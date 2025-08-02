@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pill Clicker</title>
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    canvas {
+      margin: 30px auto;
+      display: block;
+      border: 2px solid #ff00cc;
+    }
+    h1 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    h1 a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1><a href="/">INVOIID</a></h1>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const songs = [
+      "https://soundcloud.com/eluxee/blackhole-1?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/eluxe-wizler-as-2?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/push-for-help-3?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/ozo-4?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/zelinski-5?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/censored-unusual-pills?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/wish-i-could-forget-eluxe-remix?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/pulling-me-closer-6?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/memories-starship-7?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/mai-mai-found-your-love-eluxe-flip-8?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/heavyweight-9?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/air-it-out-10?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/thousand-dolla-pair-of-shoes-11?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/soul-12?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/like-a-bad-bitch-13?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/acd-14?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/ravehall-15?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/ravehall-15?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/dont-slipout-crysomemore-vip-eluxe-flip-16?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/asso9d-17?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/so-far-out-of-sight-18?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/specialty-19?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/pleasetomeetu-9-5-20?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/invoioiid-21?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/rave-boy-22?in=eluxee/sets/invoiid",
+      "https://soundcloud.com/eluxee/chomper-23?in=eluxee/sets/invoiid",
+    ];
+
+    const pills = [];
+    const rows = 4;
+    const cols = 7;
+    const cellSize = 100;
+    const offsetX = 50;
+    const offsetY = 100;
+
+    let pillIndex = 0;
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        if (pillIndex < songs.length) {
+          pills.push({
+            x: offsetX + col * cellSize,
+            y: offsetY + row * cellSize,
+            clicked: false,
+            url: songs[pillIndex],
+          });
+          pillIndex++;
+        }
+      }
+    }
+
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      pills.forEach(p => {
+        if (!p.clicked &&
+            mx >= p.x - 30 && mx <= p.x + 30 &&
+            my >= p.y - 15 && my <= p.y + 15) {
+          p.clicked = true;
+          window.open(p.url, '_blank');
+        }
+      });
+    });
+
+    function drawPill(x, y) {
+      ctx.beginPath();
+      ctx.ellipse(x, y, 30, 15, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#ff66cc";
+      ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.stroke();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pills.forEach(p => {
+        if (!p.clicked) drawPill(p.x, p.y);
+      });
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>

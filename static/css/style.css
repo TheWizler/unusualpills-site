@@ -1,0 +1,45 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    font-family: monospace;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+}
+
+.logo-wrap {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.logo-wrap:hover {
+    transform: scale(1.05);
+}
+
+.logo {
+    max-width: 240px;
+    width: 40vw;
+    filter: drop-shadow(0 0 20px #ff00ff);
+}
+
+/* Glowing animated canvas layer */
+#pillCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+}
+

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unusual Pills</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .logo, .merch-pill {
+      width: 300px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .logo:hover, .merch-pill:hover {
+      transform: scale(1.05);
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main claw machine start button -->
+  <a href="/claw">
+    <img src="static/images/RAINBOWPILLS.PNG" alt="Rainbow Pills Logo" class="logo" />
+  </a>
+
+  <!-- Merch page button -->
+  <a href="/merch">
+    <img src="static/images/pill.png" alt="Merch Pill" class="merch-pill" />
+  </a>
+</body>
+</html>
