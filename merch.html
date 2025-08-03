@@ -12,17 +12,18 @@
       text-align: center;
     }
 
-    h1 {
+    a.title {
+      text-decoration: none;
+    }
+
+    .title img {
+      width: 180px;
       margin-top: 30px;
     }
 
-    a.title {
-      text-decoration: none;
-      color: #fff;
-    }
-
-    a.title:hover {
-      text-decoration: underline;
+    .merch-header img {
+      width: 140px;
+      margin-top: 10px;
     }
 
     .merch-container {
@@ -64,9 +65,14 @@
   </style>
 </head>
 <body>
-  <h1><a href="index.html" class="title">INVOIID</a></h1>
-  <h2>Merch</h2>
-  
+  <a href="index.html" class="title">
+    <img src="static/images/INVOIID top button.png" alt="INVOIID" />
+  </a>
+
+  <div class="merch-header">
+    <img src="static/images/Merch.png" alt="Merch" />
+  </div>
+
   <div class="merch-container">
     <div class="item">
       <img src="static/images/waytoomany.jpg" alt="Way Too Many" />
@@ -88,5 +94,4 @@
   </div>
 </body>
 </html>
-
 
