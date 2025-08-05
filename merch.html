@@ -2,49 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unusual Pills</title>
+  <title>Merch - INVOIID</title>
   <style>
     body {
       margin: 0;
-      background: url("static/images/FRONT PAGE.png") no-repeat center center fixed;
-      background-size: cover;
-      color: white;
+      background: #111;
+      color: #fff;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-
-    .logo, .merch-pill {
-      width: 300px;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      margin-top: 20px;
-    }
-
-    .logo:hover, .merch-pill:hover {
-      transform: scale(1.05);
+      text-align: center;
     }
 
     h1 {
-      margin-top: 20px;
-      font-size: 24px;
-      text-align: center;
+      margin-top: 30px;
+      font-size: 36px;
+      color: #ff33cc;
+      text-shadow: 0 0 10px #ff33cc;
+    }
+
+    .merch-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+      padding: 40px;
+    }
+
+    .item {
+      width: 200px;
+      background: #1c1c1c;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 0, 204, 0.5);
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .item:hover {
+      transform: scale(1.05);
+    }
+
+    .item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .item-name {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .buy-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #ff33cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .buy-button:hover {
+      background: #ff66d9;
     }
   </style>
 </head>
 <body>
-  <!-- Main claw machine start button -->
-  <a href="claw.html">
-    <img src="static/images/RAINBOWPILLS.PNG" alt="Rainbow Pills Logo" class="logo" />
-  </a>
+  <h1>INVOIID Merch</h1>
 
-  <!-- Merch page button -->
-  <a href="merch.html">
-    <img src="static/images/pill.png" alt="Merch Pill" class="merch-pill" />
-  </a>
+  <div class="merch-container">
+    <!-- Example Item 1 -->
+    <div class="item">
+      <img src="static/images/invoid.jpg" alt="INVOIID CD" />
+      <div class="item-name">INVOIID CD</div>
+      <a href="https://buy.stripe.com/test_a1B2c3D4E5f6G7h001" target="_blank" class="buy-button">Buy</a>
+    </div>
+
+    <!-- Add more items below -->
+    <!-- Example Item 2 -->
+    <!--
+    <div class="item">
+      <img src="static/images/another_item.png" alt="Item Name" />
+      <div class="item-name">Another Item</div>
+      <a href="https://buy.stripe.com/YOUR-LINK-HERE" target="_blank" class="buy-button">Buy</a>
+    </div>
+    -->
+  </div>
 </body>
 </html>
+
