@@ -2,95 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Merch - INVOIID</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unusual Pills</title>
   <style>
     body {
       margin: 0;
-      background: #111;
-      color: #fff;
+      background: url("static/images/FRONT PAGE.png") no-repeat center center fixed;
+      background-size: cover;
+      color: white;
       font-family: Arial, sans-serif;
-      text-align: center;
-    }
-
-    a.title {
-      text-decoration: none;
-    }
-
-    .title img {
-      width: 180px;
-      margin-top: 30px;
-    }
-
-    .merch-header img {
-      width: 140px;
-      margin-top: 10px;
-    }
-
-    .merch-container {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 40px;
-      padding: 40px;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
     }
 
-    .item {
-      width: 200px;
+    .logo, .merch-pill {
+      width: 300px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-top: 20px;
     }
 
-    .item img {
-      width: 100%;
-      border: 2px solid #ff00cc;
-      border-radius: 12px;
+    .logo:hover, .merch-pill:hover {
+      transform: scale(1.05);
     }
 
-    .item-name {
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    .buy-button {
-      display: inline-block;
-      margin-top: 5px;
-      padding: 6px 12px;
-      background: #ff00cc;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-    }
-
-    .buy-button:hover {
-      background: #e600aa;
+    h1 {
+      margin-top: 20px;
+      font-size: 24px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="title">
-    <img src="static/images/INVOIIDtopbutton.png" alt="INVOIID" />
+  <!-- Main claw machine start button -->
+  <a href="claw.html">
+    <img src="static/images/RAINBOWPILLS.PNG" alt="Rainbow Pills Logo" class="logo" />
   </a>
 
-  <div class="merch-header">
-    <img src="static/images/Merch.png" alt="Merch" />
-  </div>
-
-  <div class="merch-container">
-    <div class="item">
-      <img src="static/images/waytoomany.jpg" alt="Way Too Many" />
-      <div class="item-name">Way Too Many</div>
-      <a class="buy-button" href="https://buy.stripe.com/test_9B6cN54tW7cE4pm65p7bW00" target="_blank">Buy</a>
-    </div>
-
-    <div class="item">
-      <img src="static/images/invoid.jpg" alt="INVOIID CD" />
-      <div class="item-name">INVOIID CD</div>
-      <a class="buy-button" href="https://buy.stripe.com/3cIfZicRYble75T1tvbfO01" target="_blank">Buy</a>
-    </div>
-
-    <div class="item">
-      <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream" />
-      <div class="item-name">Benzodiazastream</div>
-      <a class="buy-button" href="https://buy.stripe.com/14A3cw3ho9d6gGt8VXbfO02" target="_blank">Buy</a>
-    </div>
-  </div>
+  <!-- Merch page button -->
+  <a href="merch.html">
+    <img src="static/images/pill.png" alt="Merch Pill" class="merch-pill" />
+  </a>
 </body>
 </html>
