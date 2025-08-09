@@ -16,17 +16,26 @@
       align-items: center;
       height: 100vh;
       flex-direction: column;
+      position: relative;
     }
 
-    .logo, .merch-pill {
+    .logo, .merch-pill, .snail {
       width: 300px;
       cursor: pointer;
       transition: transform 0.3s ease;
       margin-top: 20px;
     }
 
-    .logo:hover, .merch-pill:hover {
+    .logo:hover, .merch-pill:hover, .snail:hover {
       transform: scale(1.05);
+    }
+
+    /* Position the snail slightly to the left */
+    .snail-link {
+      position: absolute;
+      left: 50px;
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     h1 {
@@ -37,6 +46,11 @@
   </style>
 </head>
 <body>
+  <!-- Snail linking to SoundCloud -->
+  <a href="https://soundcloud.com/unusualpills/disco-snail" target="_blank" class="snail-link">
+    <img src="static/images/snail.jpg" alt="Disco Snail" class="snail" />
+  </a>
+
   <!-- Main claw machine start button -->
   <a href="claw.html">
     <img src="static/images/INVOIIDtopbutton.png" alt="Rainbow Pills Logo" class="logo" />
@@ -48,4 +62,3 @@
   </a>
 </body>
 </html>
-
