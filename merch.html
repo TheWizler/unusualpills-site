@@ -27,13 +27,6 @@
       transform: scale(1.05);
     }
 
-    h1 {
-      margin-top: 30px;
-      font-size: 36px;
-      color: #a855f7; /* purple */
-      text-shadow: 0 0 10px #a855f7;
-    }
-
     .merch-container {
       display: flex;
       flex-wrap: wrap;
@@ -44,9 +37,9 @@
 
     .item {
       width: 200px;
-      background: rgba(28, 28, 28, 0.85);
+      background: rgba(255, 255, 255, 0.05); /* very transparent */
+      backdrop-filter: blur(8px); /* blur behind the box */
       border-radius: 12px;
-      /* Removed pink glow */
       box-shadow: none;
       padding: 20px;
       transition: transform 0.3s ease;
@@ -80,14 +73,14 @@
     }
 
     .buy-button:hover {
-      background: #8a2be2; /* lighter purple on hover */
+      background: #8a2be2;
     }
   </style>
 </head>
 <body>
   <!-- Top INVOIID Button Logo linking back to homepage -->
   <a href="/" class="logo-link">
-    <img src="static/images/unusualpills.png" alt="INVOIID Logo" />
+    <img src="static/images/INVOIIDtopbutton.png" alt="INVOIID Logo" />
   </a>
 
   <div class="merch-container">
@@ -121,4 +114,3 @@
   </div>
 </body>
 </html>
-
