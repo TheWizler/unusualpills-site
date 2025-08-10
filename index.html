@@ -11,7 +11,7 @@
 
     body {
       margin: 0;
-      background: url("static/images/background%20.png") no-repeat center center fixed; 
+      background: url("static/images/background.png") no-repeat center center fixed; 
       background-size: cover;
       color: white;
       font-family: Arial, sans-serif;
@@ -63,7 +63,11 @@
 
     /* Mobile fixes: stack everything, no absolute snail */
     @media (max-width: 640px) {
-      body { overflow: auto; padding: 20px 0; }
+      body { 
+        overflow: auto; 
+        padding: 20px 0; 
+        background-attachment: scroll; /* fix for iOS */
+      }
 
       .snail-link {
         position: static;
@@ -92,16 +96,13 @@
   <div class="center-links">
     <!-- Main claw machine start button -->
     <a href="claw.html" aria-label="Start Claw Machine">
-      <!-- Make sure this filename exactly matches your server file (case-sensitive) -->
       <img src="static/images/unusualpills.png" alt="Rainbow Pills Logo" class="logo" />
     </a>
 
     <!-- Merch page button -->
     <a href="merch.html" aria-label="Merch Page">
-      <!-- Make sure this filename exactly matches your server file (case-sensitive) -->
       <img src="static/images/merch.png" alt="Merch Pill" class="merch-pill" />
     </a>
   </div>
 </body>
 </html>
- 
