@@ -5,9 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unusual Pills</title>
   <style>
+    :root {
+      --max-img: 300px;
+    }
+
     body {
       margin: 0;
-      background: url("static/images/FRONT PAGE.png") no-repeat center center fixed;
+      background: url("static/images/FRONT%20PAGE.png") no-repeat center center fixed;
       background-size: cover;
       color: white;
       font-family: Arial, sans-serif;
@@ -17,25 +21,38 @@
       height: 100vh;
       flex-direction: column;
       position: relative;
+      overflow: hidden;
     }
 
+    /* Common image link styles */
     .logo, .merch-pill, .snail {
-      width: 300px;
+      width: min(60vw, var(--max-img));
+      max-width: var(--max-img);
       cursor: pointer;
       transition: transform 0.3s ease;
       margin-top: 20px;
+      display: block;
     }
 
     .logo:hover, .merch-pill:hover, .snail:hover {
       transform: scale(1.05);
     }
 
-    /* Position the snail slightly to the left */
+    /* Snail to the left on larger screens */
     .snail-link {
       position: absolute;
-      left: 50px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
+      z-index: 1; /* keep it under the main buttons */
+    }
+
+    /* Center buttons above the snail for click priority */
+    .center-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
     }
 
     h1 {
@@ -43,22 +60,48 @@
       font-size: 24px;
       text-align: center;
     }
+
+    /* Mobile fixes: stack everything, no absolute snail */
+    @media (max-width: 640px) {
+      body { overflow: auto; padding: 20px 0; }
+
+      .snail-link {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+        order: -1; /* show first */
+      }
+
+      .logo, .merch-pill, .snail {
+        width: min(80vw, var(--max-img));
+      }
+
+      .center-links {
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <!-- Snail linking to SoundCloud -->
-  <a href="https://soundcloud.com/unusualpills/disco-snail" target="_blank" class="snail-link">
+  <a href="https://soundcloud.com/unusualpills/disco-snail" target="_blank" class="snail-link" aria-label="Disco Snail on SoundCloud">
     <img src="static/images/snail.jpg" alt="Disco Snail" class="snail" />
   </a>
 
-  <!-- Main claw machine start button -->
-  <a href="claw.html">
-    <img src="static/images/INVOIIDtopbutton.png" alt="Rainbow Pills Logo" class="logo" />
-  </a>
+  <!-- Main links centered -->
+  <div class="center-links">
+    <!-- Main claw machine start button -->
+    <a href="claw.html" aria-label="Start Claw Machine">
+      <!-- Make sure this filename exactly matches your server file (case-sensitive) -->
+      <img src="static/images/INVOIIDtopbutton.png" alt="Rainbow Pills Logo" class="logo" />
+    </a>
 
-  <!-- Merch page button -->
-  <a href="merch.html">
-    <img src="static/images/merchpill.png" alt="Merch Pill" class="merch-pill" />
-  </a>
+    <!-- Merch page button -->
+    <a href="merch.html" aria-label="Merch Page">
+      <!-- Make sure this filename exactly matches your server file (case-sensitive) -->
+      <img src="static/images/merchpill.png" alt="Merch Pill" class="merch-pill" />
+    </a>
+  </div>
 </body>
 </html>
+ 
