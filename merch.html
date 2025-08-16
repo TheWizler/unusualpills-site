@@ -3,121 +3,261 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unusual Pills — Merch</title>
+  <!-- Fonts: modern (Inter) + retro (Press Start 2P) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
+    :root {
+      /* Color system */
+      --bg: 12 12 14;             /* page background */
+      --fg: 245 245 247;           /* main text */
+      --muted: 160 160 175;        /* secondary text */
+      --card: 20 20 24;            /* card base */
+      --accent: 255 51 204;        /* brand pink */
+      --accent-2: 129 140 248;     /* violet */
+      --glass: 255 255 255 / 7%;   /* glass layer */
+      --ring: 255 255 255 / 18%;   /* subtle borders */
+
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --maxw: 1200px;
+    }
+
+    /* Base */
+    html, body { height: 100%; }
     body {
       margin: 0;
-      background: url("static/images/background.png") no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
+      color: rgb(var(--fg));
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(255,51,204,.2), transparent),
+                  radial-gradient(800px 400px at 110% 10%, rgba(129,140,248,.18), transparent),
+                  rgb(var(--bg)) url("static/images/background.png") center / cover fixed no-repeat;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
-    a.logo-link {
-      display: inline-block;
-      margin-top: 30px;
+    /* Top bar */
+    .nav {
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.15));
+      border-bottom: 1px solid var(--ring);
+      z-index: 10;
     }
-
-    .logo-link img {
-      width: 300px;
-      transition: transform 0.3s ease;
-    }
-
-    .logo-link img:hover {
-      transform: scale(1.05);
-    }
-
-    .merch-container {
+    .nav-inner {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 14px 20px;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 40px;
-      padding: 40px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
-
-    .item {
-      width: 200px;
-      padding: 0;
-      box-shadow: none;
-      background: none;
-      border-radius: 0;
-      transition: transform 0.3s ease;
-    }
-
-    .item:hover {
-      transform: scale(1.05);
-    }
-
-    .item img {
-      width: 100%;
-      border-radius: 8px;
-    }
-
-    .item-name {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 18px;
-      color: black; /* Changed to black */
-    }
-
-    .buy-button {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.4); /* translucent background */
-      color: black; /* black text */
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
       text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background 0.3s ease;
-      border: 1px solid rgba(0, 0, 0, 0.3); /* subtle border */
+      color: inherit;
+    }
+    .brand img { width: 160px; height: auto; display: block; filter: drop-shadow(0 4px 14px rgba(255,51,204,.25)); }
+
+    /* Theme toggle */
+    .toggle {
+      display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: rgb(var(--muted));
+      user-select: none; cursor: pointer;
+    }
+    .switch { position: relative; width: 50px; height: 28px; background: rgba(255,255,255,.1); border: 1px solid var(--ring); border-radius: 999px; transition: .25s ease; }
+    .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: white; transition: .25s ease; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+    .switch.active { background: rgba(255,51,204,.25); border-color: rgba(255,51,204,.45); }
+    .switch.active::after { transform: translateX(22px); }
+
+    /* Page header */
+    .header {
+      max-width: var(--maxw);
+      margin: 40px auto 10px;
+      padding: 0 20px;
+    }
+    .title { font-size: clamp(26px, 4vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+    .subtitle { margin-top: 10px; color: rgb(var(--muted)); font-weight: 400; }
+
+    /* Grid */
+    .grid {
+      max-width: var(--maxw);
+      margin: 24px auto 80px;
+      padding: 0 20px 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 22px;
     }
 
-    .buy-button:hover {
-      background: rgba(255, 255, 255, 0.6);
+    /* Card */
+    .card {
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid var(--ring);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+      isolation: isolate;
+    }
+    .card::before { /* glow border */
+      content: "";
+      position: absolute; inset: -1px;
+      border-radius: inherit;
+      padding: 1px; /* to reveal gradient edge */
+      background: linear-gradient(135deg, rgba(255,51,204,.35), rgba(129,140,248,.35));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      opacity: 0; transition: opacity .25s ease;
+      z-index: 0;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,.5); border-color: rgba(255,255,255,.28); }
+    .card:hover::before { opacity: 1; }
+
+    .thumb { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; display: block; }
+    .content { padding: 14px; display: grid; gap: 10px; }
+    .name { font-weight: 700; font-size: 16px; letter-spacing: .2px; color: rgb(var(--fg)); }
+
+    .buy {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 14px; border-radius: 12px; font-weight: 700; text-decoration: none;
+      border: 1px solid rgba(255,255,255,.25);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      color: rgb(var(--fg));
+      transition: transform .15s ease, filter .15s ease, background .2s ease, border-color .2s ease;
+      will-change: transform;
+    }
+    .buy:hover { transform: translateY(-1px); border-color: rgba(255,51,204,.55); background: linear-gradient(180deg, rgba(255,51,204,.18), rgba(129,140,248,.18)); }
+
+    /* Footer */
+    footer { text-align: center; color: rgb(var(--muted)); padding: 20px; margin-bottom: 20px; }
+
+    /* Retro mode (toggle adds .retro on <body>) */
+    body.retro { 
+      image-rendering: pixelated;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 2px, transparent 2px 4px),
+                  radial-gradient(1000px 450px at -10% 10%, rgba(0,255,170,.18), transparent),
+                  radial-gradient(700px 350px at 120% -10%, rgba(255,0,170,.18), transparent),
+                  rgb(10 10 12) url("static/images/background.png") center / cover fixed no-repeat;
+      font-family: 'Press Start 2P', monospace;
+      letter-spacing: .5px;
+    }
+    body.retro .title { text-shadow: 0 0 8px rgba(0,255,170,.35), 0 0 24px rgba(255,0,170,.25); }
+    body.retro .card { border-radius: 8px; }
+    body.retro .buy {
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.35));
+      box-shadow: inset 0 0 0 2px rgba(0,255,170,.35), 0 6px 0 0 rgba(0,0,0,.6);
+      text-transform: uppercase;
+    }
+    body.retro .buy:hover { filter: contrast(1.15) saturate(1.25); }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
     }
   </style>
 </head>
 <body>
-  <!-- Top INVOIID Button Logo linking back to homepage -->
-  <a href="/" class="logo-link">
-    <img src="static/images/unusualpills.png" alt="INVOIID Logo" />
-  </a>
-
-  <div class="merch-container">
-    <!-- Benzodiazastream Tee -->
-    <div class="item">
-      <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Shirt" />
-      <div class="item-name">Benzodiazastream</div>
-      <a href="https://buy.stripe.com/14A3cw3ho9d6gGt8VXbfO02" target="_blank" class="buy-button">Buy</a>
-    </div>
-
-    <!-- Way Too Many Shirt -->
-    <div class="item">
-      <img src="static/images/waytoomany.jpg" alt="Way Too Many Shirt" />
-      <div class="item-name">Way Too Many</div>
-      <a href="https://buy.stripe.com/7sYcN62dkcpiduh0prbfO00" target="_blank" class="buy-button">Buy</a>
-    </div>
-
-    <!-- Generically Shirt -->
-    <div class="item">
-      <img src="static/images/generically.png" alt="Generically Shirt" />
-      <div class="item-name">Seroquel</div>
-      <a href="https://buy.stripe.com/7sY00kaJQfBu61P6NPbfO03" target="_blank" class="buy-button">Buy</a>
-    </div>
-
-    <!-- Hoodie -->
-    <div class="item">
-      <img src="static/images/hoodie.jpg" alt="Unusual Hoodie" />
-      <div class="item-name">Unusual Hoodie</div>
-      <a href="https://buy.stripe.com/5kQ4gA05cahaai55JLbfO04" target="_blank" class="buy-button">Buy</a>
-    </div>
-    <!-- UnusualPillT -->
-    <div class="item">
-      <img src="static/images/unusualpillT.jpg" alt="Unusual Pill T" />
-      <div class="item-name">Unusual Pill</div>
-      <a href="https://buy.stripe.com/eVq4gA4ls60UcqddcdbfO05" target="_blank" class="buy-button">Buy</a>
+  <!-- Top bar -->
+  <div class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">
+        <img src="static/images/unusualpills.png" alt="Unusual Pills" loading="eager" />
+      </a>
+      <div class="toggle" id="themeToggle" role="button" aria-pressed="false" tabindex="0">
+        <span>Retro mode</span>
+        <div class="switch" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
+
+  <!-- Header copy -->
+  <header class="header">
+    <h1 class="title">Merch Drop</h1>
+    <p class="subtitle">Clean modern by default. Flip the switch for a retro-future vibe.</p>
+  </header>
+
+  <!-- Grid of products -->
+  <main class="grid" id="grid">
+    <!-- Benzodiazastream Tee -->
+    <article class="card">
+      <img class="thumb" src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Shirt" loading="lazy" />
+      <div class="content">
+        <h2 class="name">Benzodiazastream</h2>
+        <a class="buy" target="_blank" href="https://buy.stripe.com/14A3cw3ho9d6gGt8VXbfO02" rel="noopener">Buy</a>
+      </div>
+    </article>
+
+    <!-- Way Too Many Shirt -->
+    <article class="card">
+      <img class="thumb" src="static/images/waytoomany.jpg" alt="Way Too Many Shirt" loading="lazy" />
+      <div class="content">
+        <h2 class="name">Way Too Many</h2>
+        <a class="buy" target="_blank" href="https://buy.stripe.com/7sYcN62dkcpiduh0prbfO00" rel="noopener">Buy</a>
+      </div>
+    </article>
+
+    <!-- Generically Shirt (Seroquel) -->
+    <article class="card">
+      <img class="thumb" src="static/images/generically.png" alt="Seroquel Shirt" loading="lazy" />
+      <div class="content">
+        <h2 class="name">Seroquel</h2>
+        <a class="buy" target="_blank" href="https://buy.stripe.com/7sY00kaJQfBu61P6NPbfO03" rel="noopener">Buy</a>
+      </div>
+    </article>
+
+    <!-- Hoodie -->
+    <article class="card">
+      <img class="thumb" src="static/images/hoodie.jpg" alt="Unusual Hoodie" loading="lazy" />
+      <div class="content">
+        <h2 class="name">Unusual Hoodie</h2>
+        <a class="buy" target="_blank" href="https://buy.stripe.com/5kQ4gA05cahaai55JLbfO04" rel="noopener">Buy</a>
+      </div>
+    </article>
+
+    <!-- Unusual Pill Tee -->
+    <article class="card">
+      <img class="thumb" src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee" loading="lazy" />
+      <div class="content">
+        <h2 class="name">Unusual Pill</h2>
+        <a class="buy" target="_blank" href="https://buy.stripe.com/eVq4gA4ls60UcqddcdbfO05" rel="noopener">Buy</a>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Unusual Pills. All rights reserved.
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    const switchEl = toggle.querySelector('.switch');
+
+    function setRetro(on) {
+      document.body.classList.toggle('retro', on);
+      switchEl.classList.toggle('active', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      localStorage.setItem('retro', on ? '1' : '0');
+    }
+
+    // Load saved preference
+    const saved = localStorage.getItem('retro');
+    if (saved === '1') setRetro(true);
+
+    toggle.addEventListener('click', () => setRetro(!document.body.classList.contains('retro')));
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRetro(!document.body.classList.contains('retro')); }
+    });
+  </script>
 </body>
 </html>
