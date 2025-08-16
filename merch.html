@@ -84,6 +84,25 @@
     .title { font-size: clamp(26px, 4vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
     .subtitle { margin-top: 10px; color: rgb(var(--muted)); font-weight: 400; }
 
+    /* NEW: Filter bar */
+    .filters {
+      max-width: var(--maxw);
+      margin: 12px auto 0;
+      padding: 0 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      appearance: none; border: 1px solid rgba(255,255,255,.25);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+      color: rgb(var(--fg));
+      padding: 8px 14px; border-radius: 999px; font-weight: 700;
+      cursor: pointer; transition: border-color .2s ease, transform .15s ease;
+    }
+    .filter-btn:hover { transform: translateY(-1px); border-color: rgba(255,51,204,.55); }
+    .filter-btn.active { border-color: rgba(255,51,204,.75); box-shadow: 0 0 0 2px rgba(255,51,204,.25) inset; }
+
     /* Grid */
     .grid {
       max-width: var(--maxw);
@@ -157,6 +176,9 @@
     }
     body.retro .buy:hover { filter: contrast(1.15) saturate(1.25); }
 
+    /* Hide helper */
+    .is-hidden { display: none !important; }
+
     /* Reduce motion */
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
@@ -183,10 +205,17 @@
     <p class="subtitle">Flip the switch</p>
   </header>
 
+  <!-- NEW: Filter bar -->
+  <nav class="filters" aria-label="Filter products">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <a class="filter-btn" href="#tees" data-filter="tees">Tees</a>
+    <a class="filter-btn" href="#hoodies" data-filter="hoodies">Hoodies</a>
+  </nav>
+
   <!-- Grid of products -->
   <main class="grid" id="grid">
     <!-- Benzodiazastream Tee -->
-    <article class="card">
+    <article class="card" data-category="tees">
       <img class="thumb" src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Shirt" loading="lazy" />
       <div class="content">
         <h2 class="name">Benzodiazastream</h2>
@@ -195,7 +224,7 @@
     </article>
 
     <!-- Way Too Many Shirt -->
-    <article class="card">
+    <article class="card" data-category="tees">
       <img class="thumb" src="static/images/waytoomany.jpg" alt="Way Too Many Shirt" loading="lazy" />
       <div class="content">
         <h2 class="name">Way Too Many</h2>
@@ -204,7 +233,7 @@
     </article>
 
     <!-- Generically Shirt (Seroquel) -->
-    <article class="card">
+    <article class="card" data-category="tees">
       <img class="thumb" src="static/images/generically.png" alt="Seroquel Shirt" loading="lazy" />
       <div class="content">
         <h2 class="name">Seroquel</h2>
@@ -213,7 +242,7 @@
     </article>
 
     <!-- Hoodie -->
-    <article class="card">
+    <article class="card" data-category="hoodies">
       <img class="thumb" src="static/images/hoodie.jpg" alt="Unusual Hoodie" loading="lazy" />
       <div class="content">
         <h2 class="name">Unusual Hoodie</h2>
@@ -222,7 +251,7 @@
     </article>
 
     <!-- Unusual Pill Tee -->
-    <article class="card">
+    <article class="card" data-category="tees">
       <img class="thumb" src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee" loading="lazy" />
       <div class="content">
         <h2 class="name">Unusual Pill</h2>
@@ -250,7 +279,6 @@
       localStorage.setItem('retro', on ? '1' : '0');
     }
 
-    // Load saved preference
     const saved = localStorage.getItem('retro');
     if (saved === '1') setRetro(true);
 
@@ -258,6 +286,48 @@
     toggle.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRetro(!document.body.classList.contains('retro')); }
     });
+
+    // ===== Filters (show/hide cards) =====
+    const btns = Array.from(document.querySelectorAll('.filter-btn'));
+    const cards = Array.from(document.querySelectorAll('.card'));
+
+    function applyFilter(key) {
+      // Update active button
+      btns.forEach(b => b.classList.toggle('active', b.dataset.filter === key || (key === 'all' && b.dataset.filter === 'all')));
+      // Show/hide
+      cards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        const show = key === 'all' || key === cat;
+        card.classList.toggle('is-hidden', !show);
+      });
+    }
+
+    function filterFromHash() {
+      const hash = (location.hash || '').replace('#','').toLowerCase();
+      if (hash === 'tees' || hash === 'hoodies') {
+        applyFilter(hash);
+      } else {
+        applyFilter('all');
+      }
+    }
+
+    // Click handlers
+    btns.forEach(b => {
+      b.addEventListener('click', (e) => {
+        const key = b.dataset.filter;
+        if (key !== 'all') {
+          // update URL hash for deep linking
+          location.hash = key;
+        } else {
+          history.replaceState(null, '', location.pathname + location.search);
+        }
+        applyFilter(key);
+      });
+    });
+
+    // Init and on hash change
+    window.addEventListener('hashchange', filterFromHash);
+    filterFromHash();
   </script>
 </body>
 </html>
