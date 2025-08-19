@@ -85,21 +85,71 @@
       }
     }
 
-    /* Glitch face styling */
+    /* === TRIPPY CODED FACE (no image) === */
     .glitch-face {
       position: absolute;
-      right: 20px;
+      right: 16px;
       top: 50%;
       transform: translateY(-50%);
-      z-index: 0; /* behind main buttons */
-      width: 150px;
-      overflow: hidden;
+      width: 180px;
+      z-index: 0;           /* stays behind your center buttons */
+      pointer-events: none; /* never blocks clicks */
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.15));
+      animation: idleWobble 4s ease-in-out infinite;
+      contain: layout paint; /* keep paints cheap */
+    }
+    .glitch-face svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      display: block;
     }
 
-    .glitch-face img {
-      width: 100%;
-      transition: transform 0.1s ease, filter 0.1s ease;
-      will-change: transform, filter;
+    /* RGB split layers */
+    .glitch-layer { mix-blend-mode: screen; opacity: 0.9; }
+    .glitch-r { filter: hue-rotate(0deg) saturate(1.6); }
+    .glitch-g { filter: hue-rotate(120deg) saturate(1.6); }
+    .glitch-b { filter: hue-rotate(240deg) saturate(1.6); }
+
+    /* Subtle idle wiggle */
+    @keyframes idleWobble {
+      0%   { transform: translateY(-50%) translate(0,0) skewX(0deg); }
+      50%  { transform: translateY(-50%) translate(0,-1px) skewX(0.5deg); }
+      100% { transform: translateY(-50%) translate(0,0) skewX(0deg); }
+    }
+
+    /* Scanlines overlay */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.06) 0px,
+        rgba(255,255,255,0.06) 1px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,0,0,0) 3px
+      );
+      mix-blend-mode: overlay;
+      opacity: .25;
+      pointer-events: none;
+      animation: scanFlicker 2.8s linear infinite;
+    }
+    @keyframes scanFlicker {
+      0%, 100% { opacity: .22; }
+      45%      { opacity: .34; }
+      60%      { opacity: .18; }
+      80%      { opacity: .28; }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .glitch-face { animation: none; }
+      .scanlines { animation: none; opacity: .2; }
+    }
+
+    /* Hide on small screens if you want */
+    @media (max-width: 640px) {
+      .glitch-face { display: none; }
     }
   </style>
 </head>
@@ -118,31 +168,133 @@
     </a>
   </div>
 
-  <!-- Glitchy face element -->
-  <div class="glitch-face">
-    <img src="static/images/face.png" alt="Glitch Face" />
+  <!-- === TRIPPY CODED GLITCH FACE (SVG + JS with scanlines & slice jumps) === -->
+  <div class="glitch-face" aria-hidden="true">
+    <div class="scanlines"></div>
+    <svg viewBox="0 0 200 240" role="img">
+      <defs>
+        <!-- Fractal noise & displacement for the “melt” effect -->
+        <filter id="glitchFilter">
+          <feTurbulence id="noise" type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="7" result="turb"/>
+          <feDisplacementMap id="disp" in="SourceGraphic" in2="turb" scale="12" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+
+        <!-- Mouth squiggle path -->
+        <path id="mouthPath" d="M40,155 C70,175 130,175 160,155" />
+
+        <!-- Build the face once, reuse for slices -->
+        <g id="faceBase" filter="url(#glitchFilter)">
+          <!-- head -->
+          <ellipse cx="100" cy="110" rx="78" ry="92" fill="none" stroke="white" stroke-width="3"/>
+          <!-- eyes -->
+          <circle cx="68" cy="95" r="9" fill="white"/>
+          <circle cx="132" cy="92" r="11" fill="white"/>
+          <!-- pupils -->
+          <circle cx="70" cy="97" r="3" fill="black"/>
+          <circle cx="129" cy="94" r="3" fill="black"/>
+          <!-- brows -->
+          <path d="M52,78 q16,-10 32,0" stroke="white" stroke-width="3" fill="none"/>
+          <path d="M120,73 q16,-6 28,4" stroke="white" stroke-width="3" fill="none"/>
+          <!-- mouth -->
+          <use href="#mouthPath" stroke="white" stroke-width="3" fill="none"/>
+        </g>
+
+        <!-- ClipPaths for slice bands -->
+        <clipPath id="slice0"><rect x="0" y="20"  width="200" height="16"/></clipPath>
+        <clipPath id="slice1"><rect x="0" y="40"  width="200" height="18"/></clipPath>
+        <clipPath id="slice2"><rect x="0" y="62"  width="200" height="16"/></clipPath>
+        <clipPath id="slice3"><rect x="0" y="82"  width="200" height="18"/></clipPath>
+        <clipPath id="slice4"><rect x="0" y="106" width="200" height="16"/></clipPath>
+        <clipPath id="slice5"><rect x="0" y="126" width="200" height="18"/></clipPath>
+        <clipPath id="slice6"><rect x="0" y="150" width="200" height="16"/></clipPath>
+        <clipPath id="slice7"><rect x="0" y="170" width="200" height="20"/></clipPath>
+      </defs>
+
+      <!-- Three color layers grouped (for RGB split) -->
+      <g id="rgbFace">
+        <g class="glitch-layer glitch-r"><use href="#faceBase"/></g>
+        <g class="glitch-layer glitch-g"><use href="#faceBase"/></g>
+        <g class="glitch-layer glitch-b"><use href="#faceBase"/></g>
+      </g>
+
+      <!-- Sliced copies for horizontal jumps -->
+      <g id="slices">
+        <g class="slice" clip-path="url(#slice0)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice1)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice2)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice3)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice4)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice5)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice6)"><use href="#rgbFace"/></g>
+        <g class="slice" clip-path="url(#slice7)"><use href="#rgbFace"/></g>
+      </g>
+    </svg>
   </div>
 
   <script>
-    const face = document.querySelector(".glitch-face img");
+    // Animate noise/displacement to “melt” and “jitter” the face
+    const noise = document.querySelector('#noise');
+    const disp  = document.querySelector('#disp');
+    const faceEl = document.querySelector('.glitch-face');
+    const slices = Array.from(document.querySelectorAll('.slice'));
+    const rLayer = document.querySelector('.glitch-r');
+    const gLayer = document.querySelector('.glitch-g');
+    const bLayer = document.querySelector('.glitch-b');
 
-    function glitchEffect() {
-      const randX = (Math.random() - 0.5) * 20; // shake
-      const randY = (Math.random() - 0.5) * 20;
-      const randSkew = (Math.random() - 0.5) * 10;
-      const randHue = Math.random() * 360;
+    let t = 0;
+    let rgbPhase = 0;
 
-      face.style.transform = `translate(${randX}px, ${randY}px) skew(${randSkew}deg)`;
-      face.style.filter = `hue-rotate(${randHue}deg) contrast(1.5) saturate(2)`;
-      
-      setTimeout(() => {
-        face.style.transform = `translate(0,0) skew(0deg)`;
-        face.style.filter = `hue-rotate(0deg)`;
-      }, 150);
+    function pulseGlitch() {
+      t += 0.007;
+      rgbPhase += 0.04;
+
+      // Smooth base movement
+      const baseFreq = 0.012 + Math.abs(Math.sin(t)) * 0.02;   // 0.012–0.032
+      const scale    = 8 + Math.abs(Math.cos(t*1.3)) * 14;     // 8–22
+
+      noise.setAttribute('baseFrequency', baseFreq.toFixed(4));
+      disp.setAttribute('scale', scale.toFixed(1));
+
+      // Subtle RGB breathing offset
+      const rx = Math.sin(rgbPhase) * 0.8;
+      const gx = Math.sin(rgbPhase + 2.1) * 1.0;
+      const bx = Math.sin(rgbPhase + 4.2) * -0.9;
+      rLayer.setAttribute('transform', `translate(${rx},0)`);
+      gLayer.setAttribute('transform', `translate(${gx},0)`);
+      bLayer.setAttribute('transform', `translate(${bx},0)`);
+
+      // Random “hard” glitch bursts
+      if (Math.random() < 0.03) {
+        // Burst noise/scale
+        const burstFreq = (0.06 + Math.random() * 0.12).toFixed(3);
+        const burstScale = (30 + Math.random() * 60).toFixed(1);
+        noise.setAttribute('baseFrequency', burstFreq);
+        disp.setAttribute('scale', burstScale);
+
+        // Micro jitter of container
+        faceEl.style.transform = `translateY(-50%) translate(${(Math.random()*6-3)}px, ${(Math.random()*5-2.5)}px) skewX(${(Math.random()*4-2).toFixed(2)}deg)`;
+        setTimeout(() => { faceEl.style.transform = 'translateY(-50%)'; }, 120 + Math.random()*180);
+
+        // Horizontal slice jumps
+        slices.forEach((s, i) => {
+          // Make only some slices jump each burst
+          if (Math.random() < (0.35 + (i%2)*0.15)) {
+            const dir = Math.random() < 0.5 ? -1 : 1;
+            const mag = (4 + Math.random() * 18) * dir; // 4–22px
+            s.setAttribute('transform', `translate(${mag},0)`);
+            // snap back slightly staggered
+            setTimeout(() => {
+              s.setAttribute('transform', 'translate(0,0)');
+            }, 80 + Math.random()*220);
+          }
+        });
+      }
+
+      requestAnimationFrame(pulseGlitch);
     }
 
-    // glitch out every random interval
-    setInterval(glitchEffect, 500 + Math.random() * 2000);
+    // Kick off
+    requestAnimationFrame(pulseGlitch);
   </script>
 </body>
 </html>
