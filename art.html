@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unusual Pills — Art</title>
+
+  <style>
+    :root{
+      --bg: #0c0c0e;
+      --fg: #f5f5f7;
+      --muted: #a0a0af;
+      --accent: #9d7cff;
+      --gap: 14px;
+      --col: 320px; /* target column width */
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    }
+
+    /* Header */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px clamp(12px, 4vw, 32px);
+      background: linear-gradient(180deg, rgba(12,12,14,.92), rgba(12,12,14,.72) 70%, rgba(12,12,14,0));
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .brand{
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; letter-spacing: .3px;
+    }
+    .brand .dot{
+      width: 8px; height: 8px; border-radius: 999px; background: var(--accent);
+      box-shadow: 0 0 24px var(--accent);
+    }
+    .back{
+      color: var(--fg); text-decoration: none; opacity: .8;
+      border: 1px solid rgba(255,255,255,.15);
+      padding: 8px 12px; border-radius: 10px;
+    }
+    .back:hover{ opacity: 1; border-color: rgba(255,255,255,.3); }
+
+    /* Subheader */
+    .sub{
+      padding: 8px clamp(12px, 4vw, 32px) 0;
+      opacity: .8; color: var(--muted); font-size: .95rem;
+    }
+
+    /* Masonry container using CSS columns (simple & fast) */
+    .masonry{
+      column-width: var(--col);
+      column-gap: var(--gap);
+      padding: clamp(12px, 4vw, 32px);
+    }
+
+    .card{
+      break-inside: avoid;
+      margin: 0 0 var(--gap);
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: transform .2s ease, box-shadow .2s ease;
+      cursor: zoom-in;
+    }
+
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.35);
+    }
+
+    .card img{
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      background: #111;
+    }
+
+    .cap{
+      padding: 10px 12px;
+      font-size: .9rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position: fixed; inset: 0; z-index: 1000;
+      display: none; place-items: center;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(4px);
+    }
+    .lightbox.open{ display: grid; }
+
+    .lb-frame{
+      position: relative;
+      max-width: min(92vw, 1280px);
+      max-height: 86vh;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .lb-img{
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 86vh;
+      object-fit: contain;
+      background: #000;
+    }
+    .lb-cap{
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 14px;
+      color: #ddd; font-size: .95rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.7));
+    }
+
+    .lb-ui{
+      position: absolute; inset: 0; pointer-events: none;
+    }
+    .ctrl{
+      pointer-events: auto;
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #fff; text-decoration: none;
+      user-select: none;
+    }
+    .ctrl:hover{ background: rgba(255,255,255,.15); }
+    .prev{ left: -56px; }
+    .next{ right: -56px; }
+    @media (max-width: 800px){
+      .prev{ left: 6px; }
+      .next{ right: 6px; }
+    }
+    .close{
+      pointer-events: auto;
+      position: absolute; top: -56px; right: 0;
+      width: 44px; height: 44px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #fff; text-decoration: none;
+    }
+    @media (max-width: 800px){
+      .close{ top: 6px; right: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Unusual Pills — Art</span>
+    </div>
+    <a class="back" href="index.html" aria-label="Back to Home">← Home</a>
+  </header>
+
+  <div class="sub">
+    Click any piece to view. Use ← → or swipe; press Esc to close.
+  </div>
+
+  <!-- GALLERY -->
+  <main class="masonry" id="gallery">
+    <!-- Example items — replace src with your files in static/art/ -->
+    <figure class="card" data-full="static/art/01.jpg" data-caption="Glitch Bloom — 2025">
+      <img src="static/art/01_thumb.jpg" alt="Glitch Bloom" loading="lazy" width="800" height="1000">
+      <figcaption class="cap">Glitch Bloom — 2025</figcaption>
+    </figure>
+
+    <figure class="card" data-full="static/art/02.jpg" data-caption="Pilly Mirage">
+      <img src="static/art/02_thumb.jpg" alt="Pilly Mirage" loading="lazy" width="800" height="1000">
+      <figcaption class="cap">Pilly Mirage</figcaption>
+    </figure>
+
+    <figure class="card" data-full="static/art/03.jpg" data-caption="Disco Snail Variant">
+      <img src="static/art/03_thumb.jpg" alt="Disco Snail Variant" loading="lazy" width="800" height="1000">
+      <figcaption class="cap">Disco Snail Variant</figcaption>
+    </figure>
+
+    <figure class="card" data-full="static/art/04.jpg" data-caption="Botan-eye-cal">
+      <img src="static/art/04_thumb.jpg" alt="Botan-eye-cal" loading="lazy" width="800" height="1000">
+      <figcaption class="cap">Botan-eye-cal</figcaption>
+    </figure>
+
+    <!-- Add more <figure class="card">…</figure> blocks as needed -->
+  </main>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lb-frame">
+      <img class="lb-img" id="lbImg" alt="">
+      <div class="lb-cap" id="lbCap"></div>
+      <div class="lb-ui">
+        <a href="#" class="ctrl prev" id="prevBtn" aria-label="Previous">‹</a>
+        <a href="#" class="ctrl next" id="nextBtn" aria-label="Next">›</a>
+        <a href="#" class="close" id="closeBtn" aria-label="Close">✕</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple lightbox with keyboard navigation
+    (function(){
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const lbCap = document.getElementById('lbCap');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const closeBtn = document.getElementById('closeBtn');
+
+      let idx = -1;
+
+      function open(i){
+        idx = i;
+        const card = cards[idx];
+        const full = card.getAttribute('data-full') || card.querySelector('img').src;
+        const cap  = card.getAttribute('data-caption') || card.querySelector('.cap')?.textContent || '';
+        lbImg.src = full;
+        lbImg.alt = cap || 'Artwork';
+        lbCap.textContent = cap;
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function close(){
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+        lbImg.src = '';
+      }
+
+      function prev(){
+        if (idx <= 0) idx = cards.length - 1; else idx--;
+        open(idx);
+      }
+
+      function next(){
+        if (idx >= cards.length - 1) idx = 0; else idx++;
+        open(idx);
+      }
+
+      // Click handlers
+      cards.forEach((c, i) => {
+        c.addEventListener('click', () => open(i));
+      });
+
+      prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
+      nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
+      closeBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
+
+      // Dismiss on backdrop click
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb) close();
+      });
+
+      // Keyboard controls
+      window.addEventListener('keydown', (e) => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowLeft') prev();
+        if (e.key === 'ArrowRight') next();
+      });
+
+      // Basic swipe support
+      let sx = 0, sy = 0;
+      lb.addEventListener('touchstart', (e) => {
+        if (!lb.classList.contains('open')) return;
+        const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+      }, {passive: true});
+      lb.addEventListener('touchend', (e) => {
+        if (!lb.classList.contains('open')) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx;
+        const dy = t.clientY - sy;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
+          dx > 0 ? prev() : next();
+        }
+      }, {passive: true});
+
+    })();
+  </script>
+</body>
+</html>
