@@ -84,11 +84,27 @@
         margin-top: 10px;
       }
     }
+
+    /* Glitch face styling */
+    .glitch-face {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 0; /* behind main buttons */
+      width: 150px;
+      overflow: hidden;
+    }
+
+    .glitch-face img {
+      width: 100%;
+      transition: transform 0.1s ease, filter 0.1s ease;
+      will-change: transform, filter;
+    }
   </style>
 </head>
 <body>
  
-
   <!-- Main links centered -->
   <div class="center-links">
     <!-- Main claw machine start button -->
@@ -101,5 +117,32 @@
       <img src="static/images/merch.png" alt="Merch Pill" class="merch-pill" />
     </a>
   </div>
+
+  <!-- Glitchy face element -->
+  <div class="glitch-face">
+    <img src="static/images/face.png" alt="Glitch Face" />
+  </div>
+
+  <script>
+    const face = document.querySelector(".glitch-face img");
+
+    function glitchEffect() {
+      const randX = (Math.random() - 0.5) * 20; // shake
+      const randY = (Math.random() - 0.5) * 20;
+      const randSkew = (Math.random() - 0.5) * 10;
+      const randHue = Math.random() * 360;
+
+      face.style.transform = `translate(${randX}px, ${randY}px) skew(${randSkew}deg)`;
+      face.style.filter = `hue-rotate(${randHue}deg) contrast(1.5) saturate(2)`;
+      
+      setTimeout(() => {
+        face.style.transform = `translate(0,0) skew(0deg)`;
+        face.style.filter = `hue-rotate(0deg)`;
+      }, 150);
+    }
+
+    // glitch out every random interval
+    setInterval(glitchEffect, 500 + Math.random() * 2000);
+  </script>
 </body>
 </html>
