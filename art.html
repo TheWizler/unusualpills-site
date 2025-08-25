@@ -7,94 +7,151 @@
 
   <style>
     :root{
-      --bg: #0c0c0e;
+      --bg: #0b0b0e;
       --fg: #f5f5f7;
       --muted: #a0a0af;
       --accent: #9d7cff;
       --gap: 14px;
-      --col: 320px; /* target column width */
+      --col: 320px;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    /* RESET / BASE */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; color: var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+      overflow-x: hidden;
+      background: radial-gradient(1200px 800px at 20% 10%,
+                  rgba(157,124,255,0.08), transparent 60%),
+                  radial-gradient(1000px 700px at 80% 80%,
+                  rgba(124,255,216,0.06), transparent 60%),
+                  #0b0b0e;
+      /* animated flowing hue */
+      animation: hue 24s linear infinite;
+    }
+    @keyframes hue { to { filter: hue-rotate(360deg); } }
+
+    /* Animated amorphous backdrop blob */
+    .backdrop {
+      position: fixed; inset: -20vmax;
+      background:
+        conic-gradient(from 0deg at 50% 50%,
+          rgba(255,0,153,0.05), rgba(0,255,204,0.05), rgba(157,124,255,0.06), rgba(255,0,153,0.05));
+      filter: blur(70px) saturate(1.3);
+      animation: swirl 36s linear infinite;
+      z-index: -3;
+    }
+    @keyframes swirl { to { transform: rotate(360deg) scale(1.05); } }
+
+    /* Scanline/noise veneer */
+    .grain::before {
+      content: "";
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(transparent 0 2px, rgba(255,255,255,.02) 2px 3px);
+      mix-blend-mode: soft-light; opacity: .6;
+      animation: flicker 2.4s steps(2,end) infinite;
+      z-index: 3;
+    }
+    @keyframes flicker {
+      0%,100% { opacity: .55; }
+      50% { opacity: .7; }
     }
 
     /* Header */
     .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
       gap: 12px;
       padding: 14px clamp(12px, 4vw, 32px);
       background: linear-gradient(180deg, rgba(12,12,14,.92), rgba(12,12,14,.72) 70%, rgba(12,12,14,0));
       backdrop-filter: blur(6px);
       border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .brand{
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 700; letter-spacing: .3px;
-    }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.3px; }
     .brand .dot{
       width: 8px; height: 8px; border-radius: 999px; background: var(--accent);
       box-shadow: 0 0 24px var(--accent);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 18px var(--accent); }
+      50% { transform: scale(1.2); box-shadow: 0 0 36px var(--accent); }
     }
     .back{
-      color: var(--fg); text-decoration: none; opacity: .8;
+      color: var(--fg); text-decoration: none; opacity: .85;
       border: 1px solid rgba(255,255,255,.15);
       padding: 8px 12px; border-radius: 10px;
+      transition: .2s;
     }
     .back:hover{ opacity: 1; border-color: rgba(255,255,255,.3); }
 
     /* Subheader */
     .sub{
       padding: 8px clamp(12px, 4vw, 32px) 0;
-      opacity: .8; color: var(--muted); font-size: .95rem;
+      opacity: .85; color: var(--muted); font-size: .95rem;
     }
 
-    /* Masonry container using CSS columns (simple & fast) */
+    /* Masonry using CSS columns */
     .masonry{
       column-width: var(--col);
       column-gap: var(--gap);
       padding: clamp(12px, 4vw, 32px);
+      perspective: 900px;
     }
 
     .card{
-      break-inside: avoid;
-      margin: 0 0 var(--gap);
-      position: relative;
-      border-radius: 14px;
-      overflow: hidden;
+      break-inside: avoid; margin: 0 0 var(--gap);
+      position: relative; border-radius: 16px; overflow: hidden;
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.08);
-      transition: transform .2s ease, box-shadow .2s ease;
-      cursor: zoom-in;
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+      cursor: crosshair;
+      will-change: transform, filter;
+      transform-style: preserve-3d;
     }
-
     .card:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(0,0,0,.35);
+      box-shadow: 0 16px 46px rgba(0,0,0,.45);
     }
-
     .card img{
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      background: #111;
+      display: block; width: 100%; height: auto; object-fit: cover; background: #111;
+      transform: translateZ(0);
+    }
+    .cap{
+      padding: 10px 12px; font-size: .9rem; color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(2px);
     }
 
-    .cap{
-      padding: 10px 12px;
-      font-size: .9rem;
-      color: var(--muted);
-      border-top: 1px solid rgba(255,255,255,.06);
+    /* RGB split on click */
+    .card.rgb-split{
+      filter: saturate(1.2) contrast(1.05) drop-shadow(0 0 0 rgba(255,0,0,.35)) drop-shadow(0 0 0 rgba(0,255,255,.35));
+      animation: split 140ms steps(2,end) 1;
+    }
+    @keyframes split {
+      0%   { transform: translate(-1px, 0) skewX(-0.5deg); }
+      50%  { transform: translate(2px, -1px) skewX(0.5deg); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* Parallax tilt on hover (JS updates CSS vars) */
+    .card {
+      --rx: 0deg; --ry: 0deg;
+      transform: rotateX(var(--rx)) rotateY(var(--ry));
+    }
+
+    /* Click ripple */
+    .ripple {
+      position: fixed; pointer-events: none; z-index: 12;
+      width: 6px; height: 6px; border-radius: 999px;
+      background: radial-gradient(circle, rgba(255,255,255,.9) 0%, rgba(157,124,255,.8) 25%, rgba(0,0,0,0) 70%);
+      transform: translate(-50%,-50%) scale(1);
+      animation: ripple 650ms ease forwards;
+      mix-blend-mode: screen;
+    }
+    @keyframes ripple {
+      to { transform: translate(-50%,-50%) scale(16); opacity: 0; }
     }
 
     /* Lightbox */
@@ -117,56 +174,42 @@
       border: 1px solid rgba(255,255,255,.2);
     }
     .lb-img{
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: 86vh;
-      object-fit: contain;
-      background: #000;
+      display: block; width: 100%; height: auto; max-height: 86vh;
+      object-fit: contain; background: #000;
+      transition: transform .3s ease;
     }
+    /* brief wavy distortion via SVG filter */
+    .lb-img.distort { filter: url(#wavy); }
+
     .lb-cap{
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      padding: 10px 14px;
-      color: #ddd; font-size: .95rem;
+      position: absolute; left:0; right:0; bottom:0;
+      padding: 10px 14px; color: #ddd; font-size: .95rem;
       background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.7));
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
     }
 
-    .lb-ui{
-      position: absolute; inset: 0; pointer-events: none;
-    }
+    .lb-ui{ position:absolute; inset:0; pointer-events:none; }
     .ctrl{
-      pointer-events: auto;
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 44px; height: 44px; border-radius: 999px;
-      display: grid; place-items: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.2);
-      color: #fff; text-decoration: none;
-      user-select: none;
+      pointer-events:auto; position:absolute; top:50%; transform:translateY(-50%);
+      width:44px; height:44px; border-radius:999px; display:grid; place-items:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);
+      color:#fff; text-decoration:none; user-select:none; transition:.2s;
     }
     .ctrl:hover{ background: rgba(255,255,255,.15); }
-    .prev{ left: -56px; }
-    .next{ right: -56px; }
-    @media (max-width: 800px){
-      .prev{ left: 6px; }
-      .next{ right: 6px; }
-    }
+    .prev{ left: -56px; } .next{ right: -56px; }
+    @media (max-width: 800px){ .prev{left:6px;} .next{right:6px;} }
     .close{
-      pointer-events: auto;
-      position: absolute; top: -56px; right: 0;
-      width: 44px; height: 44px; border-radius: 999px;
-      display: grid; place-items: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.2);
-      color: #fff; text-decoration: none;
+      pointer-events:auto; position:absolute; top:-56px; right:0;
+      width:44px; height:44px; border-radius:999px; display:grid; place-items:center;
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+      color:#fff;
     }
-    @media (max-width: 800px){
-      .close{ top: 6px; right: 6px; }
-    }
+    @media (max-width: 800px){ .close{ top:6px; right:6px; } }
   </style>
 </head>
-<body>
+<body class="grain">
+  <div class="backdrop" aria-hidden="true"></div>
 
   <header class="topbar">
     <div class="brand">
@@ -177,32 +220,28 @@
   </header>
 
   <div class="sub">
-    Click any piece to view. Use ← → or swipe; press Esc to close.
+    Click any piece to view. Try moving your mouse—cards tilt. Clicks glitch. Use ← → or swipe; Esc to close.
   </div>
 
   <!-- GALLERY -->
   <main class="masonry" id="gallery">
-    <!-- Rabbit Holes -->
     <figure class="card" data-full="static/images/rabbitholes.jpg" data-caption="Rabbit Holes">
-      <img src="static/images/rabbitholes.jpg" alt="Rabbit Holes" loading="lazy" width="1200" height="1500">
+      <img src="static/images/rabbitholes.jpg" alt="Rabbit Holes" loading="lazy">
       <figcaption class="cap">Rabbit Holes</figcaption>
     </figure>
 
-    <!-- Benzodiazastream 2 -->
     <figure class="card" data-full="static/images/benzodiazastream2.jpg" data-caption="Benzodiazastream 2">
-      <img src="static/images/benzodiazastream2.jpg" alt="Benzodiazastream 2" loading="lazy" width="1200" height="1500">
+      <img src="static/images/benzodiazastream2.jpg" alt="Benzodiazastream 2" loading="lazy">
       <figcaption class="cap">Benzodiazastream 2</figcaption>
     </figure>
 
-    <!-- Off Kilter -->
     <figure class="card" data-full="static/images/offkilter.jpg" data-caption="Off Kilter">
-      <img src="static/images/offkilter.jpg" alt="Off Kilter" loading="lazy" width="1200" height="1500">
+      <img src="static/images/offkilter.jpg" alt="Off Kilter" loading="lazy">
       <figcaption class="cap">Off Kilter</figcaption>
     </figure>
 
-    <!-- Duality -->
     <figure class="card" data-full="static/images/duality.jpg" data-caption="Duality">
-      <img src="static/images/duality.jpg" alt="Duality" loading="lazy" width="1200" height="1500">
+      <img src="static/images/duality.jpg" alt="Duality" loading="lazy">
       <figcaption class="cap">Duality</figcaption>
     </figure>
   </main>
@@ -220,8 +259,17 @@
     </div>
   </div>
 
+  <!-- SVG filter defs for wavy distortion -->
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="wavy">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008" numOctaves="2" seed="2">
+        <animate attributeName="baseFrequency" dur="400ms" values="0.02;0.008" repeatCount="1" fill="freeze"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" scale="16" />
+    </filter>
+  </svg>
+
   <script>
-    // Simple lightbox with keyboard navigation
     (function(){
       const cards = Array.from(document.querySelectorAll('.card'));
       const lb = document.getElementById('lightbox');
@@ -232,6 +280,53 @@
       const closeBtn = document.getElementById('closeBtn');
 
       let idx = -1;
+
+      /* click ripple at cursor */
+      function ripple(x,y){
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        r.style.left = x + 'px';
+        r.style.top = y + 'px';
+        document.body.appendChild(r);
+        setTimeout(()=>r.remove(), 700);
+      }
+
+      /* RGB split “glitch pop” */
+      function glitchPop(el){
+        el.classList.add('rgb-split');
+        setTimeout(()=>el.classList.remove('rgb-split'), 160);
+      }
+
+      /* Parallax tilt per card */
+      cards.forEach((card) => {
+        let rect;
+        const onMove = (e) => {
+          if (!rect) rect = card.getBoundingClientRect();
+          const cx = rect.left + rect.width/2;
+          const cy = rect.top + rect.height/2;
+          const dx = (e.clientX - cx) / rect.width;
+          const dy = (e.clientY - cy) / rect.height;
+          const rx = (dy * -10).toFixed(2)+'deg';
+          const ry = (dx *  10).toFixed(2)+'deg';
+          card.style.setProperty('--rx', rx);
+          card.style.setProperty('--ry', ry);
+        };
+        const onLeave = () => {
+          card.style.setProperty('--rx', '0deg');
+          card.style.setProperty('--ry', '0deg');
+          rect = null;
+        };
+        card.addEventListener('mousemove', onMove);
+        card.addEventListener('mouseleave', onLeave);
+
+        /* Click handler: ripple + glitch then open lightbox */
+        card.addEventListener('click', (e) => {
+          ripple(e.clientX, e.clientY);
+          glitchPop(card);
+          const i = cards.indexOf(card);
+          open(i);
+        });
+      });
 
       function open(i){
         idx = i;
@@ -244,6 +339,9 @@
         lb.classList.add('open');
         lb.setAttribute('aria-hidden','false');
         document.body.style.overflow = 'hidden';
+        // kick brief distortion
+        lbImg.classList.add('distort');
+        setTimeout(()=>lbImg.classList.remove('distort'), 420);
       }
 
       function close(){
@@ -254,53 +352,32 @@
       }
 
       function prev(){
-        if (idx <= 0) idx = cards.length - 1; else idx--;
+        idx = (idx <= 0) ? cards.length - 1 : idx - 1;
         open(idx);
       }
 
       function next(){
-        if (idx >= cards.length - 1) idx = 0; else idx++;
+        idx = (idx >= cards.length - 1) ? 0 : idx + 1;
         open(idx);
       }
 
-      // Click handlers
-      cards.forEach((c, i) => {
-        c.addEventListener('click', () => open(i));
-      });
-
+      // Controls + keyboard + backdrop dismiss
       prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
       nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
       closeBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
-
-      // Dismiss on backdrop click
-      lb.addEventListener('click', (e) => {
-        if (e.target === lb) close();
-      });
-
-      // Keyboard controls
+      lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
       window.addEventListener('keydown', (e) => {
         if (!lb.classList.contains('open')) return;
         if (e.key === 'Escape') close();
-        if (e.key === 'ArrowLeft') prev();
-        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') { glitchPop(lbImg); prev(); }
+        if (e.key === 'ArrowRight'){ glitchPop(lbImg); next(); }
       });
 
-      // Basic swipe support
-      let sx = 0, sy = 0;
-      lb.addEventListener('touchstart', (e) => {
-        if (!lb.classList.contains('open')) return;
-        const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
-      }, {passive: true});
-      lb.addEventListener('touchend', (e) => {
-        if (!lb.classList.contains('open')) return;
-        const t = e.changedTouches[0];
-        const dx = t.clientX - sx;
-        const dy = t.clientY - sy;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
-          dx > 0 ? prev() : next();
-        }
-      }, {passive: true});
-
+      // global click ripple (outside cards, lighter vibe)
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('.card, .ctrl, .close')) return;
+        ripple(e.clientX, e.clientY);
+      });
     })();
   </script>
 </body>
