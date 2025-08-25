@@ -1,306 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unusual Pills</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unusual Pills — Art</title>
+
   <style>
-    :root {
-      --max-img: 300px;
+    :root{
+      --bg: #0c0c0e;
+      --fg: #f5f5f7;
+      --muted: #a0a0af;
+      --accent: #9d7cff;
+      --gap: 14px;
+      --col: 320px; /* target column width */
     }
 
-    body {
+    html, body {
       margin: 0;
-      background: url("static/images/background.png") no-repeat center center fixed; 
-      background-size: cover;
-      color: white;
-      font-family: Arial, sans-serif;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+    }
+
+    /* Header */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 10;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px clamp(12px, 4vw, 32px);
+      background: linear-gradient(180deg, rgba(12,12,14,.92), rgba(12,12,14,.72) 70%, rgba(12,12,14,0));
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .brand{
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; letter-spacing: .3px;
+    }
+    .brand .dot{
+      width: 8px; height: 8px; border-radius: 999px; background: var(--accent);
+      box-shadow: 0 0 24px var(--accent);
+    }
+    .back{
+      color: var(--fg); text-decoration: none; opacity: .8;
+      border: 1px solid rgba(255,255,255,.15);
+      padding: 8px 12px; border-radius: 10px;
+    }
+    .back:hover{ opacity: 1; border-color: rgba(255,255,255,.3); }
+
+    /* Subheader */
+    .sub{
+      padding: 8px clamp(12px, 4vw, 32px) 0;
+      opacity: .8; color: var(--muted); font-size: .95rem;
+    }
+
+    /* Masonry container using CSS columns (simple & fast) */
+    .masonry{
+      column-width: var(--col);
+      column-gap: var(--gap);
+      padding: clamp(12px, 4vw, 32px);
+    }
+
+    .card{
+      break-inside: avoid;
+      margin: 0 0 var(--gap);
       position: relative;
+      border-radius: 14px;
       overflow: hidden;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      transition: transform .2s ease, box-shadow .2s ease;
+      cursor: zoom-in;
     }
 
-    /* Common image link styles */
-    .logo, .merch-pill, .snail {
-      width: min(60vw, var(--max-img));
-      max-width: var(--max-img);
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      margin-top: 20px;
+    .card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.35);
+    }
+
+    .card img{
       display: block;
-    }
-    .logo:hover, .merch-pill:hover, .snail:hover {
-      transform: scale(1.05);
-    }
-
-    /* Snail to the left on larger screens */
-    .snail-link {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1; /* keep it under the main buttons */
-    }
-
-    /* Center buttons above the snail for click priority */
-    .center-links {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 2;
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 24px;
-      text-align: center;
-    }
-
-    /* Mobile fixes: stack everything, no absolute snail */
-    @media (max-width: 640px) {
-      body { 
-        overflow: auto; 
-        padding: 20px 0; 
-        background-attachment: scroll; /* fix for iOS */
-      }
-      .snail-link {
-        position: static;
-        transform: none;
-        margin-top: 10px;
-        order: -1; /* show first */
-      }
-      .logo, .merch-pill, .snail {
-        width: min(80vw, var(--max-img));
-      }
-      .center-links {
-        margin-top: 10px;
-      }
-    }
-
-    /* === TRIPPY CODED FACE (clickable) === */
-    .glitch-link {
-      position: absolute;
-      right: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 180px;
-      z-index: 3;                 /* above center links so it’s easy to click */
-      text-decoration: none;
-      outline: none;
-    }
-    .glitch-link:focus-visible {
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.4);
-      border-radius: 12px;
-    }
-
-    .glitch-face {
-      width: 100%;
-      filter: drop-shadow(0 0 10px rgba(255,255,255,.15));
-      contain: layout paint;      /* keep paints cheap */
-      animation: idleWobble 4s ease-in-out infinite;
-    }
-    .glitch-face svg {
       width: 100%;
       height: auto;
-      overflow: visible;
+      object-fit: cover;
+      background: #111;
+    }
+
+    .cap{
+      padding: 10px 12px;
+      font-size: .9rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position: fixed; inset: 0; z-index: 1000;
+      display: none; place-items: center;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(4px);
+    }
+    .lightbox.open{ display: grid; }
+
+    .lb-frame{
+      position: relative;
+      max-width: min(92vw, 1280px);
+      max-height: 86vh;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    .lb-img{
       display: block;
+      width: 100%;
+      height: auto;
+      max-height: 86vh;
+      object-fit: contain;
+      background: #000;
     }
-
-    /* RGB split layers */
-    .glitch-layer { mix-blend-mode: screen; opacity: 0.9; }
-    .glitch-r { filter: hue-rotate(0deg) saturate(1.6); }
-    .glitch-g { filter: hue-rotate(120deg) saturate(1.6); }
-    .glitch-b { filter: hue-rotate(240deg) saturate(1.6); }
-
-    /* Subtle idle wiggle */
-    @keyframes idleWobble {
-      0%   { transform: translateY(0) translate(0,0) skewX(0deg); }
-      50%  { transform: translateY(-1px) skewX(0.5deg); }
-      100% { transform: translateY(0) skewX(0deg); }
-    }
-
-    /* Scanlines overlay */
-    .scanlines {
+    .lb-cap{
       position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.06) 0px,
-        rgba(255,255,255,0.06) 1px,
-        rgba(0,0,0,0) 2px,
-        rgba(0,0,0,0) 3px
-      );
-      mix-blend-mode: overlay;
-      opacity: .25;
-      pointer-events: none; /* don’t block clicks */
-      animation: scanFlicker 2.8s linear infinite;
-    }
-    @keyframes scanFlicker {
-      0%, 100% { opacity: .22; }
-      45%      { opacity: .34; }
-      60%      { opacity: .18; }
-      80%      { opacity: .28; }
+      left: 0; right: 0; bottom: 0;
+      padding: 10px 14px;
+      color: #ddd; font-size: .95rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.7));
     }
 
-    /* Respect reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      .glitch-face { animation: none; }
-      .scanlines { animation: none; opacity: .2; }
+    .lb-ui{
+      position: absolute; inset: 0; pointer-events: none;
     }
-
-    /* Hide on small screens if you want */
-    @media (max-width: 640px) {
-      .glitch-link { display: none; }
+    .ctrl{
+      pointer-events: auto;
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 44px; height: 44px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #fff; text-decoration: none;
+      user-select: none;
+    }
+    .ctrl:hover{ background: rgba(255,255,255,.15); }
+    .prev{ left: -56px; }
+    .next{ right: -56px; }
+    @media (max-width: 800px){
+      .prev{ left: 6px; }
+      .next{ right: 6px; }
+    }
+    .close{
+      pointer-events: auto;
+      position: absolute; top: -56px; right: 0;
+      width: 44px; height: 44px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #fff; text-decoration: none;
+    }
+    @media (max-width: 800px){
+      .close{ top: 6px; right: 6px; }
     }
   </style>
 </head>
 <body>
- 
-  <!-- Main links centered -->
-  <div class="center-links">
-    <!-- Main claw machine start button -->
-    <a href="claw.html" aria-label="Start Claw Machine">
-      <img src="static/images/unusualpills.png" alt="Rainbow Pills Logo" class="logo" />
-    </a>
 
-    <!-- Merch page button -->
-    <a href="merch.html" aria-label="Merch Page">
-      <img src="static/images/merch.png" alt="Merch Pill" class="merch-pill" />
-    </a>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Unusual Pills — Art</span>
+    </div>
+    <a class="back" href="index.html" aria-label="Back to Home">← Home</a>
+  </header>
+
+  <div class="sub">
+    Click any piece to view. Use ← → or swipe; press Esc to close.
   </div>
 
-  <!-- === CLICKABLE TRIPPY GLITCH FACE (opens art.html) === -->
-  <a class="glitch-link" href="art.html" aria-label="Open Art">
-    <div class="glitch-face" aria-hidden="true">
-      <div class="scanlines"></div>
-      <svg viewBox="0 0 200 240" role="img">
-        <defs>
-          <!-- Fractal noise & displacement for the “melt” effect -->
-          <filter id="glitchFilter">
-            <feTurbulence id="noise" type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="7" result="turb"/>
-            <feDisplacementMap id="disp" in="SourceGraphic" in2="turb" scale="12" xChannelSelector="R" yChannelSelector="G"/>
-          </filter>
+  <!-- GALLERY -->
+  <main class="masonry" id="gallery">
+    <!-- Rabbit Holes -->
+    <figure class="card" data-full="static/images/rabbitholes.jpg" data-caption="Rabbit Holes">
+      <img src="static/images/rabbitholes.jpg" alt="Rabbit Holes" loading="lazy" width="1200" height="1500">
+      <figcaption class="cap">Rabbit Holes</figcaption>
+    </figure>
 
-          <!-- Mouth squiggle path -->
-          <path id="mouthPath" d="M40,155 C70,175 130,175 160,155" />
+    <!-- Benzodiazastream 2 -->
+    <figure class="card" data-full="static/images/benzodiazastream2.jpg" data-caption="Benzodiazastream 2">
+      <img src="static/images/benzodiazastream2.jpg" alt="Benzodiazastream 2" loading="lazy" width="1200" height="1500">
+      <figcaption class="cap">Benzodiazastream 2</figcaption>
+    </figure>
 
-          <!-- Build the face once, reuse for slices -->
-          <g id="faceBase" filter="url(#glitchFilter)">
-            <!-- head -->
-            <ellipse cx="100" cy="110" rx="78" ry="92" fill="none" stroke="white" stroke-width="3"/>
-            <!-- eyes -->
-            <circle cx="68" cy="95" r="9" fill="white"/>
-            <circle cx="132" cy="92" r="11" fill="white"/>
-            <!-- pupils -->
-            <circle cx="70" cy="97" r="3" fill="black"/>
-            <circle cx="129" cy="94" r="3" fill="black"/>
-            <!-- brows -->
-            <path d="M52,78 q16,-10 32,0" stroke="white" stroke-width="3" fill="none"/>
-            <path d="M120,73 q16,-6 28,4" stroke="white" stroke-width="3" fill="none"/>
-            <!-- mouth -->
-            <use href="#mouthPath" stroke="white" stroke-width="3" fill="none"/>
-          </g>
+    <!-- Off Kilter -->
+    <figure class="card" data-full="static/images/offkilter.jpg" data-caption="Off Kilter">
+      <img src="static/images/offkilter.jpg" alt="Off Kilter" loading="lazy" width="1200" height="1500">
+      <figcaption class="cap">Off Kilter</figcaption>
+    </figure>
 
-          <!-- ClipPaths for slice bands -->
-          <clipPath id="slice0"><rect x="0" y="20"  width="200" height="16"/></clipPath>
-          <clipPath id="slice1"><rect x="0" y="40"  width="200" height="18"/></clipPath>
-          <clipPath id="slice2"><rect x="0" y="62"  width="200" height="16"/></clipPath>
-          <clipPath id="slice3"><rect x="0" y="82"  width="200" height="18"/></clipPath>
-          <clipPath id="slice4"><rect x="0" y="106" width="200" height="16"/></clipPath>
-          <clipPath id="slice5"><rect x="0" y="126" width="200" height="18"/></clipPath>
-          <clipPath id="slice6"><rect x="0" y="150" width="200" height="16"/></clipPath>
-          <clipPath id="slice7"><rect x="0" y="170" width="200" height="20"/></clipPath>
-        </defs>
+    <!-- Duality -->
+    <figure class="card" data-full="static/images/duality.jpg" data-caption="Duality">
+      <img src="static/images/duality.jpg" alt="Duality" loading="lazy" width="1200" height="1500">
+      <figcaption class="cap">Duality</figcaption>
+    </figure>
+  </main>
 
-        <!-- Three color layers grouped (for RGB split) -->
-        <g id="rgbFace">
-          <g class="glitch-layer glitch-r"><use href="#faceBase"/></g>
-          <g class="glitch-layer glitch-g"><use href="#faceBase"/></g>
-          <g class="glitch-layer glitch-b"><use href="#faceBase"/></g>
-        </g>
-
-        <!-- Sliced copies for horizontal jumps -->
-        <g id="slices">
-          <g class="slice" clip-path="url(#slice0)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice1)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice2)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice3)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice4)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice5)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice6)"><use href="#rgbFace"/></g>
-          <g class="slice" clip-path="url(#slice7)"><use href="#rgbFace"/></g>
-        </g>
-      </svg>
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <div class="lb-frame">
+      <img class="lb-img" id="lbImg" alt="">
+      <div class="lb-cap" id="lbCap"></div>
+      <div class="lb-ui">
+        <a href="#" class="ctrl prev" id="prevBtn" aria-label="Previous">‹</a>
+        <a href="#" class="ctrl next" id="nextBtn" aria-label="Next">›</a>
+        <a href="#" class="close" id="closeBtn" aria-label="Close">✕</a>
+      </div>
     </div>
-  </a>
+  </div>
 
   <script>
-    // Animate noise/displacement to “melt” and “jitter” the face
-    const noise = document.querySelector('#noise');
-    const disp  = document.querySelector('#disp');
-    const faceBox = document.querySelector('.glitch-link'); // anchor wrapper
-    const faceEl = document.querySelector('.glitch-face');
-    const slices = Array.from(document.querySelectorAll('.slice'));
-    const rLayer = document.querySelector('.glitch-r');
-    const gLayer = document.querySelector('.glitch-g');
-    const bLayer = document.querySelector('.glitch-b');
+    // Simple lightbox with keyboard navigation
+    (function(){
+      const cards = Array.from(document.querySelectorAll('.card'));
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lbImg');
+      const lbCap = document.getElementById('lbCap');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const closeBtn = document.getElementById('closeBtn');
 
-    let t = 0;
-    let rgbPhase = 0;
+      let idx = -1;
 
-    function pulseGlitch() {
-      t += 0.007;
-      rgbPhase += 0.04;
-
-      // Smooth base movement
-      const baseFreq = 0.012 + Math.abs(Math.sin(t)) * 0.02;   // 0.012–0.032
-      const scale    = 8 + Math.abs(Math.cos(t*1.3)) * 14;     // 8–22
-
-      noise.setAttribute('baseFrequency', baseFreq.toFixed(4));
-      disp.setAttribute('scale', scale.toFixed(1));
-
-      // Subtle RGB breathing offset
-      const rx = Math.sin(rgbPhase) * 0.8;
-      const gx = Math.sin(rgbPhase + 2.1) * 1.0;
-      const bx = Math.sin(rgbPhase + 4.2) * -0.9;
-      rLayer.setAttribute('transform', `translate(${rx},0)`);
-      gLayer.setAttribute('transform', `translate(${gx},0)`);
-      bLayer.setAttribute('transform', `translate(${bx},0)`);
-
-      // Random “hard” glitch bursts
-      if (Math.random() < 0.03) {
-        // Burst noise/scale
-        const burstFreq = (0.06 + Math.random() * 0.12).toFixed(3);
-        const burstScale = (30 + Math.random() * 60).toFixed(1);
-        noise.setAttribute('baseFrequency', burstFreq);
-        disp.setAttribute('scale', burstScale);
-
-        // Micro jitter of container
-        faceEl.style.transform = `translateY(0) translate(${(Math.random()*6-3)}px, ${(Math.random()*5-2.5)}px) skewX(${(Math.random()*4-2).toFixed(2)}deg)`;
-        setTimeout(() => { faceEl.style.transform = ''; }, 120 + Math.random()*180);
-
-        // Horizontal slice jumps
-        slices.forEach((s, i) => {
-          if (Math.random() < (0.35 + (i%2)*0.15)) {
-            const dir = Math.random() < 0.5 ? -1 : 1;
-            const mag = (4 + Math.random() * 18) * dir; // 4–22px
-            s.setAttribute('transform', `translate(${mag},0)`);
-            setTimeout(() => {
-              s.setAttribute('transform', 'translate(0,0)');
-            }, 80 + Math.random()*220);
-          }
-        });
+      function open(i){
+        idx = i;
+        const card = cards[idx];
+        const full = card.getAttribute('data-full') || card.querySelector('img').src;
+        const cap  = card.getAttribute('data-caption') || card.querySelector('.cap')?.textContent || '';
+        lbImg.src = full;
+        lbImg.alt = cap || 'Artwork';
+        lbCap.textContent = cap;
+        lb.classList.add('open');
+        lb.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
       }
 
-      requestAnimationFrame(pulseGlitch);
-    }
+      function close(){
+        lb.classList.remove('open');
+        lb.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+        lbImg.src = '';
+      }
 
-    // Kick off
-    requestAnimationFrame(pulseGlitch);
+      function prev(){
+        if (idx <= 0) idx = cards.length - 1; else idx--;
+        open(idx);
+      }
+
+      function next(){
+        if (idx >= cards.length - 1) idx = 0; else idx++;
+        open(idx);
+      }
+
+      // Click handlers
+      cards.forEach((c, i) => {
+        c.addEventListener('click', () => open(i));
+      });
+
+      prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
+      nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
+      closeBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
+
+      // Dismiss on backdrop click
+      lb.addEventListener('click', (e) => {
+        if (e.target === lb) close();
+      });
+
+      // Keyboard controls
+      window.addEventListener('keydown', (e) => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowLeft') prev();
+        if (e.key === 'ArrowRight') next();
+      });
+
+      // Basic swipe support
+      let sx = 0, sy = 0;
+      lb.addEventListener('touchstart', (e) => {
+        if (!lb.classList.contains('open')) return;
+        const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
+      }, {passive: true});
+      lb.addEventListener('touchend', (e) => {
+        if (!lb.classList.contains('open')) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - sx;
+        const dy = t.clientY - sy;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
+          dx > 0 ? prev() : next();
+        }
+      }, {passive: true});
+
+    })();
   </script>
 </body>
 </html>
