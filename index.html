@@ -1,307 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Unusual Pills — Art</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unusual Pills</title>
   <style>
-    :root{
-      --bg: #0c0c0e;
-      --fg: #f5f5f7;
-      --muted: #a0a0af;
-      --accent: #9d7cff;
-      --gap: 14px;
-      --col: 320px; /* target column width */
+    :root {
+      --max-img: 300px;
     }
 
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
-    }
-
-    /* Header */
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: url("static/images/background.png") no-repeat center center fixed; 
+      background-size: cover;
+      color: white;
+      font-family: Arial, sans-serif;
       display: flex;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px clamp(12px, 4vw, 32px);
-      background: linear-gradient(180deg, rgba(12,12,14,.92), rgba(12,12,14,.72) 70%, rgba(12,12,14,0));
-      backdrop-filter: blur(6px);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .brand{
-      display: flex; align-items: center; gap: 10px;
-      font-weight: 700; letter-spacing: .3px;
-    }
-    .brand .dot{
-      width: 8px; height: 8px; border-radius: 999px; background: var(--accent);
-      box-shadow: 0 0 24px var(--accent);
-    }
-    .back{
-      color: var(--fg); text-decoration: none; opacity: .8;
-      border: 1px solid rgba(255,255,255,.15);
-      padding: 8px 12px; border-radius: 10px;
-    }
-    .back:hover{ opacity: 1; border-color: rgba(255,255,255,.3); }
-
-    /* Subheader */
-    .sub{
-      padding: 8px clamp(12px, 4vw, 32px) 0;
-      opacity: .8; color: var(--muted); font-size: .95rem;
-    }
-
-    /* Masonry container using CSS columns (simple & fast) */
-    .masonry{
-      column-width: var(--col);
-      column-gap: var(--gap);
-      padding: clamp(12px, 4vw, 32px);
-    }
-
-    .card{
-      break-inside: avoid;
-      margin: 0 0 var(--gap);
+      height: 100vh;
+      flex-direction: column;
       position: relative;
-      border-radius: 14px;
       overflow: hidden;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      transition: transform .2s ease, box-shadow .2s ease;
-      cursor: zoom-in;
     }
 
-    .card:hover{
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(0,0,0,.35);
-    }
-
-    .card img{
+    /* Common image link styles */
+    .logo, .merch-pill, .snail {
+      width: min(60vw, var(--max-img));
+      max-width: var(--max-img);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-top: 20px;
       display: block;
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-      background: #111;
     }
 
-    .cap{
-      padding: 10px 12px;
-      font-size: .9rem;
-      color: var(--muted);
-      border-top: 1px solid rgba(255,255,255,.06);
+    .logo:hover, .merch-pill:hover, .snail:hover {
+      transform: scale(1.05);
     }
 
-    /* Lightbox */
-    .lightbox{
-      position: fixed; inset: 0; z-index: 1000;
-      display: none; place-items: center;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(4px);
-    }
-    .lightbox.open{ display: grid; }
-
-    .lb-frame{
-      position: relative;
-      max-width: min(92vw, 1280px);
-      max-height: 86vh;
-      border-radius: 14px;
-      overflow: hidden;
-      background: #000;
-      box-shadow: 0 20px 60px rgba(0,0,0,.6);
-      border: 1px solid rgba(255,255,255,.2);
-    }
-    .lb-img{
-      display: block;
-      width: 100%;
-      height: auto;
-      max-height: 86vh;
-      object-fit: contain;
-      background: #000;
-    }
-    .lb-cap{
+    /* Snail to the left on larger screens */
+    .snail-link {
       position: absolute;
-      left: 0; right: 0; bottom: 0;
-      padding: 10px 14px;
-      color: #ddd; font-size: .95rem;
-      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.7));
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1; /* keep it under the main buttons */
     }
 
-    .lb-ui{
-      position: absolute; inset: 0; pointer-events: none;
+    /* Center buttons above the snail for click priority */
+    .center-links {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
     }
-    .ctrl{
-      pointer-events: auto;
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 44px; height: 44px; border-radius: 999px;
-      display: grid; place-items: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.2);
-      color: #fff; text-decoration: none;
-      user-select: none;
+
+    h1 {
+      margin-top: 20px;
+      font-size: 24px;
+      text-align: center;
     }
-    .ctrl:hover{ background: rgba(255,255,255,.15); }
-    .prev{ left: -56px; }
-    .next{ right: -56px; }
-    @media (max-width: 800px){
-      .prev{ left: 6px; }
-      .next{ right: 6px; }
-    }
-    .close{
-      pointer-events: auto;
-      position: absolute; top: -56px; right: 0;
-      width: 44px; height: 44px; border-radius: 999px;
-      display: grid; place-items: center;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.2);
-      color: #fff; text-decoration: none;
-    }
-    @media (max-width: 800px){
-      .close{ top: 6px; right: 6px; }
+
+    /* Mobile fixes: stack everything, no absolute snail */
+    @media (max-width: 640px) {
+      body { 
+        overflow: auto; 
+        padding: 20px 0; 
+        background-attachment: scroll; /* fix for iOS */
+      }
+
+      .snail-link {
+        position: static;
+        transform: none;
+        margin-top: 10px;
+        order: -1; /* show first */
+      }
+
+      .logo, .merch-pill, .snail {
+        width: min(80vw, var(--max-img));
+      }
+
+      .center-links {
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
-<body>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="dot"></span>
-      <span>Unusual Pills — Art</span>
-    </div>
-    <a class="back" href="index.html" aria-label="Back to Home">← Home</a>
-  </header>
 
-  <div class="sub">
-    Click any piece to view. Use ← → or swipe; press Esc to close.
+  <!-- Main links centered -->
+  <div class="center-links">
+    <!-- Main claw machine start button -->
+    <a href="claw.html" aria-label="Start Claw Machine">
+      <img src="static/images/unusualpills.png" alt="Rainbow Pills Logo" class="logo" />
+    </a>
+
+    <!-- Merch page button -->
+    <a href="merch.html" aria-label="Merch Page">
+      <img src="static/images/merch.png" alt="Merch Pill" class="merch-pill" />
+    </a>
   </div>
-
-  <!-- GALLERY -->
-  <main class="masonry" id="gallery">
-    <!-- Rabbit Holes -->
-    <figure class="card" data-full="static/images/rabbitholes.jpg" data-caption="Rabbit Holes">
-      <img src="static/images/rabbitholes.jpg" alt="Rabbit Holes" loading="lazy" width="1200" height="1500">
-      <figcaption class="cap">Rabbit Holes</figcaption>
-    </figure>
-
-    <!-- Benzodiazastream 2 -->
-    <figure class="card" data-full="static/images/benzodiazastream2.jpg" data-caption="Benzodiazastream 2">
-      <img src="static/images/benzodiazastream2.jpg" alt="Benzodiazastream 2" loading="lazy" width="1200" height="1500">
-      <figcaption class="cap">Benzodiazastream 2</figcaption>
-    </figure>
-
-    <!-- Off Kilter -->
-    <figure class="card" data-full="static/images/offkilter.jpg" data-caption="Off Kilter">
-      <img src="static/images/offkilter.jpg" alt="Off Kilter" loading="lazy" width="1200" height="1500">
-      <figcaption class="cap">Off Kilter</figcaption>
-    </figure>
-
-    <!-- Duality -->
-    <figure class="card" data-full="static/images/duality.jpg" data-caption="Duality">
-      <img src="static/images/duality.jpg" alt="Duality" loading="lazy" width="1200" height="1500">
-      <figcaption class="cap">Duality</figcaption>
-    </figure>
-  </main>
-
-  <!-- LIGHTBOX -->
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lb-frame">
-      <img class="lb-img" id="lbImg" alt="">
-      <div class="lb-cap" id="lbCap"></div>
-      <div class="lb-ui">
-        <a href="#" class="ctrl prev" id="prevBtn" aria-label="Previous">‹</a>
-        <a href="#" class="ctrl next" id="nextBtn" aria-label="Next">›</a>
-        <a href="#" class="close" id="closeBtn" aria-label="Close">✕</a>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Simple lightbox with keyboard navigation
-    (function(){
-      const cards = Array.from(document.querySelectorAll('.card'));
-      const lb = document.getElementById('lightbox');
-      const lbImg = document.getElementById('lbImg');
-      const lbCap = document.getElementById('lbCap');
-      const prevBtn = document.getElementById('prevBtn');
-      const nextBtn = document.getElementById('nextBtn');
-      const closeBtn = document.getElementById('closeBtn');
-
-      let idx = -1;
-
-      function open(i){
-        idx = i;
-        const card = cards[idx];
-        const full = card.getAttribute('data-full') || card.querySelector('img').src;
-        const cap  = card.getAttribute('data-caption') || card.querySelector('.cap')?.textContent || '';
-        lbImg.src = full;
-        lbImg.alt = cap || 'Artwork';
-        lbCap.textContent = cap;
-        lb.classList.add('open');
-        lb.setAttribute('aria-hidden','false');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function close(){
-        lb.classList.remove('open');
-        lb.setAttribute('aria-hidden','true');
-        document.body.style.overflow = '';
-        lbImg.src = '';
-      }
-
-      function prev(){
-        if (idx <= 0) idx = cards.length - 1; else idx--;
-        open(idx);
-      }
-
-      function next(){
-        if (idx >= cards.length - 1) idx = 0; else idx++;
-        open(idx);
-      }
-
-      // Click handlers
-      cards.forEach((c, i) => {
-        c.addEventListener('click', () => open(i));
-      });
-
-      prevBtn.addEventListener('click', (e) => { e.preventDefault(); prev(); });
-      nextBtn.addEventListener('click', (e) => { e.preventDefault(); next(); });
-      closeBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
-
-      // Dismiss on backdrop click
-      lb.addEventListener('click', (e) => {
-        if (e.target === lb) close();
-      });
-
-      // Keyboard controls
-      window.addEventListener('keydown', (e) => {
-        if (!lb.classList.contains('open')) return;
-        if (e.key === 'Escape') close();
-        if (e.key === 'ArrowLeft') prev();
-        if (e.key === 'ArrowRight') next();
-      });
-
-      // Basic swipe support
-      let sx = 0, sy = 0;
-      lb.addEventListener('touchstart', (e) => {
-        if (!lb.classList.contains('open')) return;
-        const t = e.touches[0]; sx = t.clientX; sy = t.clientY;
-      }, {passive: true});
-      lb.addEventListener('touchend', (e) => {
-        if (!lb.classList.contains('open')) return;
-        const t = e.changedTouches[0];
-        const dx = t.clientX - sx;
-        const dy = t.clientY - sy;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
-          dx > 0 ? prev() : next();
-        }
-      }, {passive: true});
-
-    })();
-  </script>
 </body>
 </html>
