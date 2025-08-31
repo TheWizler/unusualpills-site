@@ -91,7 +91,6 @@
     <div id="err" class="error" role="alert"></div>
     <div id="ok"  class="success" role="status">Thanks! Check your email for a verification link…</div>
 
-    <!-- Form -->
     <form id="shirtForm" autocomplete="on" novalidate>
       <div class="row">
         <div>
@@ -163,11 +162,11 @@
   <!-- Supabase + Formspree -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // Supabase values
+    // Supabase values (yours)
     const SUPABASE_URL  = "https://rkwldeocahwvnuzjhpgq.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrd2xkZW9jYWh3dm51empocGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NDA2OTEsImV4cCI6MjA3MjIxNjY5MX0.WH_XmuIJ53DtMwMo2I7e4ul-m9BaTVlJMkMHY583oi0";
 
-    // Formspree endpoint (for email notifications)
+    // Formspree endpoint (for owner email notifications)
     const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
 
     const { createClient } = supabase;
@@ -208,16 +207,21 @@
         marketing_consent: true
       };
 
-      // 1) Create Supabase account (magic link email)
-      const { error: signErr } = await sb.auth.signUp({ email: payload.email });
-      if (signErr) {
-        err.textContent = 'Signup failed: ' + signErr.message;
+      // 1) Send passwordless magic link (no password required)
+      const { error: otpErr } = await sb.auth.signInWithOtp({
+        email: payload.email,
+        options: {
+          emailRedirectTo: window.location.origin + '/thanks.html' // optional
+        }
+      });
+      if (otpErr) {
+        err.textContent = 'Signup failed: ' + otpErr.message;
         err.style.display = 'block';
         btn.disabled = false;
         return;
       }
 
-      // 2) Save profile row
+      // 2) Save profile row (stores shipping info for you)
       const { error: insErr } = await sb.from('profiles').insert(payload);
       if (insErr) {
         err.textContent = 'Saving profile failed: ' + insErr.message;
@@ -226,15 +230,15 @@
         return;
       }
 
-      // 3) Notify via Formspree (so you get an email)
+      // 3) Email you via Formspree (non-blocking)
       try {
         const fd = new FormData();
         Object.entries(payload).forEach(([k,v]) => fd.append(k, v ?? ""));
         fd.append("_subject", "New Free Shirt Signup");
         await fetch(FORMSPREE_URL, { method: "POST", body: fd, headers: { "Accept": "application/json" } });
-      } catch (_) { /* ignore notification errors */ }
+      } catch (_) { /* ignore */ }
 
-      // 4) Success → show message and redirect
+      // 4) Success message + gentle redirect
       ok.style.display = 'block';
       setTimeout(() => { window.location.href = 'thanks.html'; }, 800);
     });
