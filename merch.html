@@ -81,6 +81,8 @@
       transition:transform .08s, box-shadow .2s;}
     .buy:hover{transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18);}
 
+    .is-hidden{display:none !important;}
+
     footer{text-align:center; color:rgb(var(--muted)); padding:20px; margin-bottom:20px;}
 
     body.retro{image-rendering:pixelated;
@@ -107,8 +109,8 @@
     <p class="subtitle">Flip the switch</p>
   </header>
 
-  <nav class="filters">
-    <button class="filter-btn active" data-filter="all">All</button>
+  <nav class="filters" aria-label="Filter products">
+    <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
     <a class="filter-btn" href="#tees" data-filter="tees">Tees</a>
     <a class="filter-btn" href="#hoodies" data-filter="hoodies">Hoodies</a>
   </nav>
@@ -156,11 +158,61 @@
   <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
 
   <script>
+    // Year
     document.getElementById('year').textContent = new Date().getFullYear();
-    const toggle=document.getElementById('themeToggle');const switchEl=toggle.querySelector('.switch');
-    function setRetro(on){document.body.classList.toggle('retro',on);switchEl.classList.toggle('active',on);toggle.setAttribute('aria-pressed',on?'true':'false');localStorage.setItem('retro',on?'1':'0');}
-    if(localStorage.getItem('retro')==='1') setRetro(true);
-    toggle.addEventListener('click',()=>setRetro(!document.body.classList.contains('retro')));
+
+    // Retro toggle
+    const toggle = document.getElementById('themeToggle');
+    const switchEl = toggle.querySelector('.switch');
+    function setRetro(on){
+      document.body.classList.toggle('retro', on);
+      switchEl.classList.toggle('active', on);
+      toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+      localStorage.setItem('retro', on ? '1' : '0');
+    }
+    if (localStorage.getItem('retro') === '1') setRetro(true);
+    toggle.addEventListener('click', ()=> setRetro(!document.body.classList.contains('retro')));
+
+    // Category filters
+    const filterButtons = Array.from(document.querySelectorAll('.filters [data-filter]'));
+    const cards = Array.from(document.querySelectorAll('.product-card'));
+
+    function applyFilter(key){
+      // Update active styles + aria
+      filterButtons.forEach(btn => {
+        const active = btn.dataset.filter === key || (key === 'all' && btn.dataset.filter === 'all');
+        btn.classList.toggle('active', active);
+        if (btn.tagName === 'BUTTON') btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      // Show/hide cards
+      cards.forEach(card => {
+        const show = key === 'all' || card.dataset.category === key;
+        card.classList.toggle('is-hidden', !show);
+      });
+    }
+
+    function syncFromHash(){
+      const key = (location.hash || '').slice(1).toLowerCase();
+      if (key === 'tees' || key === 'hoodies') applyFilter(key);
+      else applyFilter('all');
+    }
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault(); // prevent anchor jump
+        const key = btn.dataset.filter;
+        if (key === 'all') {
+          history.replaceState(null, '', location.pathname + location.search);
+        } else {
+          location.hash = key; // updates URL and allows deep-linking
+        }
+        applyFilter(key);
+      });
+    });
+
+    window.addEventListener('hashchange', syncFromHash);
+    syncFromHash();
   </script>
 </body>
 </html>
+
