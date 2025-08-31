@@ -319,7 +319,7 @@
   <script>
     (() => {
       const link = document.createElement('a');
-      link.href = "/free-shirt";
+      link.href = "signup.html";   // ✅ updated for GitHub Pages
       link.setAttribute('aria-label', 'Free Shirt Signup');
       link.title = 'Free Shirt';
       Object.assign(link.style, {
@@ -364,7 +364,7 @@
       }
 
       let hovering = false;
-      let ripples = []; // {t0:number} items; each lasts ~0.6s
+      let ripples = []; // {t0:number} each lasts ~0.6s
 
       function draw(t=0){
         const w = Math.floor(c.clientWidth || 220);
@@ -373,9 +373,9 @@
 
         // Pulse factor (0..1)
         const pulse = (prefersReduced ? 0 : (Math.sin(t * 0.012) + 1) / 2);
-        const scale = 1 + (hovering ? 0.02 * (0.5 + pulse*0.5) : 0); // gentle scale on hover
+        const scale = 1 + (hovering ? 0.02 * (0.5 + pulse*0.5) : 0);
 
-        // Draw scaled group
+        // Scaled group for subtle breathing
         ctx.save();
         ctx.translate(w/2, h/2);
         ctx.scale(scale, scale);
@@ -387,7 +387,7 @@
         bg.addColorStop(1, hovering ? 'rgba(80,220,255,0.42)'  : 'rgba(0,200,255,0.30)');
         ctx.save();
         ctx.shadowColor = `rgba(255,0,200,${0.15 + 0.15*pulse})`;
-        ctx.shadowBlur  = 24 + 20*pulse; // pulsing glow
+        ctx.shadowBlur  = 24 + 20*pulse;
         rr(4,4,w-8,h-8,h/2);
         ctx.fillStyle = bg; 
         ctx.fill();
@@ -459,12 +459,11 @@
       c.addEventListener('mouseenter', () => hovering = true);
       c.addEventListener('mouseleave', () => hovering = false);
 
-      // click ripple, then navigate (tiny delay so ripple is visible)
+      // Click ripple, then navigate (tiny delay so ripple is visible)
       link.addEventListener('click', (e) => {
-        if (prefersReduced) return; // just navigate
+        if (prefersReduced) return; // just navigate immediately
         e.preventDefault();
         ripples.push({ t0: performance.now() });
-        // allow ~180ms of ripple before leaving
         setTimeout(() => { window.location.href = link.href; }, 180);
       });
 
