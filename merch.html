@@ -24,7 +24,6 @@
       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
 
-    /* NAV */
     .nav{position:sticky; top:0; backdrop-filter:blur(10px);
       background:linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.15));
       border-bottom:1px solid var(--ring); z-index:10;}
@@ -36,10 +35,11 @@
     .switch.active{background:rgba(255,51,204,.25); border-color:rgba(255,51,204,.45);}
     .switch.active::after{transform:translateX(22px);}
 
-    /* HEADER + FILTERS */
     .header{max-width:var(--maxw); margin:40px auto 10px; padding:0 20px;}
     .title{font-size:clamp(26px,4vw,44px); line-height:1.1; font-weight:800;}
     .subtitle{margin-top:10px; color:rgb(var(--muted));}
+    .promo-banner{margin-top:14px; padding:10px 16px; background:#ff5a5a; color:#111; font-weight:800; border-radius:12px; display:inline-block;}
+
     .filters{max-width:var(--maxw); margin:12px auto 0; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap;}
     .filter-btn{appearance:none; border:1px solid rgba(255,255,255,.25);
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
@@ -48,7 +48,6 @@
     .filter-btn:hover{transform:translateY(-1px); border-color:rgba(255,51,204,.55);}
     .filter-btn.active{border-color:rgba(255,51,204,.75); box-shadow:0 0 0 2px rgba(255,51,204,.25) inset;}
 
-    /* GRID + CARDS */
     .grid{max-width:var(--maxw); margin:24px auto 120px; padding:0 20px 40px;
       display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:22px;}
     .product-card{position:relative; border:1px solid var(--ring); border-radius:var(--radius);
@@ -62,7 +61,6 @@
       -webkit-mask-composite:xor; mask-composite:exclude; opacity:0; transition:opacity .25s; pointer-events:none;}
     .product-card:hover::before{opacity:1;}
 
-    /* MEDIA with RETRO filters */
     .media{position:relative; aspect-ratio:4/5; overflow:hidden;}
     .media img{width:100%; height:100%; object-fit:cover; transform:scale(1.02); transition:transform .4s ease; filter:var(--retro-filter);}
     .product-card:hover .media img{transform:scale(1.08);}
@@ -83,9 +81,6 @@
       background-size:100% 3px; opacity:.18; pointer-events:none;
     }
 
-    .badge,.info{pointer-events:none;}
-    .badge{position:absolute; top:10px; left:10px; padding:6px 10px; font-size:12px; font-weight:800;
-      background:#ff5a5a; color:#111; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.3); z-index:2;}
     .info{position:absolute; left:0; right:0; bottom:0; z-index:2; display:flex; align-items:end; justify-content:space-between; padding:12px; color:#fff;}
     .name{font-weight:800; font-size:14px;}
     .price{font-size:13px; opacity:.9;}
@@ -112,7 +107,6 @@
   </style>
 </head>
 <body>
-  <!-- NAV -->
   <div class="nav">
     <div class="nav-inner">
       <a class="brand" href="/"><img src="static/images/unusualpills.png" alt="Unusual Pills" /></a>
@@ -122,94 +116,78 @@
     </div>
   </div>
 
-  <!-- HEADER -->
   <header class="header">
     <h1 class="title">Merch</h1>
     <p class="subtitle">Flip the switch</p>
+    <div class="promo-banner">🔥 BUY 2 GET 2 on all tees 🔥</div>
   </header>
 
-  <!-- FILTERS -->
   <nav class="filters" aria-label="Filter products">
     <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
     <button class="filter-btn" data-filter="tees">Tees</button>
     <button class="filter-btn" data-filter="hoodies">Hoodies</button>
   </nav>
 
-  <!-- GRID -->
   <main class="grid">
-    <!-- Ferris Wheel Tee -->
     <article class="product-card" data-category="tees">
       <div class="media">
         <img src="static/images/ferris_wheel.png" alt="Ferris Wheel Tee">
         <div class="info"><div><div class="name">Ferris Wheel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="ferris_wheel.html">Buy</a>
+      <a class="buy" href="product.html?slug=ferris_wheel">Buy</a>
     </article>
 
-    <!-- Benzodiazastream -->
     <article class="product-card" data-category="tees">
       <div class="media">
-        <span class="badge">BUY 2 GET 2</span>
         <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Tee">
         <div class="info"><div><div class="name">Benzodiazastream • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="benzodiazastream.html">Buy</a>
+      <a class="buy" href="product.html?slug=benzodiazastream">Buy</a>
     </article>
 
-    <!-- Way Too Many -->
     <article class="product-card" data-category="tees">
       <div class="media">
-        <span class="badge">BUY 2 GET 2</span>
         <img src="static/images/waytoomany.jpg" alt="Way Too Many Tee">
         <div class="info"><div><div class="name">Way Too Many • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="waytoomany.html">Buy</a>
+      <a class="buy" href="product.html?slug=waytoomany">Buy</a>
     </article>
 
-    <!-- Seroquel -->
     <article class="product-card" data-category="tees">
       <div class="media">
-        <span class="badge">BUY 2 GET 2</span>
         <img src="static/images/generically.png" alt="Seroquel Tee">
         <div class="info"><div><div class="name">Seroquel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="seroquel.html">Buy</a>
+      <a class="buy" href="product.html?slug=seroquel">Buy</a>
     </article>
 
-    <!-- Hoodie -->
     <article class="product-card" data-category="hoodies">
       <div class="media">
-        <span class="badge">BUY 2 GET 2</span>
         <img src="static/images/hoodie.jpg" alt="Unusual Hoodie">
         <div class="info"><div><div class="name">Unusual Hoodie</div><div class="price">$55</div></div></div>
       </div>
-      <a class="buy" href="hoodie.html">Buy</a>
+      <a class="buy" href="product.html?slug=hoodie">Buy</a>
     </article>
 
-    <!-- Unusual Pill -->
     <article class="product-card" data-category="tees">
       <div class="media">
-        <span class="badge">BUY 2 GET 2</span>
         <img src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee">
         <div class="info"><div><div class="name">Unusual Pill • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="unusualpill.html">Buy</a>
+      <a class="buy" href="product.html?slug=unusualpill">Buy</a>
     </article>
   </main>
 
   <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
 
   <script>
-    // year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // retro toggle
     const toggle = document.getElementById('themeToggle'), switchEl = toggle.querySelector('.switch');
     function setRetro(on){ document.body.classList.toggle('retro', on); switchEl.classList.toggle('active', on); toggle.setAttribute('aria-pressed', on?'true':'false'); localStorage.setItem('retro', on?'1':'0'); }
     if(localStorage.getItem('retro')==='1') setRetro(true);
     toggle.addEventListener('click',()=> setRetro(!document.body.classList.contains('retro')));
 
-    // filters
     const filterButtons=[...document.querySelectorAll('.filters [data-filter]')];
     const cards=[...document.querySelectorAll('.product-card')];
     function applyFilter(key){
