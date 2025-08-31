@@ -10,179 +10,130 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Color system */
-      --bg: 12 12 14;             /* page background */
-      --fg: 245 245 247;           /* main text */
-      --muted: 160 160 175;        /* secondary text */
-      --card: 20 20 24;            /* card base */
-      --accent: 255 51 204;        /* brand pink */
-      --accent-2: 129 140 248;     /* violet */
-      --glass: 255 255 255 / 7%;   /* glass layer */
-      --ring: 255 255 255 / 18%;   /* subtle borders */
-
-      --radius: 18px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --bg: 12 12 14; --fg: 245 245 247; --muted: 160 160 175;
+      --card: 20 20 24; --accent: 255 51 204; --accent-2: 129 140 248;
+      --ring: 255 255 255 / 18%;
+      --radius: 18px; --shadow: 0 10px 30px rgba(0,0,0,.35);
       --maxw: 1200px;
     }
-
-    /* Base */
     html, body { height: 100%; }
     body {
-      margin: 0;
-      color: rgb(var(--fg));
+      margin: 0; color: rgb(var(--fg));
       font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 10% -10%, rgba(255,51,204,.2), transparent),
-                  radial-gradient(800px 400px at 110% 10%, rgba(129,140,248,.18), transparent),
-                  rgb(var(--bg)) url("static/images/background.png") center / cover fixed no-repeat;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(255,51,204,.2), transparent),
+        radial-gradient(800px 400px at 110% 10%, rgba(129,140,248,.18), transparent),
+        rgb(var(--bg)) url("static/images/background.png") center / cover fixed no-repeat;
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
     }
 
     /* Top bar */
-    .nav {
-      position: sticky;
-      top: 0;
-      backdrop-filter: blur(10px);
+    .nav{ position:sticky; top:0; backdrop-filter: blur(10px);
       background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.15));
-      border-bottom: 1px solid var(--ring);
-      z-index: 10;
-    }
-    .nav-inner {
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: inherit;
-    }
-    .brand img { width: 160px; height: auto; display: block; filter: drop-shadow(0 4px 14px rgba(255,51,204,.25)); }
+      border-bottom: 1px solid var(--ring); z-index:10; }
+    .nav-inner{ max-width:var(--maxw); margin:0 auto; padding:14px 20px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .brand{ display:inline-flex; align-items:center; gap:12px; text-decoration:none; color:inherit }
+    .brand img{ width:160px; height:auto; display:block; filter: drop-shadow(0 4px 14px rgba(255,51,204,.25)); }
 
     /* Theme toggle */
-    .toggle {
-      display: inline-flex; align-items: center; gap: 10px; font-size: 14px; color: rgb(var(--muted));
-      user-select: none; cursor: pointer;
-    }
-    .switch { position: relative; width: 50px; height: 28px; background: rgba(255,255,255,.1); border: 1px solid var(--ring); border-radius: 999px; transition: .25s ease; }
-    .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 50%; background: white; transition: .25s ease; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
-    .switch.active { background: rgba(255,51,204,.25); border-color: rgba(255,51,204,.45); }
-    .switch.active::after { transform: translateX(22px); }
+    .toggle{ display:inline-flex; align-items:center; gap:10px; font-size:14px; color: rgb(var(--muted)); cursor:pointer; user-select:none; }
+    .switch{ position:relative; width:50px; height:28px; background: rgba(255,255,255,.1);
+      border:1px solid var(--ring); border-radius:999px; transition:.25s; }
+    .switch::after{ content:""; position:absolute; inset:2px auto auto 2px; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,.35); transition:.25s; }
+    .switch.active{ background: rgba(255,51,204,.25); border-color: rgba(255,51,204,.45); }
+    .switch.active::after{ transform: translateX(22px); }
 
-    /* Page header */
-    .header {
-      max-width: var(--maxw);
-      margin: 40px auto 10px;
-      padding: 0 20px;
-    }
-    .title { font-size: clamp(26px, 4vw, 44px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
-    .subtitle { margin-top: 10px; color: rgb(var(--muted)); font-weight: 400; }
+    /* Header */
+    .header{ max-width:var(--maxw); margin:40px auto 10px; padding:0 20px; }
+    .title{ font-size: clamp(26px, 4vw, 44px); line-height:1.1; font-weight:800; letter-spacing:-.02em; }
+    .subtitle{ margin-top:10px; color: rgb(var(--muted)); }
 
-    /* NEW: Filter bar */
-    .filters {
-      max-width: var(--maxw);
-      margin: 12px auto 0;
-      padding: 0 20px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .filter-btn {
-      appearance: none; border: 1px solid rgba(255,255,255,.25);
+    /* Filters */
+    .filters{ max-width:var(--maxw); margin:12px auto 0; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap; }
+    .filter-btn{
+      appearance:none; border:1px solid rgba(255,255,255,.25);
       background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
-      color: rgb(var(--fg));
-      padding: 8px 14px; border-radius: 999px; font-weight: 700;
-      cursor: pointer; transition: border-color .2s ease, transform .15s ease;
+      color: rgb(var(--fg)); padding:8px 14px; border-radius:999px; font-weight:700;
+      cursor:pointer; transition: border-color .2s, transform .15s;
     }
-    .filter-btn:hover { transform: translateY(-1px); border-color: rgba(255,51,204,.55); }
-    .filter-btn.active { border-color: rgba(255,51,204,.75); box-shadow: 0 0 0 2px rgba(255,51,204,.25) inset; }
+    .filter-btn:hover{ transform: translateY(-1px); border-color: rgba(255,51,204,.55); }
+    .filter-btn.active{ border-color: rgba(255,51,204,.75); box-shadow: 0 0 0 2px rgba(255,51,204,.25) inset; }
 
     /* Grid */
-    .grid {
-      max-width: var(--maxw);
-      margin: 24px auto 80px;
-      padding: 0 20px 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 22px;
-    }
+    .grid{ max-width:var(--maxw); margin:24px auto 80px; padding:0 20px 40px;
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:22px; }
 
-    /* Card */
-    .card {
-      position: relative;
+    /* Product card */
+    .product-card{
+      position:relative; border:1px solid var(--ring); border-radius:var(--radius);
       background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      border: 1px solid var(--ring);
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-      isolation: isolate;
+      overflow:hidden; box-shadow:var(--shadow);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      isolation:isolate;
     }
-    .card::before { /* glow border */
-      content: "";
-      position: absolute; inset: -1px;
-      border-radius: inherit;
-      padding: 1px; /* to reveal gradient edge */
+    .product-card::before{
+      content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
       background: linear-gradient(135deg, rgba(255,51,204,.35), rgba(129,140,248,.35));
       -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      opacity: 0; transition: opacity .25s ease;
-      z-index: 0;
+      -webkit-mask-composite: xor; mask-composite: exclude; opacity:0; transition:opacity .25s;
+      z-index:0;
     }
-    .card:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(0,0,0,.5); border-color: rgba(255,255,255,.28); }
-    .card:hover::before { opacity: 1; }
+    .product-card:hover{ transform:translateY(-3px); box-shadow:0 16px 46px rgba(0,0,0,.5); border-color: rgba(255,255,255,.28); }
+    .product-card:hover::before{ opacity:1; }
 
-    .thumb { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; display: block; }
-    .content { padding: 14px; display: grid; gap: 10px; }
-    .name { font-weight: 700; font-size: 16px; letter-spacing: .2px; color: rgb(var(--fg)); }
-
-    .buy {
-      display: inline-flex; align-items: center; justify-content: center;
-      padding: 10px 14px; border-radius: 12px; font-weight: 700; text-decoration: none;
-      border: 1px solid rgba(255,255,255,.25);
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
-      color: rgb(var(--fg));
-      transition: transform .15s ease, filter .15s ease, background .2s ease, border-color .2s ease;
-      will-change: transform;
+    /* Media block keeps a clean 4:5 image window */
+    .media{ position:relative; aspect-ratio:4/5; overflow:hidden; }
+    .media img{
+      width:100%; height:100%; object-fit:cover; object-position:center;
+      display:block; transform:scale(1.02); opacity:0; transition: transform .4s ease, opacity .25s ease;
+      image-rendering:auto;
     }
-    .buy:hover { transform: translateY(-1px); border-color: rgba(255,51,204,.55); background: linear-gradient(180deg, rgba(255,51,204,.18), rgba(129,140,248,.18)); }
+    .media img.is-loaded{ opacity:1; }
+    .product-card:hover .media img{ transform:scale(1.08); }
+    .media::after{
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%);
+      pointer-events:none;
+    }
+
+    /* Promo badge + quick icons (optional) */
+    .badge{
+      position:absolute; top:10px; left:10px; padding:6px 10px; font-size:12px; font-weight:800;
+      background:#ff5a5a; color:#111; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.3); z-index:2;
+    }
+    .swatches{ position:absolute; left:12px; bottom:66px; display:flex; gap:8px; z-index:2; }
+    .swatch{ width:14px; height:14px; border-radius:50%; border:2px solid rgba(255,255,255,.85); box-shadow:0 2px 8px rgba(0,0,0,.3); }
+
+    /* Info */
+    .info{ position:absolute; left:0; right:0; bottom:0; z-index:2; display:flex; align-items:end; justify-content:space-between; padding:12px; color:#fff; }
+    .name{ font-weight:800; font-size:14px; }
+    .price{ font-size:13px; opacity:.9; }
+
+    /* Buy button */
+    .buy{ margin:10px; margin-top:0; display:block; text-align:center; background:#fff; color:#111;
+      font-weight:900; border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 12px;
+      transition: transform .08s, box-shadow .2s; }
+    .buy:hover{ transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18); }
 
     /* Footer */
-    footer { text-align: center; color: rgb(var(--muted)); padding: 20px; margin-bottom: 20px; }
+    footer{ text-align:center; color: rgb(var(--muted)); padding:20px; margin-bottom:20px; }
 
-    /* Retro mode (toggle adds .retro on <body>) */
-    body.retro { 
+    /* Retro mode */
+    body.retro{
       image-rendering: pixelated;
-      background: repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 2px, transparent 2px 4px),
-                  radial-gradient(1000px 450px at -10% 10%, rgba(0,255,170,.18), transparent),
-                  radial-gradient(700px 350px at 120% -10%, rgba(255,0,170,.18), transparent),
-                  rgb(10 10 12) url("static/images/background.png") center / cover fixed no-repeat;
-      font-family: 'Press Start 2P', monospace;
-      letter-spacing: .5px;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 2px, transparent 2px 4px),
+        radial-gradient(1000px 450px at -10% 10%, rgba(0,255,170,.18), transparent),
+        radial-gradient(700px 350px at 120% -10%, rgba(255,0,170,.18), transparent),
+        rgb(10 10 12) url("static/images/background.png") center / cover fixed no-repeat;
+      font-family:'Press Start 2P', monospace; letter-spacing:.5px;
     }
-    body.retro .title { text-shadow: 0 0 8px rgba(0,255,170,.35), 0 0 24px rgba(255,0,170,.25); }
-    body.retro .card { border-radius: 8px; }
-    body.retro .buy {
-      border-radius: 6px;
-      background: linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.35));
-      box-shadow: inset 0 0 0 2px rgba(0,255,170,.35), 0 6px 0 0 rgba(0,0,0,.6);
-      text-transform: uppercase;
-    }
-    body.retro .buy:hover { filter: contrast(1.15) saturate(1.25); }
+    body.retro .title{ text-shadow: 0 0 8px rgba(0,255,170,.35), 0 0 24px rgba(255,0,170,.25); }
+    body.retro .buy{ border-radius:6px; background:linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.35)); box-shadow: inset 0 0 0 2px rgba(0,255,170,.35), 0 6px 0 0 rgba(0,0,0,.6); text-transform:uppercase; }
 
-    /* Hide helper */
-    .is-hidden { display: none !important; }
-
-    /* Reduce motion */
-    @media (prefers-reduced-motion: reduce) {
-      * { transition: none !important; animation: none !important; }
-    }
+    .is-hidden{ display:none !important; }
+    @media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
   </style>
 </head>
 <body>
@@ -193,141 +144,172 @@
         <img src="static/images/unusualpills.png" alt="Unusual Pills" loading="eager" />
       </a>
       <div class="toggle" id="themeToggle" role="button" aria-pressed="false" tabindex="0">
-        <span>Retro mode</span>
-        <div class="switch" aria-hidden="true"></div>
+        <span>Retro mode</span><div class="switch" aria-hidden="true"></div>
       </div>
     </div>
   </div>
 
-  <!-- Header copy -->
+  <!-- Header -->
   <header class="header">
     <h1 class="title">Merch</h1>
     <p class="subtitle">Flip the switch</p>
   </header>
 
-  <!-- NEW: Filter bar -->
+  <!-- Filters -->
   <nav class="filters" aria-label="Filter products">
     <button class="filter-btn active" data-filter="all">All</button>
     <a class="filter-btn" href="#tees" data-filter="tees">Tees</a>
     <a class="filter-btn" href="#hoodies" data-filter="hoodies">Hoodies</a>
   </nav>
 
-  <!-- Grid of products -->
+  <!-- Product grid -->
   <main class="grid" id="grid">
-    <!-- Benzodiazastream Tee -->
-    <article class="card" data-category="tees">
-      <img class="thumb" src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Shirt" loading="lazy" />
-      <div class="content">
-        <h2 class="name">Benzodiazastream</h2>
-        <a class="buy" target="_blank" href="https://buy.stripe.com/14A3cw3ho9d6gGt8VXbfO02" rel="noopener">Buy</a>
+    <!-- Card 1 -->
+    <article class="product-card" data-category="tees">
+      <div class="media">
+        <!-- Optional promo -->
+        <span class="badge">BUY 2 GET 2</span>
+        <!-- Color dots (optional) -->
+        <div class="swatches">
+          <span class="swatch" style="background:#000"></span>
+          <span class="swatch" style="background:#7e7e7e"></span>
+          <span class="swatch" style="background:#e9e4dc"></span>
+        </div>
+        <img
+          src="static/images/benzodiazastream.jpg"
+          srcset="static/images/benzodiazastream.jpg 1x, static/images/benzodiazastream@2x.jpg 2x, static/images/benzodiazastream.webp 1x"
+          sizes="(max-width: 600px) 50vw, 250px"
+          alt="Benzodiazastream Tee"
+          loading="lazy" decoding="async">
+        <div class="info">
+          <div>
+            <div class="name">Benzodiazastream • Tee</div>
+            <div class="price">From $35</div>
+          </div>
+        </div>
       </div>
+      <a class="buy" target="_blank" rel="noopener" href="https://buy.stripe.com/14A3cw3ho9d6gGt8VXbfO02">Buy</a>
     </article>
 
-    <!-- Way Too Many Shirt -->
-    <article class="card" data-category="tees">
-      <img class="thumb" src="static/images/waytoomany.jpg" alt="Way Too Many Shirt" loading="lazy" />
-      <div class="content">
-        <h2 class="name">Way Too Many</h2>
-        <a class="buy" target="_blank" href="https://buy.stripe.com/7sYcN62dkcpiduh0prbfO00" rel="noopener">Buy</a>
+    <!-- Card 2 -->
+    <article class="product-card" data-category="tees">
+      <div class="media">
+        <img
+          src="static/images/waytoomany.jpg"
+          srcset="static/images/waytoomany.jpg 1x, static/images/waytoomany@2x.jpg 2x, static/images/waytoomany.webp 1x"
+          sizes="(max-width: 600px) 50vw, 250px"
+          alt="Way Too Many Tee"
+          loading="lazy" decoding="async">
+        <div class="info">
+          <div>
+            <div class="name">Way Too Many • Tee</div>
+            <div class="price">$35</div>
+          </div>
+        </div>
       </div>
+      <a class="buy" target="_blank" rel="noopener" href="https://buy.stripe.com/7sYcN62dkcpiduh0prbfO00">Buy</a>
     </article>
 
-    <!-- Generically Shirt (Seroquel) -->
-    <article class="card" data-category="tees">
-      <img class="thumb" src="static/images/generically.png" alt="Seroquel Shirt" loading="lazy" />
-      <div class="content">
-        <h2 class="name">Seroquel</h2>
-        <a class="buy" target="_blank" href="https://buy.stripe.com/7sY00kaJQfBu61P6NPbfO03" rel="noopener">Buy</a>
+    <!-- Card 3 -->
+    <article class="product-card" data-category="tees">
+      <div class="media">
+        <img
+          src="static/images/generically.png"
+          srcset="static/images/generically.png 1x, static/images/generically@2x.png 2x, static/images/generically.webp 1x"
+          sizes="(max-width: 600px) 50vw, 250px"
+          alt="Seroquel Tee"
+          loading="lazy" decoding="async">
+        <div class="info">
+          <div>
+            <div class="name">Seroquel • Tee</div>
+            <div class="price">$35</div>
+          </div>
+        </div>
       </div>
+      <a class="buy" target="_blank" rel="noopener" href="https://buy.stripe.com/7sY00kaJQfBu61P6NPbfO03">Buy</a>
     </article>
 
-    <!-- Hoodie -->
-    <article class="card" data-category="hoodies">
-      <img class="thumb" src="static/images/hoodie.jpg" alt="Unusual Hoodie" loading="lazy" />
-      <div class="content">
-        <h2 class="name">Unusual Hoodie</h2>
-        <a class="buy" target="_blank" href="https://buy.stripe.com/5kQ4gA05cahaai55JLbfO04" rel="noopener">Buy</a>
+    <!-- Card 4 -->
+    <article class="product-card" data-category="hoodies">
+      <div class="media">
+        <img
+          src="static/images/hoodie.jpg"
+          srcset="static/images/hoodie.jpg 1x, static/images/hoodie@2x.jpg 2x, static/images/hoodie.webp 1x"
+          sizes="(max-width: 600px) 50vw, 250px"
+          alt="Unusual Hoodie"
+          loading="lazy" decoding="async">
+        <div class="info">
+          <div>
+            <div class="name">Unusual Hoodie</div>
+            <div class="price">$55</div>
+          </div>
+        </div>
       </div>
+      <a class="buy" target="_blank" rel="noopener" href="https://buy.stripe.com/5kQ4gA05cahaai55JLbfO04">Buy</a>
     </article>
 
-    <!-- Unusual Pill Tee -->
-    <article class="card" data-category="tees">
-      <img class="thumb" src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee" loading="lazy" />
-      <div class="content">
-        <h2 class="name">Unusual Pill</h2>
-        <a class="buy" target="_blank" href="https://buy.stripe.com/eVq4gA4ls60UcqddcdbfO05" rel="noopener">Buy</a>
+    <!-- Card 5 -->
+    <article class="product-card" data-category="tees">
+      <div class="media">
+        <img
+          src="static/images/unusualpillT.jpg"
+          srcset="static/images/unusualpillT.jpg 1x, static/images/unusualpillT@2x.jpg 2x, static/images/unusualpillT.webp 1x"
+          sizes="(max-width: 600px) 50vw, 250px"
+          alt="Unusual Pill Tee"
+          loading="lazy" decoding="async">
+        <div class="info">
+          <div>
+            <div class="name">Unusual Pill • Tee</div>
+            <div class="price">$35</div>
+          </div>
+        </div>
       </div>
+      <a class="buy" target="_blank" rel="noopener" href="https://buy.stripe.com/eVq4gA4ls60UcqddcdbfO05">Buy</a>
     </article>
   </main>
 
-  <footer>
-    © <span id="year"></span> Unusual Pills. All rights reserved.
-  </footer>
+  <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
 
   <script>
     // Year
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Theme toggle
+    // Retro toggle
     const toggle = document.getElementById('themeToggle');
     const switchEl = toggle.querySelector('.switch');
-
-    function setRetro(on) {
+    function setRetro(on){
       document.body.classList.toggle('retro', on);
       switchEl.classList.toggle('active', on);
       toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
-      localStorage.setItem('retro', on ? '1' : '0');
+      localStorage.setItem('retro',''+(on?1:0));
     }
+    const saved = localStorage.getItem('retro'); if (saved==='1') setRetro(true);
+    toggle.addEventListener('click', ()=> setRetro(!document.body.classList.contains('retro')));
+    toggle.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); setRetro(!document.body.classList.contains('retro')); }});
 
-    const saved = localStorage.getItem('retro');
-    if (saved === '1') setRetro(true);
-
-    toggle.addEventListener('click', () => setRetro(!document.body.classList.contains('retro')));
-    toggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setRetro(!document.body.classList.contains('retro')); }
-    });
-
-    // ===== Filters (show/hide cards) =====
+    // Filters
     const btns = Array.from(document.querySelectorAll('.filter-btn'));
-    const cards = Array.from(document.querySelectorAll('.card'));
-
-    function applyFilter(key) {
-      // Update active button
-      btns.forEach(b => b.classList.toggle('active', b.dataset.filter === key || (key === 'all' && b.dataset.filter === 'all')));
-      // Show/hide
-      cards.forEach(card => {
-        const cat = card.getAttribute('data-category');
-        const show = key === 'all' || key === cat;
-        card.classList.toggle('is-hidden', !show);
-      });
+    const cards = Array.from(document.querySelectorAll('.product-card'));
+    function applyFilter(key){
+      btns.forEach(b=> b.classList.toggle('active', b.dataset.filter===key || (key==='all' && b.dataset.filter==='all')));
+      cards.forEach(card=> card.classList.toggle('is-hidden', !(key==='all' || key===card.dataset.category)));
     }
-
-    function filterFromHash() {
-      const hash = (location.hash || '').replace('#','').toLowerCase();
-      if (hash === 'tees' || hash === 'hoodies') {
-        applyFilter(hash);
-      } else {
-        applyFilter('all');
-      }
+    function filterFromHash(){
+      const hash=(location.hash||'').replace('#','').toLowerCase();
+      if(hash==='tees'||hash==='hoodies'){ applyFilter(hash); } else { applyFilter('all'); }
     }
+    btns.forEach(b=> b.addEventListener('click', ()=>{
+      const key=b.dataset.filter;
+      if(key!=='all'){ location.hash=key; } else { history.replaceState(null,'',location.pathname+location.search); }
+      applyFilter(key);
+    }));
+    window.addEventListener('hashchange', filterFromHash); filterFromHash();
 
-    // Click handlers
-    btns.forEach(b => {
-      b.addEventListener('click', (e) => {
-        const key = b.dataset.filter;
-        if (key !== 'all') {
-          // update URL hash for deep linking
-          location.hash = key;
-        } else {
-          history.replaceState(null, '', location.pathname + location.search);
-        }
-        applyFilter(key);
-      });
+    // Image fade-in when decoded
+    document.querySelectorAll('.media img').forEach(img=>{
+      if (img.complete) img.classList.add('is-loaded');
+      else img.addEventListener('load', ()=> img.classList.add('is-loaded'));
     });
-
-    // Init and on hash change
-    window.addEventListener('hashchange', filterFromHash);
-    filterFromHash();
   </script>
 </body>
 </html>
