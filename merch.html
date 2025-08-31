@@ -66,7 +66,7 @@
     .product-card:hover .media img{transform:scale(1.08);}
     /* duotone + slight sepia + lowered sat, add fine scanlines + film grain layers */
     :root{ --retro-filter: contrast(1.05) saturate(.85) sepia(.18) brightness(.98); }
-    .media::before{ /* fine grain */
+    .media::before{
       content:""; position:absolute; inset:0;
       background:
         radial-gradient(transparent 60%, rgba(0,0,0,.12) 100%),
@@ -77,14 +77,12 @@
 </svg>") center/200px 200px repeat;
       mix-blend-mode:soft-light; opacity:.55; pointer-events:none;
     }
-    .media::after{ /* scanlines */
+    .media::after{
       content:""; position:absolute; inset:0;
-      background:
-        linear-gradient(to bottom, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
+      background:linear-gradient(to bottom, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
       background-size:100% 3px; opacity:.18; pointer-events:none;
     }
 
-    /* BADGES + INFO */
     .badge,.swatches,.info{pointer-events:none;}
     .badge{position:absolute; top:10px; left:10px; padding:6px 10px; font-size:12px; font-weight:800;
       background:#ff5a5a; color:#111; border-radius:999px; box-shadow:0 6px 18px rgba(0,0,0,.3); z-index:2;}
@@ -92,7 +90,6 @@
     .name{font-weight:800; font-size:14px;}
     .price{font-size:13px; opacity:.9;}
 
-    /* BUY triggers modal (made to order) */
     .buy{position:relative; z-index:10; margin:10px; margin-top:0; display:block; text-align:center;
       background:#fff; color:#111; font-weight:900; cursor:pointer;
       border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 12px;
@@ -102,7 +99,7 @@
     .is-hidden{display:none !important;}
     footer{text-align:center; color:rgb(var(--muted)); padding:20px; margin-bottom:20px;}
 
-    /* MODAL (quick order) */
+    /* MODAL */
     .modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:50;}
     .modal{width:min(520px,94vw); background:rgba(20,20,24,.96); border:1px solid var(--ring); border-radius:16px; padding:18px; backdrop-filter: blur(10px);}
     .modal h3{margin:0 0 6px; font-size:18px;}
@@ -141,14 +138,23 @@
 
   <!-- GRID -->
   <main class="grid">
-    <!-- You can duplicate these cards freely; “Buy” opens the modal -->
+    <!-- NEW: Ferris Wheel Tee (direct Stripe link) -->
+    <article class="product-card" data-category="tees">
+      <div class="media">
+        <img src="static/images/ferris_wheel.png" alt="Ferris Wheel Tee">
+        <div class="info"><div><div class="name">Ferris Wheel • Tee</div><div class="price">$35</div></div></div>
+      </div>
+      <a class="buy" href="https://buy.stripe.com/dRmcN69FM74Y2PD4FHbfO0b" target="_blank" rel="noopener">Buy</a>
+    </article>
+
+    <!-- Existing items (modal-based) -->
     <article class="product-card" data-category="tees">
       <div class="media">
         <span class="badge">MADE TO ORDER</span>
         <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Tee">
         <div class="info"><div><div class="name">Benzodiazastream • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" data-type="tee" data-design="Benzodiazastream">Buy</a>
+      <a class="buy" data-modal="true" data-type="tee" data-design="Benzodiazastream">Buy</a>
     </article>
 
     <article class="product-card" data-category="tees">
@@ -156,7 +162,7 @@
         <img src="static/images/waytoomany.jpg" alt="Way Too Many Tee">
         <div class="info"><div><div class="name">Way Too Many • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" data-type="tee" data-design="Way Too Many">Buy</a>
+      <a class="buy" data-modal="true" data-type="tee" data-design="Way Too Many">Buy</a>
     </article>
 
     <article class="product-card" data-category="tees">
@@ -164,7 +170,7 @@
         <img src="static/images/generically.png" alt="Seroquel Tee">
         <div class="info"><div><div class="name">Seroquel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" data-type="tee" data-design="Seroquel">Buy</a>
+      <a class="buy" data-modal="true" data-type="tee" data-design="Seroquel">Buy</a>
     </article>
 
     <article class="product-card" data-category="hoodies">
@@ -172,7 +178,7 @@
         <img src="static/images/hoodie.jpg" alt="Unusual Hoodie">
         <div class="info"><div><div class="name">Unusual Hoodie</div><div class="price">$55</div></div></div>
       </div>
-      <a class="buy" data-type="hoodie" data-design="Unusual Hoodie">Buy</a>
+      <a class="buy" data-modal="true" data-type="hoodie" data-design="Unusual Hoodie">Buy</a>
     </article>
 
     <article class="product-card" data-category="tees">
@@ -180,7 +186,7 @@
         <img src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee">
         <div class="info"><div><div class="name">Unusual Pill • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" data-type="tee" data-design="Unusual Pill">Buy</a>
+      <a class="buy" data-modal="true" data-type="tee" data-design="Unusual Pill">Buy</a>
     </article>
   </main>
 
@@ -189,7 +195,7 @@
   <!-- QUICK ORDER MODAL -->
   <div class="modal-backdrop" id="orderModal">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h3 id="modalTitle">BUY 2 GET 2</h3>
+      <h3 id="modalTitle">Made to Order</h3>
       <div class="row">
         <div>
           <label for="designSel">Design</label>
@@ -230,21 +236,18 @@
     filterButtons.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
     applyFilter('all');
 
-    // MADE-TO-ORDER: simple modal -> email you + go to one Stripe link per type
+    // Modal setup (only for buttons with data-modal="true")
     const MODAL=document.getElementById('orderModal');
     const designSel=document.getElementById('designSel');
     const sizeSel=document.getElementById('sizeSel');
     const cancelBtn=document.getElementById('cancelBtn');
     const checkoutBtn=document.getElementById('checkoutBtn');
 
-    // One generic link per garment type (swap with your real Payment Links)
     const STRIPE_LINKS={ tee:"https://buy.stripe.com/test_123tee", hoodie:"https://buy.stripe.com/test_456hoodie" };
 
-    // Open modal with prefilled design/type
     let currentType='tee';
     function openModal(type, design){
       currentType=type;
-      // build design options from all cards of same type (so you "add products" without new prices)
       designSel.innerHTML = [...document.querySelectorAll(`.product-card[data-category='${type}s'] .name`)]
         .map(el=>el.textContent.replace(/ • .+$/,''))
         .map(name=>`<option ${name===design?'selected':''}>${name}</option>`).join('');
@@ -252,7 +255,7 @@
     }
     function closeModal(){ MODAL.style.display='none'; }
 
-    document.querySelectorAll('.buy').forEach(btn=>{
+    document.querySelectorAll('.buy[data-modal="true"]').forEach(btn=>{
       btn.addEventListener('click',(e)=>{
         e.preventDefault();
         openModal(btn.dataset.type, btn.dataset.design);
@@ -262,7 +265,7 @@
     MODAL.addEventListener('click', (e)=>{ if(e.target===MODAL) closeModal(); });
 
     // On checkout: email you the selection, then send to Stripe generic link
-    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan"; // same endpoint you used before
+    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
     checkoutBtn.addEventListener('click', async ()=>{
       const payload = {
         design: designSel.value,
@@ -274,7 +277,6 @@
         const fd=new FormData(); Object.entries(payload).forEach(([k,v])=>fd.append(k,v));
         await fetch(FORMSPREE_URL, { method:"POST", body:fd, headers:{ "Accept":"application/json" }});
       }catch(_){}
-      // redirect to Stripe link for garment type
       const link = STRIPE_LINKS[currentType] || STRIPE_LINKS.tee;
       window.location.href = link;
     });
