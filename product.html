@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unusual Pills — Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0c0c0e; --fg:#f5f5f7; --muted:#a0a0af; --ring:255 255 255 / 18%;
+      --radius:18px; --maxw:980px;
+      --retro-filter: contrast(1.05) saturate(.85) sepia(.18) brightness(.98);
+    }
+    *{box-sizing:border-box}
+    body{margin:0; color:var(--fg); font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:
+        radial-gradient(1100px 520px at 8% -8%, rgba(255,51,204,.18), transparent),
+        radial-gradient(800px 420px at 108% 12%, rgba(129,140,248,.16), transparent),
+        #0c0c0e url("static/images/background.png") center/cover fixed no-repeat;}
+    .wrap{max-width:var(--maxw); margin:24px auto 40px; padding:0 16px;}
+    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid rgba(var(--ring));}
+    .brand{display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:inherit}
+    .brand img{height:36px}
+    a.back{color:var(--fg); text-decoration:none; font-weight:800; padding:8px 12px; border:1px solid rgba(var(--ring)); border-radius:12px}
+    .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:24px; margin-top:24px}
+    .media{position:relative; aspect-ratio:4/5; background:rgba(255,255,255,.04); border:1px solid rgba(var(--ring)); border-radius:16px; overflow:hidden}
+    .media img{width:100%; height:100%; object-fit:cover; filter:var(--retro-filter)}
+    .title{font-size:clamp(22px,3.6vw,34px); font-weight:800; margin:4px 0 6px}
+    .price{color:#cfcfe5; font-weight:700; margin-bottom:10px}
+    .deal{display:inline-block; margin:6px 0 14px; padding:8px 12px; background:#ff5a5a; color:#111; font-weight:900; border-radius:12px}
+    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    select{width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(var(--ring)); background:rgba(0,0,0,.25); color:var(--fg)}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .cta{margin-top:16px; display:flex; gap:10px}
+    .btn{padding:12px 16px; border-radius:14px; border:1px solid rgba(var(--ring)); font-weight:900; cursor:pointer}
+    .btn.primary{background:#fff; color:#111}
+    .note{color:var(--muted); font-size:12px; margin-top:8px}
+    @media (max-width:860px){ .grid{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="merch.html"><img src="static/images/unusualpills.png" alt="Unusual Pills"></a>
+      <a class="back" href="merch.html">← Back to merch</a>
+    </div>
+
+    <div class="grid">
+      <div class="media">
+        <img id="prodImage" alt="">
+      </div>
+      <div>
+        <h1 class="title" id="prodName">Product</h1>
+        <div class="price" id="prodPrice">$—</div>
+        <div class="deal">BUY 2 GET 2 on all tees</div>
+
+        <label for="sizeSel">Size</label>
+        <select id="sizeSel"></select>
+
+        <label for="colorSel">Color</label>
+        <select id="colorSel"></select>
+
+        <div class="cta">
+          <button class="btn primary" id="checkoutBtn">Checkout</button>
+          <button class="btn" id="cartBtn" disabled>Add to cart</button>
+        </div>
+        <div class="note">Made per order. Lead time 5–10 days.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Product data (edit this when you add items) ----
+    const PRODUCTS = {
+      ferris_wheel: {
+        name: "Ferris Wheel • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/ferris_wheel.png",
+        colors: ["White","Black"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/dRmcN69FM74Y2PD4FHbfO0b"
+      },
+      benzodiazastream: {
+        name: "Benzodiazastream • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/benzodiazastream.jpg",
+        colors: ["White","Black"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/test_123tee"
+      },
+      waytoomany: {
+        name: "Way Too Many • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/waytoomany.jpg",
+        colors: ["White","Black"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/test_123tee"
+      },
+      seroquel: {
+        name: "Seroquel • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/generically.png",
+        colors: ["White","Black"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/test_123tee"
+      },
+      hoodie: {
+        name: "Unusual Hoodie",
+        price: 55,
+        type: "hoodie",
+        image: "static/images/hoodie.jpg",
+        colors: ["Black","Heather Gray"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/test_456hoodie"
+      },
+      unusualpill: {
+        name: "Unusual Pill • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/unusualpillT.jpg",
+        colors: ["White","Black"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/test_123tee"
+      }
+    };
+
+    // ---- Utilities ----
+    function getSlug(){
+      const u = new URL(location.href);
+      return (u.searchParams.get('slug') || '').toLowerCase().replace(/[^a-z0-9_-]/g,'');
+    }
+
+    function fillSelect(sel, items){
+      sel.innerHTML = items.map(v=>`<option>${v}</option>`).join('');
+    }
+
+    // ---- Render product ----
+    const slug = getSlug();
+    const p = PRODUCTS[slug];
+
+    const nameEl = document.getElementById('prodName');
+    const priceEl = document.getElementById('prodPrice');
+    const imgEl = document.getElementById('prodImage');
+    const sizeSel = document.getElementById('sizeSel');
+    const colorSel = document.getElementById('colorSel');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    if (!p) {
+      nameEl.textContent = "Product not found";
+      priceEl.textContent = "";
+      imgEl.alt = "";
+    } else {
+      nameEl.textContent = p.name;
+      priceEl.textContent = `$${p.price}`;
+      imgEl.src = p.image; imgEl.alt = p.name;
+      fillSelect(sizeSel, p.sizes);
+      fillSelect(colorSel, p.colors);
+    }
+
+    // ---- Checkout: email selection then go to Stripe ----
+    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
+
+    checkoutBtn.addEventListener('click', async () => {
+      if (!p) return;
+      const payload = {
+        _subject: "New Product Order",
+        slug, name: p.name, type: p.type,
+        size: sizeSel.value, color: colorSel.value
+      };
+      try {
+        const fd = new FormData();
+        Object.entries(payload).forEach(([k,v])=>fd.append(k,v));
+        await fetch(FORMSPREE_URL, { method:"POST", body:fd, headers:{ "Accept":"application/json" }});
+      } catch(_) {}
+      // Redirect to Stripe Payment Link for the product
+      window.location.href = p.stripe;
+    });
+  </script>
+</body>
+</html>
