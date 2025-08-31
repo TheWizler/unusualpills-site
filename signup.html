@@ -1,3 +1,4 @@
+<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,13 +8,8 @@
   <meta name="color-scheme" content="dark light">
   <style>
     :root{
-      --bg:#0c0c12;
-      --card:rgba(255,255,255,.06);
-      --stroke:rgba(255,255,255,.16);
-      --focus:#7dfcff;
-      --text:#fff;
-      --muted:rgba(255,255,255,.7);
-      --accent:#ffffff;
+      --bg:#0c0c12; --card:rgba(255,255,255,.06); --stroke:rgba(255,255,255,.16);
+      --focus:#7dfcff; --text:#fff; --muted:rgba(255,255,255,.7); --accent:#ffffff;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -28,24 +24,16 @@
       display:flex; align-items:center; justify-content:center; padding:32px;
     }
     .card{
-      width:min(880px, 96vw);
-      background:var(--card);
-      backdrop-filter: blur(10px);
-      border:1px solid var(--stroke);
-      border-radius:20px;
-      box-shadow:0 20px 60px rgba(0,0,0,.45);
-      padding:24px;
+      width:min(880px, 96vw); background:var(--card); backdrop-filter: blur(10px);
+      border:1px solid var(--stroke); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.45); padding:24px;
     }
-    .header{
-      display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-    .brand img{ width:40px; height:40px; border-radius:10px; object-fit:cover; }
+    .header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px }
+    .brand{ display:flex; align-items:center; gap:12px }
+    .brand img{ width:40px; height:40px; border-radius:10px; object-fit:cover }
     h1{margin:0; font-size:28px; letter-spacing:.3px}
     .sub{margin-top:6px; color:var(--muted); font-size:14px}
     form{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
     .full{ grid-column:1 / -1 }
     label{ display:block; font-size:12px; letter-spacing:.2px; color:var(--muted); margin-bottom:6px }
     input, select{
@@ -57,14 +45,9 @@
       border-color: var(--focus);
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 30%, transparent);
     }
-    .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
-    .consent{
-      grid-column:1 / -1; display:flex; align-items:flex-start; gap:12px; margin-top:8px; font-size:14px;
-    }
+    .consent{ grid-column:1/-1; display:flex; align-items:flex-start; gap:12px; margin-top:8px; font-size:14px }
     .consent input{ width:auto; margin-top:4px }
-    .actions{
-      grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:6px;
-    }
+    .actions{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:6px }
     .small{ color:var(--muted); font-size:12px }
     .btn{
       padding:12px 16px; border-radius:14px; border:1px solid var(--stroke);
@@ -73,18 +56,11 @@
     }
     .btn:hover{ transform: translateY(-1px); box-shadow:0 8px 24px rgba(255,255,255,.15) }
     .btn:active{ transform: translateY(0); box-shadow:none }
-    .error{
-      display:none; background:#ff4d4d; color:#fff; padding:10px 12px; border-radius:10px; margin:8px 0;
-    }
-    .success{
-      display:none; background:#2ecc71; color:#111; padding:10px 12px; border-radius:10px; margin:8px 0;
-    }
-    .hp{ display:none } /* honeypot */
+    .error{ display:none; background:#ff4d4d; color:#fff; padding:10px 12px; border-radius:10px; margin:8px 0 }
+    .success{ display:none; background:#2ecc71; color:#111; padding:10px 12px; border-radius:10px; margin:8px 0 }
     @media (max-width:720px){
-      form{ grid-template-columns:1fr }
-      .row{ grid-template-columns:1fr }
-      .actions{ flex-direction:column; align-items:stretch }
-      .btn{ width:100% }
+      form{ grid-template-columns:1fr } .row{ grid-template-columns:1fr }
+      .actions{ flex-direction:column; align-items:stretch } .btn{ width:100% }
     }
   </style>
 </head>
@@ -92,26 +68,20 @@
   <div class="card" role="region" aria-labelledby="title">
     <div class="header">
       <div class="brand">
-        <!-- optional brand mark -->
         <img src="static/images/merch.png" alt="Unusual Pills">
         <div>
-          <h1 id="title">dnuƃᴉS</h1>
-          <div class="sub">Drop your shipping info and opt-in for merch drops. We’ll never sell your data.</div>
+          <h1 id="title">Free Shirt Signup</h1>
+          <div class="sub">Verify your email and drop your shipping info. We’ll never sell your data.</div>
         </div>
       </div>
       <div class="small">Need help? <a href="mailto:hello@unusualpills.com" style="color:#fff">Contact us</a></div>
     </div>
 
-    <div id="err" class="error" role="alert">Please check the email opt-in box to continue.</div>
-    <div id="ok" class="success" role="status">Thanks! Submitting…</div>
+    <div id="err" class="error" role="alert"></div>
+    <div id="ok"  class="success" role="status">Thanks! Check your email for a verification link…</div>
 
-    <form id="shirtForm" method="POST" action="https://formspree.io/f/xldwnjan" autocomplete="on" novalidate>
-      <!-- Formspree helpers -->
-      <input type="hidden" name="_subject" value="New Free Shirt Signup">
-      <input type="hidden" name="_redirect" value="https://unusualpills.com/thanks.html">
-      <!-- Honeypot field (blocks many bots) -->
-      <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
-
+    <!-- NOTE: no action attribute; JS handles submit -->
+    <form id="shirtForm" autocomplete="on" novalidate>
       <div class="row">
         <div>
           <label for="first">First name</label>
@@ -169,35 +139,83 @@
 
       <div class="consent">
         <input id="consent" type="checkbox" name="marketing_consent" required>
-        <label for="consent">I agree to receive emails about new merch from Unusual Pills. I can unsubscribe anytime.</label>
+        <label for="consent">I agree to receive emails about new merch & drops from Unusual Pills. I can unsubscribe anytime.</label>
       </div>
 
       <div class="actions">
         <div class="small">By submitting, you allow us to email you and to use your details to ship your shirt.</div>
-        <button id="submitBtn" class="btn" type="submit">Claim My Free Shirt</button>
+        <button id="submitBtn" class="btn" type="submit">Create Account & Claim</button>
       </div>
     </form>
   </div>
 
+  <!-- Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // UX: validate consent & disable button during submit
-    const form = document.getElementById('shirtForm');
-    const consent = document.getElementById('consent');
-    const err = document.getElementById('err');
-    const ok = document.getElementById('ok');
-    const btn = document.getElementById('submitBtn');
+    const SUPABASE_URL  = "https://rkwldeocahwvnuzjhpgq.supabase.co"; // replace with your Project URL
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrd2xkZW9jYWh3dm51empocGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NDA2OTEsImV4cCI6MjA3MjIxNjY5MX0.WH_XmuIJ53DtMwMo2I7e4ul-m9BaTVlJMkMHY583oi0";
 
-    form.addEventListener('submit', (e) => {
-      err.style.display = 'none';
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const form = document.getElementById('shirtForm');
+    const btn  = document.getElementById('submitBtn');
+    const err  = document.getElementById('err');
+    const ok   = document.getElementById('ok');
+    const consent = document.getElementById('consent');
+
+    function val(id){ return document.getElementById(id).value.trim(); }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.style.display = 'none'; err.textContent = '';
+      ok.style.display = 'none';
+
       if (!consent.checked) {
-        e.preventDefault();
+        err.textContent = 'Please check the email opt-in box to continue.';
         err.style.display = 'block';
         return;
       }
-      // show submitting state (Formspree will redirect)
+
       btn.disabled = true;
+
+      const payload = {
+        first_name: val('first'),
+        last_name:  val('last'),
+        email:      val('email'),
+        address1:   val('address1'),
+        address2:   val('address2'),
+        city:       val('city'),
+        state:      val('state'),
+        postal_code:val('postal'),
+        country:    document.getElementById('country').value,
+        phone:      val('phone'),
+        marketing_consent: true
+      };
+
+      // 1) Create account (magic-link email)
+      const { error: signErr } = await sb.auth.signUp({ email: payload.email });
+      if (signErr) {
+        err.textContent = 'Signup failed: ' + signErr.message;
+        err.style.display = 'block';
+        btn.disabled = false;
+        return;
+      }
+
+      // 2) Save profile
+      const { error: insErr } = await sb.from('profiles').insert(payload);
+      if (insErr) {
+        err.textContent = 'Saving profile failed: ' + insErr.message;
+        err.style.display = 'block';
+        btn.disabled = false;
+        return;
+      }
+
+      // 3) Success
       ok.style.display = 'block';
+      setTimeout(() => { window.location.href = 'thanks.html'; }, 800);
     });
   </script>
 </body>
 </html>
+
