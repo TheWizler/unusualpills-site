@@ -27,10 +27,19 @@
       border:1px solid var(--stroke); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.45); padding:24px;
     }
     .header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px }
-    .brand{ display:flex; align-items:center; gap:12px }
-    .brand img{ width:40px; height:40px; border-radius:10px; object-fit:cover }
+    .brand-link{ display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit }
+    .brand-link:hover{ opacity:.9 }
+    .brand-link img{ width:40px; height:40px; border-radius:10px; object-fit:cover }
     h1{margin:0; font-size:28px; letter-spacing:.3px}
     .sub{margin-top:6px; color:var(--muted); font-size:14px}
+    .header-right{ display:flex; align-items:center; gap:12px }
+    .home-btn{
+      padding:8px 12px; border-radius:12px; border:1px solid var(--stroke);
+      background:#fff; color:#111; font-weight:800; text-decoration:none;
+      transition: transform .05s ease, box-shadow .2s ease;
+    }
+    .home-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,255,255,.15) }
+    .home-btn:active{ transform:none; box-shadow:none }
     form{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px }
     .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
     .full{ grid-column:1 / -1 }
@@ -66,20 +75,23 @@
 <body>
   <div class="card" role="region" aria-labelledby="title">
     <div class="header">
-      <div class="brand">
+      <a class="brand-link" href="index.html" aria-label="Back to Home">
         <img src="static/images/merch.png" alt="Unusual Pills">
         <div>
           <h1 id="title">Free Shirt Signup</h1>
           <div class="sub">Verify your email and drop your shipping info. We’ll never sell your data.</div>
         </div>
+      </a>
+      <div class="header-right">
+        <a class="home-btn" href="index.html">Home</a>
+        <a class="small" href="mailto:hello@unusualpills.com" style="color:#fff">Contact us</a>
       </div>
-      <div class="small">Need help? <a href="mailto:hello@unusualpills.com" style="color:#fff">Contact us</a></div>
     </div>
 
     <div id="err" class="error" role="alert"></div>
     <div id="ok"  class="success" role="status">Thanks! Check your email for a verification link…</div>
 
-    <!-- NOTE: no action attribute; JS handles submit -->
+    <!-- Form -->
     <form id="shirtForm" autocomplete="on" novalidate>
       <div class="row">
         <div>
@@ -148,14 +160,14 @@
     </form>
   </div>
 
-  <!-- Supabase -->
+  <!-- Supabase + Formspree -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // 1) Fill these with your project values
-    const SUPABASE_URL  = "https://YOUR-PROJECT-ID.supabase.co";   // <-- replace with your actual Project URL
+    // Supabase values
+    const SUPABASE_URL  = "https://rkwldeocahwvnuzjhpgq.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrd2xkZW9jYWh3dm51empocGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NDA2OTEsImV4cCI6MjA3MjIxNjY5MX0.WH_XmuIJ53DtMwMo2I7e4ul-m9BaTVlJMkMHY583oi0";
 
-    // 2) Formspree endpoint for email notifications
+    // Formspree endpoint (for email notifications)
     const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
 
     const { createClient } = supabase;
@@ -196,7 +208,7 @@
         marketing_consent: true
       };
 
-      // 1) Create account (magic-link email)
+      // 1) Create Supabase account (magic link email)
       const { error: signErr } = await sb.auth.signUp({ email: payload.email });
       if (signErr) {
         err.textContent = 'Signup failed: ' + signErr.message;
@@ -205,7 +217,7 @@
         return;
       }
 
-      // 2) Save profile
+      // 2) Save profile row
       const { error: insErr } = await sb.from('profiles').insert(payload);
       if (insErr) {
         err.textContent = 'Saving profile failed: ' + insErr.message;
@@ -214,7 +226,7 @@
         return;
       }
 
-      // 3) Notify you via Formspree (email to you) — non-blocking
+      // 3) Notify via Formspree (so you get an email)
       try {
         const fd = new FormData();
         Object.entries(payload).forEach(([k,v]) => fd.append(k, v ?? ""));
@@ -222,7 +234,7 @@
         await fetch(FORMSPREE_URL, { method: "POST", body: fd, headers: { "Accept": "application/json" } });
       } catch (_) { /* ignore notification errors */ }
 
-      // 4) Success → show message and send to thanks page
+      // 4) Success → show message and redirect
       ok.style.display = 'block';
       setTimeout(() => { window.location.href = 'thanks.html'; }, 800);
     });
