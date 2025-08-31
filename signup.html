@@ -142,6 +142,23 @@
         </div>
       </div>
 
+      <!-- NEW: Shirt Size -->
+      <div class="row">
+        <div class="full">
+          <label for="size">Shirt size</label>
+          <select id="size" name="shirt_size" required>
+            <option value="" disabled selected>Select size</option>
+            <option>XS</option>
+            <option>S</option>
+            <option>M</option>
+            <option>L</option>
+            <option>XL</option>
+            <option>2XL</option>
+            <option>3XL</option>
+          </select>
+        </div>
+      </div>
+
       <div class="full">
         <label for="phone">Phone (optional)</label>
         <input id="phone" name="phone" autocomplete="tel">
@@ -191,6 +208,13 @@
         return;
       }
 
+      // Basic size validation
+      if (!val('size')) {
+        err.textContent = 'Please select a shirt size.';
+        err.style.display = 'block';
+        return;
+      }
+
       btn.disabled = true;
 
       const payload = {
@@ -204,6 +228,7 @@
         postal_code:val('postal'),
         country:    document.getElementById('country').value,
         phone:      val('phone'),
+        shirt_size: val('size'),
         marketing_consent: true
       };
 
