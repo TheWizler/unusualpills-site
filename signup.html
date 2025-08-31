@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Free Shirt | Unusual Pills</title>
+  <style>
+    body{margin:0;background:#0e0e14;color:#fff;font-family:Arial;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+    .card{width:min(680px,95vw);background:rgba(255,255,255,.06);backdrop-filter:blur(6px);border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:22px}
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    label{font-size:13px;opacity:.9}
+    input,select{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.2);color:#fff}
+    .full{grid-column:1/-1}
+    .actions{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+    .btn{padding:12px 16px;border:0;border-radius:14px;background:#fff;color:#111;font-weight:700;cursor:pointer}
+    .error{background:#ff4d4d;color:#fff;padding:8px 12px;border-radius:10px;margin-bottom:10px}
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>Free Shirt Signup</h1>
+  {% with messages = get_flashed_messages(category_filter=["error"]) %}
+    {% if messages %}<div class="error">{{ messages[0] }}</div>{% endif %}
+  {% endwith %}
+  <form method="post" action="/free-shirt" onsubmit="return document.getElementById('consent').checked;">
+    <div><label>First Name</label><input name="first_name" required></div>
+    <div><label>Last Name</label><input name="last_name" required></div>
+    <div class="full"><label>Email</label><input type="email" name="email" required></div>
+    <div class="full"><label>Address 1</label><input name="address1" required></div>
+    <div class="full"><label>Address 2</label><input name="address2"></div>
+    <div><label>City</label><input name="city" required></div>
+    <div><label>State/Region</label><input name="state" required></div>
+    <div><label>Postal Code</label><input name="postal_code" required></div>
+    <div><label>Country</label>
+      <select name="country"><option>USA</option><option>Canada</option><option>UK</option></select></div>
+    <div class="full"><label>Phone (optional)</label><input name="phone"></div>
+    <div class="full" style="display:flex;gap:10px;align-items:flex-start">
+      <input id="consent" type="checkbox" name="marketing_consent" style="margin-top:4px">
+      <label for="consent">I agree to receive marketing emails about new drops and merch (required).</label>
+    </div>
+    <div class="actions">
+      <small>We store consent time/IP for compliance.</small>
+      <button class="btn" type="submit">Claim My Free Shirt</button>
+    </div>
+  </form>
+</div>
+</body>
+</html>
