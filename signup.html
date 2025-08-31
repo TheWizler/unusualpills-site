@@ -1,4 +1,3 @@
-<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,8 +151,12 @@
   <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL  = "https://rkwldeocahwvnuzjhpgq.supabase.co"; // replace with your Project URL
+    // 1) Fill these with your project values
+    const SUPABASE_URL  = "https://YOUR-PROJECT-ID.supabase.co";   // <-- replace with your actual Project URL
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrd2xkZW9jYWh3dm51empocGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NDA2OTEsImV4cCI6MjA3MjIxNjY5MX0.WH_XmuIJ53DtMwMo2I7e4ul-m9BaTVlJMkMHY583oi0";
+
+    // 2) Formspree endpoint for email notifications
+    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
 
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -211,11 +214,18 @@
         return;
       }
 
-      // 3) Success
+      // 3) Notify you via Formspree (email to you) — non-blocking
+      try {
+        const fd = new FormData();
+        Object.entries(payload).forEach(([k,v]) => fd.append(k, v ?? ""));
+        fd.append("_subject", "New Free Shirt Signup");
+        await fetch(FORMSPREE_URL, { method: "POST", body: fd, headers: { "Accept": "application/json" } });
+      } catch (_) { /* ignore notification errors */ }
+
+      // 4) Success → show message and send to thanks page
       ok.style.display = 'block';
       setTimeout(() => { window.location.href = 'thanks.html'; }, 800);
     });
   </script>
 </body>
 </html>
-
