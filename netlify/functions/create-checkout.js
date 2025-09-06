@@ -1,8 +1,7 @@
-/// netlify/functions/create-checkout.js
+// netlify/functions/create-checkout.js
 const Stripe = require('stripe');
 
 exports.handler = async (event) => {
-  // Allow only POST
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -12,13 +11,12 @@ exports.handler = async (event) => {
   }
 
   try {
-    // --- Env & client ---
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new Error('Missing STRIPE_SECRET_KEY env var');
     }
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-    // --- Parse body ---
+    // Parse payload
     let items = [];
     try {
       const body = JSON.parse(event.body || '{}');
@@ -28,10 +26,9 @@ exports.handler = async (event) => {
     }
     if (!items.length) throw new Error('No items provided');
 
-    // Log the incoming payload in function logs (Netlify → Functions → Logs)
     console.log('checkout payload:', JSON.stringify(items));
 
-    // --- Build line items (validate) ---
+    // Validate/normalize
     const currency = String(items[0].currency || 'usd').toLowerCase();
     const line_items = items.map((it, idx) => {
       const name = it?.name ? String(it.name) : `Item ${idx + 1}`;
@@ -56,18 +53,14 @@ exports.handler = async (event) => {
       };
     });
 
-    // --- Compute Buy-2-Get-2 discount (2 cheapest free for each group of 4 shirts) ---
+    // Compute B2G2 (2 cheapest free per group of 4 shirts)
     const shirtUnits = [];
     items.forEach((it) => {
       const qty = Number(it?.quantity || 1);
-      if (it?.is_shirt) {
-        for (let q = 0; q < qty; q++) {
-          shirtUnits.push(Number(it.price_cents));
-        }
-      }
+      if (it?.is_shirt) for (let q = 0; q < qty; q++) shirtUnits.push(Number(it.price_cents));
     });
 
-    let discounts;
+    let discounts; // only set when we create a coupon
     if (shirtUnits.length >= 4) {
       const freeCount = Math.floor(shirtUnits.length / 4) * 2;
       const discountAmount = shirtUnits
@@ -88,23 +81,27 @@ exports.handler = async (event) => {
       }
     }
 
-    // --- URLs ---
     const siteUrl =
       process.env.SITE_URL ||
       event.headers?.origin ||
       `https://${event.headers?.host || 'unusualpills.com'}`;
 
-    // --- Create Stripe Checkout session ---
-    const session = await stripe.checkout.sessions.create({
+    // Build session params. IMPORTANT: only include allow_promotion_codes when no discounts exist.
+    const sessionParams = {
       mode: 'payment',
       line_items,
-      discounts,
-      allow_promotion_codes: true,
-      // automatic_tax: { enabled: true }, // keep disabled unless enabled in Stripe
       success_url: `${siteUrl}/thanks.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/cart.html`,
+      // automatic_tax: { enabled: true }, // keep disabled unless enabled in Stripe
       shipping_address_collection: { allowed_countries: ['US', 'CA'] },
-    });
+    };
+    if (discounts) {
+      sessionParams.discounts = discounts; // we created our own coupon
+    } else {
+      sessionParams.allow_promotion_codes = true; // let user enter their promo code if we didn't add one
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     return {
       statusCode: 200,
@@ -112,7 +109,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({ url: session.url }),
     };
   } catch (err) {
-    // Include as much error detail as possible
     const details = {
       message: err?.message || 'Stripe error',
       type: err?.type || err?.raw?.type,
