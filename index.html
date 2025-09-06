@@ -55,17 +55,18 @@
       display: block;
     }
 
-    /* NEW: lean the logo back like it's on the wall */
+    /* <<< UPDATED: sideways tilt on the wall >>> */
     .logo {
-      transform: perspective(900px) rotateX(10deg) skewX(-6deg);
+      /* rotateZ = sideways tilt; rotateX gives a touch of “on wall” depth */
+      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg);
       transform-origin: bottom center;
     }
     .logo:hover {
-      transform: perspective(900px) rotateX(10deg) skewX(-6deg) scale(1.05);
+      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) scale(1.05);
     }
 
-    /* NEW: sit the merch jar on the table line */
-    .merch-pill { margin-top: 220px; }
+    /* <<< UPDATED: merch sits lower on the table >>> */
+    .merch-pill { margin-top: 300px; }
     .merch-pill:hover, .snail:hover { transform: scale(1.05); }
 
     /* Left-side glitch face link (desktop/tablet) */
