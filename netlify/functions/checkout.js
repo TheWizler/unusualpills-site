@@ -1,80 +1,65 @@
-// netlify/functions/checkout.js
-// CommonJS style so Netlify finds exports.handler
 const Stripe = require('stripe');
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers: { 'Content-Type': 'text/plain' }, body: 'Method Not Allowed' };
+    return { statusCode: 405, body: 'Method Not Allowed' };
+  }
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const { items } = JSON.parse(event.body || '{}');
+  if (!Array.isArray(items) || items.length === 0) {
+    return { statusCode: 400, body: 'No items.' };
+  }
+
+  const currency = items[0].currency || 'usd';
+  const line_items = items.map(it => ({
+    price_data: {
+      currency,
+      product_data: { name: it.name },
+      unit_amount: it.price_cents,
+    },
+    quantity: it.quantity,
+    adjustable_quantity: { enabled: true, minimum: 1 }
+  }));
+
+  // Promo: for every 4 shirts, 2 cheapest free
+  const shirtUnits = [];
+  items.forEach(it => {
+    if (it.is_shirt) for (let q = 0; q < it.quantity; q++) shirtUnits.push(it.price_cents);
+  });
+
+  let couponId = null;
+  if (shirtUnits.length >= 4) {
+    const freeCount = Math.floor(shirtUnits.length / 4) * 2;
+    const discountAmount = shirtUnits.sort((a,b)=>a-b).slice(0, freeCount).reduce((s,p)=>s+p,0);
+    if (discountAmount > 0) {
+      const expiresAt = Math.floor(Date.now()/1000) + 3600; // 1 hour
+      const coupon = await stripe.coupons.create({
+        amount_off: discountAmount,
+        currency,
+        duration: 'once',
+        max_redemptions: 1,
+        name: 'Buy 2 Get 2 (auto)',
+        redeem_by: expiresAt
+      });
+      couponId = coupon.id;
+    }
   }
 
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const origin = event.headers?.origin || `https://${event.headers?.host || ''}`;
-
-    const { items } = JSON.parse(event.body || '{}');
-    if (!Array.isArray(items) || !items.length) {
-      return { statusCode: 400, body: 'No items provided' };
-    }
-
-    // Build line items
-    const line_items = items.map(it => ({
-      price_data: {
-        currency: 'usd',
-        product_data: {
-          name: it.name || 'Item',
-          images: it.image ? [origin + '/' + it.image.replace(/^\//, '')] : [],
-          metadata: {
-            slug: it.slug || '',
-            size: it.size || '',
-            color: it.color || '',
-            type: (it.type || '').toLowerCase(),
-          },
-        },
-        unit_amount: Math.round((it.price || 0) * 100),
-      },
-      quantity: it.qty || 1,
-    }));
-
-    // --- Buy 2 Get 2 (tees only) ---
-    const tees = items.filter(it => (it.type || '').toLowerCase() === 'tee');
-    const teeCount = tees.reduce((n, it) => n + (it.qty || 1), 0);
-
-    let discounts;
-    if (teeCount >= 4) {
-      const groups = Math.floor(teeCount / 4);               // 4 tees -> 2 free
-      const teeUnit = Math.round((tees[0].price || 0) * 100); // cents
-      const discountCents = groups * 2 * teeUnit;
-      if (discountCents > 0) {
-        const coupon = await stripe.coupons.create({
-          amount_off: discountCents,
-          currency: 'usd',
-          duration: 'once',
-          name: `Buy 2 Get 2 (${groups * 2} free)`,
-        });
-        discounts = [{ coupon: coupon.id }];
-      }
-    }
-
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items,
-      discounts, // only present if we created a coupon
+      discounts: couponId ? [{ coupon: couponId }] : undefined,
       allow_promotion_codes: true,
-      shipping_address_collection: { allowed_countries: ['US', 'CA'] },
-      success_url: `${origin}/thanks.html?sid={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/cart.html`,
+      shipping_address_collection: { allowed_countries: ['US','CA'] },
+      automatic_tax: { enabled: true },
+      success_url: `${process.env.SITE_URL}/thanks.html?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.SITE_URL}/cart.html`,
     });
-
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url: session.url }),
-    };
+    return { statusCode: 200, body: JSON.stringify({ url: session.url }) };
   } catch (err) {
-    return {
-      statusCode: 400,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ error: err.message }),
-    };
+    console.error(err);
+    return { statusCode: 500, body: 'Stripe error' };
   }
 };
