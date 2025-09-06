@@ -66,22 +66,48 @@
 
     .media{position:relative; aspect-ratio:4/5; overflow:hidden;}
     .media img{width:100%; height:100%; object-fit:cover; transform:scale(1.02); transition:transform .4s ease; filter:var(--retro-filter);}
-    .product-card:hover .media img{transform:scale(1.08);}
-    .media::before{
-      content:""; position:absolute; inset:0;
-      background:
-        radial-gradient(transparent 60%, rgba(0,0,0,.12) 100%),
-        url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'>\
-<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0 .08 .12 .08 0 0'/></feComponentTransfer></filter>\
-<rect width='100%' height='100%' filter='url(#n)'/>\
-</svg>") center/200px 200px repeat;
-      mix-blend-mode:soft-light; opacity:.55; pointer-events:none;
+    .product-card:hover .media img{transform:scale(1.08);} /* base hover grow */
+
+    /* ---------- Desktop hover zoom preview panel ---------- */
+    #zoomPreview{
+      position:fixed;
+      top:10px; right:20px;
+      width:min(34vw, 520px);
+      aspect-ratio:4/5;
+      background: #111 center / cover no-repeat;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:16px;
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+      z-index:50;
+      opacity:0; transform:translateY(8px);
+      pointer-events:none;
+      transition:opacity .18s ease, transform .18s ease;
     }
-    .media::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
-      background-size:100% 3px; opacity:.18; pointer-events:none;
+    #zoomPreview.show{ opacity:1; transform:translateY(0); }
+    @media (max-width: 900px){
+      #zoomPreview{ display:none; }
+    }
+
+    /* ---------- Mobile/touch fullscreen zoom ---------- */
+    #zoomOverlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.85);
+      display:none;
+      align-items:center; justify-content:center;
+      z-index:60;
+    }
+    #zoomOverlay.show{ display:flex; }
+    #zoomOverlay .zoom-img{
+      width:min(92vw, 900px);
+      aspect-ratio:4/5;
+      background:#111 center / contain no-repeat;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:16px;
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+    }
+    #zoomOverlay .close{
+      position:fixed; top:14px; right:14px;
+      background:#fff; color:#111; border:0; border-radius:999px; padding:8px 12px; font-weight:900; cursor:pointer;
     }
 
     .info{position:absolute; left:0; right:0; bottom:0; z-index:2; display:flex; align-items:end; justify-content:space-between; padding:12px; color:#fff;}
@@ -93,9 +119,6 @@
       border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 12px;
       transition:transform .08s, box-shadow .2s;}
     .buy:hover{transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18);}
-
-    .toast{position:fixed; right:14px; bottom:14px; background:#fff; color:#111; font-weight:800; padding:10px 14px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(8px); transition:.25s; z-index:50}
-    .toast.show{opacity:1; transform:translateY(0)}
 
     .is-hidden{display:none !important;}
     footer{text-align:center; color:rgb(var(--muted)); padding:20px; margin-bottom:20px;}
@@ -138,92 +161,91 @@
   </nav>
 
   <main class="grid">
-    <!-- Each product has data-* used to build the cart object -->
-    <article class="product-card" data-category="tees"
-             data-id="ferris_wheel-tee" data-name="Ferris Wheel • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/ferris_wheel.png" alt="Ferris Wheel Tee">
         <div class="info"><div><div class="name">Ferris Wheel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=ferris_wheel">Buy</a>
     </article>
 
-    <article class="product-card" data-category="tees"
-             data-id="benzodiazastream-tee" data-name="Benzodiazastream • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Tee">
         <div class="info"><div><div class="name">Benzodiazastream • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=benzodiazastream">Buy</a>
     </article>
 
-    <article class="product-card" data-category="tees"
-             data-id="waytoomany-tee" data-name="Way Too Many • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/waytoomany.jpg" alt="Way Too Many Tee">
         <div class="info"><div><div class="name">Way Too Many • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=waytoomany">Buy</a>
     </article>
 
-    <article class="product-card" data-category="tees"
-             data-id="seroquel-tee" data-name="Seroquel • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/generically.png" alt="Seroquel Tee">
         <div class="info"><div><div class="name">Seroquel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=seroquel">Buy</a>
     </article>
 
-    <article class="product-card" data-category="tees"
-             data-id="unusualpollination-tee" data-name="Unusual Pollination • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <!-- NEW: Unusual Pollination Tee -->
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/unusualpollination.png" alt="Unusual Pollination Tee">
-        <div class="info"><div><div class="name">Unusual Pollination • Tee</div><div class="price">$35</div></div></div>
+        <div class="info">
+          <div>
+            <div class="name">Unusual Pollination • Tee</div>
+            <div class="price">$35</div>
+          </div>
+        </div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=unusualpollination">Buy</a>
     </article>
+    <!-- /NEW -->
 
-    <article class="product-card" data-category="hoodies"
-             data-id="unusual-hoodie" data-name="Unusual Hoodie"
-             data-price-cents="5500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="hoodies">
+      <div class="media" data-zoom>
         <img src="static/images/hoodie.jpg" alt="Unusual Hoodie">
         <div class="info"><div><div class="name">Unusual Hoodie</div><div class="price">$55</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=hoodie">Buy</a>
     </article>
 
-    <article class="product-card" data-category="tees"
-             data-id="unusualpill-tee" data-name="Unusual Pill • Tee"
-             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
-      <div class="media">
+    <article class="product-card" data-category="tees">
+      <div class="media" data-zoom>
         <img src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee">
         <div class="info"><div><div class="name">Unusual Pill • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="#" role="button">Add to cart</a>
+      <a class="buy" href="./product.html?slug=unusualpill">Buy</a>
     </article>
   </main>
 
-  <div id="toast" class="toast" aria-live="polite"></div>
-
   <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
+
+  <!-- Desktop hover preview panel -->
+  <div id="zoomPreview" aria-hidden="true"></div>
+
+  <!-- Mobile/touch overlay -->
+  <div id="zoomOverlay" role="dialog" aria-modal="true" aria-label="Image zoom">
+    <div class="zoom-img" id="zoomImg"></div>
+    <button class="close" id="zoomClose" aria-label="Close zoom">Close ✕</button>
+  </div>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ---- Retro toggle ----
+    // retro toggle
     const toggle = document.getElementById('themeToggle'), switchEl = toggle.querySelector('.switch');
     function setRetro(on){ document.body.classList.toggle('retro', on); switchEl.classList.toggle('active', on); toggle.setAttribute('aria-pressed', on?'true':'false'); localStorage.setItem('retro', on?'1':'0'); }
     if(localStorage.getItem('retro')==='1') setRetro(true);
     toggle.addEventListener('click',()=> setRetro(!document.body.classList.contains('retro')));
 
-    // ---- Filters ----
+    // filters
     const filterButtons=[...document.querySelectorAll('.filters [data-filter]')];
     const cards=[...document.querySelectorAll('.product-card')];
     function applyFilter(key){
@@ -237,56 +259,75 @@
     filterButtons.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
     applyFilter('all');
 
-    // ---- Global Cart helpers (same schema used by cart.html) ----
-    window.Cart = window.Cart || {
-      get(){ try{return JSON.parse(localStorage.getItem('cart')||'[]')}catch(_){return[]} },
-      set(c){ localStorage.setItem('cart', JSON.stringify(c)); window.Cart.updateCount(); },
-      add(p){
-        const prod = {
-          id: p.id, name: p.name,
-          price_cents: Number(p.price_cents)||0,
-          currency: p.currency||'usd',
-          is_shirt: !!p.is_shirt,
-          quantity: Number(p.quantity)||1
-        };
-        const cart = window.Cart.get();
-        const ex = cart.find(i=>i.id===prod.id);
-        if(ex) ex.quantity += prod.quantity; else cart.push(prod);
-        window.Cart.set(cart);
-      },
-      updateCount(){
-        const n = window.Cart.get().reduce((s,i)=>s+(i.quantity||0),0);
+    // cart badge
+    (function(){
+      function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
+      function update(){
+        const n = getCart().reduce((s,i)=>s+(i.quantity||i.qty||1),0);
         const el = document.getElementById('cartCount');
-        if(el) el.textContent = n;
+        if (el) el.textContent = n;
       }
-    };
-    window.addEventListener('storage', window.Cart.updateCount);
-    window.Cart.updateCount();
+      window.addEventListener('storage', update);
+      update();
+    })();
 
-    // ---- Hook up "Add to cart" buttons ----
-    function showToast(text){
-      const t = document.getElementById('toast');
-      t.textContent = text;
-      t.classList.add('show');
-      setTimeout(()=>t.classList.remove('show'), 1400);
+    // ============= Hover Zoom (desktop) & Tap Zoom (touch) =============
+    const preview = document.getElementById('zoomPreview');
+    const overlay = document.getElementById('zoomOverlay');
+    const overlayImg = document.getElementById('zoomImg');
+    const overlayClose = document.getElementById('zoomClose');
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    function showPreview(src){ preview.style.backgroundImage = `url("${src}")`; preview.classList.add('show'); }
+    function hidePreview(){ preview.classList.remove('show'); }
+
+    function movePreview(e, imgEl){
+      const rect = imgEl.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width;   // 0..1
+      const py = (e.clientY - rect.top) / rect.height;   // 0..1
+      const bx = Math.min(100, Math.max(0, px*100));
+      const by = Math.min(100, Math.max(0, py*100));
+      // pan background towards cursor
+      preview.style.backgroundPosition = `${bx}% ${by}%`;
+      // slight follow cursor vertically (keep in viewport)
+      const top = Math.min(Math.max(10, e.clientY - preview.offsetHeight/2), window.innerHeight - preview.offsetHeight - 10);
+      preview.style.top = `${top}px`;
     }
 
-    document.querySelectorAll('.product-card .buy').forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        e.preventDefault();
-        const card = btn.closest('.product-card');
-        const prod = {
-          id: card.dataset.id,
-          name: card.dataset.name,
-          price_cents: Number(card.dataset.priceCents || card.getAttribute('data-price-cents')),
-          currency: card.dataset.currency || 'usd',
-          is_shirt: String(card.dataset.isShirt || card.getAttribute('data-is-shirt')) === 'true',
-          quantity: 1
-        };
-        window.Cart.add(prod);
-        showToast('Added to cart ✔');
+    function attachZoomHandlers(){
+      const medias = document.querySelectorAll('.media[data-zoom] img');
+      medias.forEach(img => {
+        const wrap = img.closest('.media');
+        // Desktop hover
+        if (!isTouch){
+          wrap.addEventListener('mouseenter', () => { showPreview(img.src); });
+          wrap.addEventListener('mousemove', (e) => { movePreview(e, img); });
+          wrap.addEventListener('mouseleave', hidePreview);
+          // Keyboard focus accessibility
+          wrap.setAttribute('tabindex','0');
+          wrap.addEventListener('focus', () => { showPreview(img.src); preview.style.top = '10px'; preview.style.backgroundPosition='50% 50%'; });
+          wrap.addEventListener('blur', hidePreview);
+        } else {
+          // Touch: tap to open overlay, tap close to dismiss
+          wrap.addEventListener('click', (e) => {
+            e.preventDefault(); // avoid accidental link clicks on card
+            overlayImg.style.backgroundImage = `url("${img.src}")`;
+            overlay.classList.add('show');
+          });
+        }
       });
-    });
+    }
+
+    overlayClose.addEventListener('click', ()=> overlay.classList.remove('show'));
+    overlay.addEventListener('click', (e)=>{ if (e.target === overlay) overlay.classList.remove('show'); });
+
+    // Respect reduced motion (don’t move preview with cursor)
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced){
+      preview.style.transition = 'opacity .1s ease';
+    }
+
+    attachZoomHandlers();
   </script>
 </body>
 </html>
