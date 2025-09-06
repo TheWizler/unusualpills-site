@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Unusual Pills — Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --ring:255 255 255 / 18%; --maxw:980px; }
+    body{ margin:0; font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#f5f5f7;
+      background:
+        radial-gradient(1100px 520px at 8% -8%, rgba(255,51,204,.18), transparent),
+        radial-gradient(800px 420px at 108% 12%, rgba(129,140,248,.16), transparent),
+        #0c0c0e url("static/images/background.png") center/cover fixed no-repeat;
+    }
+    .wrap{max-width:var(--maxw); margin:24px auto 40px; padding:0 16px;}
+    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid rgba(var(--ring));}
+    .brand img{height:36px}
+    a.back{color:#f5f5f7; text-decoration:none; font-weight:800; padding:8px 12px; border:1px solid rgba(var(--ring)); border-radius:12px}
+    h1{margin:16px 0 10px; font-size:clamp(24px,3.5vw,36px)}
+    .empty{opacity:.85; margin-top:20px}
+    .list{display:grid; gap:12px; margin-top:16px}
+    .item{display:grid; grid-template-columns:96px 1fr auto; gap:12px; border:1px solid rgba(var(--ring)); border-radius:14px; padding:12px; background:rgba(255,255,255,.04)}
+    .thumb{width:96px; height:96px; border-radius:10px; overflow:hidden; background:#111}
+    .thumb img{width:100%; height:100%; object-fit:cover}
+    .name{font-weight:800}
+    .muted{color:#a0a0af; font-size:13px}
+    .qty{display:inline-flex; align-items:center; gap:8px; margin-top:6px}
+    .qty button{width:28px; height:28px; border-radius:8px; border:1px solid rgba(var(--ring)); background:rgba(255,255,255,.08); color:#fff; cursor:pointer}
+    .price{font-weight:800; margin-top:4px}
+    .actions{display:flex; flex-direction:column; gap:8px; align-items:flex-end}
+    .btn{padding:10px 12px; border-radius:12px; border:1px solid rgba(var(--ring)); background:#fff; color:#111; font-weight:900; cursor:pointer; text-decoration:none; text-align:center}
+    .btn.secondary{background:transparent; color:#fff}
+    .summary{margin-top:18px; display:flex; align-items:center; justify-content:space-between}
+    .total{font-weight:900; font-size:18px}
+    .note{color:#a0a0af; font-size:13px}
+    @media (max-width:720px){ .item{grid-template-columns:72px 1fr} .actions{align-items:flex-start} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="brand" href="merch.html"><img src="static/images/unusualpills.png" alt="Unusual Pills"></a>
+      <a class="back" href="merch.html">← Continue shopping</a>
+    </div>
+
+    <h1>Your Cart</h1>
+    <div id="empty" class="empty">Your cart is empty.</div>
+    <div id="list" class="list"></div>
+
+    <div class="summary" id="summary" style="display:none">
+      <div class="total">Subtotal: $<span id="subtotal">0</span></div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <button id="checkoutAll" class="btn">Checkout all (one-by-one)</button>
+        <button id="clear" class="btn secondary">Empty cart</button>
+      </div>
+    </div>
+
+    <p class="note">Heads up: Stripe Payment Links are single-product. “Checkout all” will open the first item; come back to finish the rest.</p>
+  </div>
+
+  <script>
+    const $ = (s, r=document)=>r.querySelector(s);
+    function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
+    function setCart(items){ localStorage.setItem('cart', JSON.stringify(items)); render(); }
+
+    function stripeUrl(base, size, color){
+      if (!base) return '#';
+      const sep = base.includes('?') ? '&' : '?';
+      return `${base}${sep}size=${encodeURIComponent(size||'')}&color=${encodeURIComponent(color||'')}`;
+    }
+
+    function render(){
+      const items = getCart();
+      const empty = $('#empty');
+      const list = $('#list');
+      const summary = $('#summary');
+      const subtotalEl = $('#subtotal');
+
+      list.innerHTML = '';
+      if (!items.length){
+        empty.style.display = '';
+        summary.style.display = 'none';
+        subtotalEl.textContent = '0';
+        return;
+      }
+      empty.style.display = 'none';
+      summary.style.display = '';
+
+      let subtotal = 0;
+
+      items.forEach((it, idx)=>{
+        subtotal += (it.price||0) * (it.qty||1);
+
+        const row = document.createElement('div');
+        row.className = 'item';
+        row.innerHTML = `
+          <div class="thumb"><img src="${it.image}" alt=""></div>
+          <div>
+            <div class="name">${it.name}</div>
+            <div class="muted">Size: ${it.size} • Color: ${it.color}</div>
+            <div class="qty">
+              <button data-act="dec">−</button>
+              <span>Qty: <strong>${it.qty||1}</strong></span>
+              <button data-act="inc">+</button>
+              <button data-act="rm" style="margin-left:8px">Remove</button>
+            </div>
+            <div class="price">$${it.price} each</div>
+          </div>
+          <div class="actions">
+            <a class="btn" href="${stripeUrl(it.stripe, it.size, it.color)}">Checkout</a>
+          </div>
+        `;
+        // bind actions
+        row.querySelector('[data-act="inc"]').addEventListener('click', ()=>{
+          const c = getCart(); c[idx].qty = (c[idx].qty||1) + 1; setCart(c);
+        });
+        row.querySelector('[data-act="dec"]').addEventListener('click', ()=>{
+          const c = getCart(); c[idx].qty = Math.max(1, (c[idx].qty||1) - 1); setCart(c);
+        });
+        row.querySelector('[data-act="rm"]').addEventListener('click', ()=>{
+          const c = getCart(); c.splice(idx,1); setCart(c);
+        });
+
+        list.appendChild(row);
+      });
+
+      subtotalEl.textContent = subtotal.toFixed(2);
+    }
+
+    $('#checkoutAll').addEventListener('click', ()=>{
+      const items = getCart();
+      if (!items.length) return;
+      const first = items[0];
+      location.href = (first && first.stripe) ? (first.stripe + (first.stripe.includes('?')?'&':'?') + `size=${encodeURIComponent(first.size)}&color=${encodeURIComponent(first.color)}`) : '#';
+    });
+    $('#clear').addEventListener('click', ()=>{ setCart([]); });
+
+    render();
+  </script>
+</body>
+</html>
