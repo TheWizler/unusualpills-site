@@ -77,18 +77,34 @@
   </div>
 
   <script>
-    // ---- Catalog with unified schema (id, price_cents, etc.) ----
+    // ---- Product data ----
     const PRODUCTS = {
-      ferris_wheel:      { id:"ferris_wheel-tee",       name:"Ferris Wheel • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/ferris_wheel.png",      colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
-      benzodiazastream:  { id:"benzodiazastream-tee",   name:"Benzodiazastream • Tee",    price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/benzodiazastream.jpg",  colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
-      waytoomany:        { id:"waytoomany-tee",         name:"Way Too Many • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/waytoomany.jpg",        colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
-      seroquel:          { id:"seroquel-tee",           name:"Seroquel • Tee",            price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/generically.png",       colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
-      hoodie:            { id:"unusual-hoodie",         name:"Unusual Hoodie",            price_cents:5500, currency:"usd", is_shirt:true,  image:"static/images/hoodie.jpg",            colors:["Black","Heather Gray"], sizes:["S","M","L","XL","XXL"] },
-      unusualpill:       { id:"unusualpill-tee",        name:"Unusual Pill • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/unusualpillT.jpg",      colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
-      unusualpollination:{ id:"unusualpollination-tee", name:"Unusual Pollination • Tee", price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/unusualpollination.png",colors:["Black","White"],        sizes:["S","M","L","XL","XXL"] }
+      ferris_wheel: { name:"Ferris Wheel • Tee", price:35, type:"tee", image:"static/images/ferris_wheel.png", colors:["White","Black"], sizes:["S","M","L","XL","XXL"] },
+      benzodiazastream: { name:"Benzodiazastream • Tee", price:35, type:"tee", image:"static/images/benzodiazastream.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"] },
+      waytoomany: { name:"Way Too Many • Tee", price:35, type:"tee", image:"static/images/waytoomany.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"] },
+      seroquel: { name:"Seroquel • Tee", price:35, type:"tee", image:"static/images/generically.png", colors:["White","Black"], sizes:["S","M","L","XL","XXL"] },
+      hoodie: { name:"Unusual Hoodie", price:55, type:"hoodie", image:"static/images/hoodie.jpg", colors:["Black","Heather Gray"], sizes:["S","M","L","XL","XXL"] },
+      unusualpill: { name:"Unusual Pill • Tee", price:35, type:"tee", image:"static/images/unusualpillT.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"] },
+      unusualpollination: { name:"Unusual Pollination • Tee", price:35, type:"tee", image:"static/images/unusualpollination.png", colors:["Black","White"], sizes:["S","M","L","XL","XXL"] },
+
+      // NEW
+      mescaline_t: {
+        name:"Mescaline Trip • Tee",
+        price:35, type:"tee",
+        image:"static/images/mescaline_t.png",
+        colors:["White","Black"],
+        sizes:["S","M","L","XL","XXL"]
+      },
+      mescaline_tank: {
+        name:"Mescaline Trip • Tank",
+        price:28, type:"tank",
+        image:"static/images/mescaline_tank.png",
+        colors:["Black","White"],
+        sizes:["XS","S","M","L","XL","XXL"]
+      }
     };
 
-    // ---- DOM helpers ----
+    // ---- Utilities ----
     const $ = (s, r=document) => r.querySelector(s);
     function getSlug(){
       const u = new URL(location.href);
@@ -112,27 +128,26 @@
       nameEl.textContent = "Product not found";
       priceEl.textContent = "";
       imgEl.alt = "";
+      checkoutBtn.disabled = true;
+      cartBtn.disabled = true;
     } else {
       nameEl.textContent = p.name;
-      priceEl.textContent = `$ ${(p.price_cents/100).toFixed(2)}`;
+      priceEl.textContent = `$${p.price}`;
       imgEl.src = p.image; imgEl.alt = p.name;
       fillSelect(sizeSel, p.sizes);
       fillSelect(colorSel, p.colors);
     }
 
-    // ---- Cart helpers (same schema as cart.html) ----
-    const Cart = {
-      get(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } },
-      set(items){ localStorage.setItem('cart', JSON.stringify(items)); },
-      add(item){
-        const cart = Cart.get();
-        const key = (a)=>`${a.id}|${a.size||''}|${a.color||''}`;
-        const idx = cart.findIndex(i => key(i) === key(item));
-        if (idx >= 0) cart[idx].quantity += item.quantity || 1;
-        else cart.push({ ...item, quantity: item.quantity || 1 });
-        Cart.set(cart);
-      }
-    };
+    // ---- Cart helpers (new schema) ----
+    function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
+    function setCart(items){ localStorage.setItem('cart', JSON.stringify(items)); updateCartBadge(); }
+
+    function updateCartBadge(){
+      const count = getCart().reduce((n,i)=>n + (i.quantity||i.qty||1), 0);
+      const badge = document.getElementById('cartCount'); // exists on merch.html/nav
+      if (badge) badge.textContent = count;
+    }
+    updateCartBadge();
 
     function selectionValid(){ return !!(sizeSel.value && colorSel.value); }
     function updateCartBtnState(){ cartBtn.disabled = !selectionValid(); }
@@ -141,51 +156,43 @@
     updateCartBtnState();
 
     function buildCartItem(){
-      // Include size/color in the visible name for Stripe line items
-      const variantSuffix = selectionValid() ? ` — ${sizeSel.value} / ${colorSel.value}` : '';
       return {
-        id: p.id,
-        name: p.name + variantSuffix,
-        price_cents: p.price_cents,
-        currency: p.currency || 'usd',
-        is_shirt: !!p.is_shirt,
-        size: sizeSel.value || null,
-        color: colorSel.value || null,
+        id: `${slug}-${sizeSel.value}-${colorSel.value}`,
+        slug,
+        name: p.name,
+        price_cents: Math.round(p.price * 100),
+        currency: 'usd',
+        is_shirt: p.type === 'tee', // promo applies to tees only
+        image: p.image,
+        size: sizeSel.value,
+        color: colorSel.value,
         quantity: 1
       };
     }
 
-    // ---- Add to Cart ----
-    cartBtn.addEventListener('click', () => {
+    document.getElementById('cartBtn').addEventListener('click', () => {
       if (!p) return;
       if (!selectionValid()){ alert('Pick size & color first'); return; }
-      Cart.add(buildCartItem());
+      const item = buildCartItem();
+      const cart = getCart();
+      const idx = cart.findIndex(i => i.id===item.id);
+      if (idx >= 0) cart[idx].quantity += 1; else cart.push(item);
+      setCart(cart);
+
       cartBtn.textContent = 'Added!';
       setTimeout(()=>{ cartBtn.textContent = 'Add to cart'; }, 900);
     });
 
-    // ---- One-click Checkout (whole cart via Netlify Function) ----
-    checkoutBtn.addEventListener('click', async () => {
+    // ---- Checkout: add to cart then go to cart (unified Stripe session) ----
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
       if (!p) return;
       if (!selectionValid()){ alert('Pick size & color first'); return; }
-
-      // Ensure the chosen item is present in the cart before checkout
-      Cart.add(buildCartItem());
-
-      const items = Cart.get();
-      try{
-        const res = await fetch('/.netlify/functions/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ items })
-        });
-        const data = await res.json();
-        if (data.url) { window.location = data.url; }
-        else { throw new Error('No URL from checkout function'); }
-      }catch(err){
-        console.error(err);
-        alert('Checkout error. Please try again.');
-      }
+      const item = buildCartItem();
+      const cart = getCart();
+      const idx = cart.findIndex(i => i.id===item.id);
+      if (idx >= 0) cart[idx].quantity += 1; else cart.push(item);
+      setCart(cart);
+      location.href = 'cart.html';
     });
   </script>
 </body>
