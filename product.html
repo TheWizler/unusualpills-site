@@ -14,11 +14,14 @@
       --retro-filter: contrast(1.05) saturate(.85) sepia(.18) brightness(.98);
     }
     *{box-sizing:border-box}
-    body{margin:0; color:var(--fg); font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    body{
+      margin:0; color:var(--fg);
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:
         radial-gradient(1100px 520px at 8% -8%, rgba(255,51,204,.18), transparent),
         radial-gradient(800px 420px at 108% 12%, rgba(129,140,248,.16), transparent),
-        #0c0c0e url("static/images/background.png") center/cover fixed no-repeat;}
+        #0c0c0e url("static/images/background.png") center/cover fixed no-repeat;
+    }
     .wrap{max-width:var(--maxw); margin:24px auto 40px; padding:0 16px;}
     .top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid rgba(var(--ring));}
     .brand{display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:inherit}
@@ -37,7 +40,7 @@
     .btn{padding:12px 16px; border-radius:14px; border:1px solid rgba(var(--ring)); font-weight:900; cursor:pointer}
     .btn.primary{background:#fff; color:#111}
     .note{color:var(--muted); font-size:12px; margin-top:8px}
-    @media (max-width:860px){ .grid{grid-template-columns:1fr;}}
+    @media (max-width:860px){ .grid{grid-template-columns:1fr;} }
   </style>
 </head>
 <body>
@@ -72,7 +75,7 @@
   </div>
 
   <script>
-    // ---- Product data (edit this when you add items) ----
+    // ---- Product data ----
     const PRODUCTS = {
       ferris_wheel: {
         name: "Ferris Wheel • Tee",
@@ -127,6 +130,16 @@
         colors: ["White","Black"],
         sizes: ["S","M","L","XL","XXL"],
         stripe: "https://buy.stripe.com/28EfZi9FM1KE3TH4FHbfO09"
+      },
+      // ✅ NEW: Unusual Pollination
+      unusualpollination: {
+        name: "Unusual Pollination • Tee",
+        price: 35,
+        type: "tee",
+        image: "static/images/unusualpollination.png",
+        colors: ["Black","White"],
+        sizes: ["S","M","L","XL","XXL"],
+        stripe: "https://buy.stripe.com/14A00kg4a60Uai5a01bfO0c"
       }
     };
 
@@ -135,9 +148,8 @@
       const u = new URL(location.href);
       return (u.searchParams.get('slug') || '').toLowerCase().replace(/[^a-z0-9_-]/g,'');
     }
-
     function fillSelect(sel, items){
-      sel.innerHTML = items.map(v=>`<option>${v}</option>`).join('');
+      sel.innerHTML = (items || []).map(v=>`<option>${v}</option>`).join('');
     }
 
     // ---- Render product ----
@@ -163,7 +175,7 @@
       fillSelect(colorSel, p.colors);
     }
 
-    // ---- Checkout: email selection then go to Stripe ----
+    // ---- Checkout: record selection then go to Stripe ----
     const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
 
     checkoutBtn.addEventListener('click', async () => {
@@ -171,17 +183,18 @@
       const payload = {
         _subject: "New Product Order",
         slug, name: p.name, type: p.type,
-        size: sizeSel.value, color: colorSel.value
+        size: sizeSel.value || "", color: colorSel.value || ""
       };
       try {
         const fd = new FormData();
         Object.entries(payload).forEach(([k,v])=>fd.append(k,v));
         await fetch(FORMSPREE_URL, { method:"POST", body:fd, headers:{ "Accept":"application/json" }});
       } catch(_) {}
-      // Redirect to Stripe Payment Link for the product
-      window.location.href = p.stripe;
+      // Redirect to Stripe Payment Link (appends size/color for your logs if you ever capture URL)
+      const sep = p.stripe.includes("?") ? "&" : "?";
+      const url = `${p.stripe}${sep}size=${encodeURIComponent(sizeSel.value||"")}&color=${encodeURIComponent(colorSel.value||"")}`;
+      window.location.href = url;
     });
   </script>
 </body>
 </html>
-
