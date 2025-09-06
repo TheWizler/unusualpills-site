@@ -94,6 +94,9 @@
       transition:transform .08s, box-shadow .2s;}
     .buy:hover{transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18);}
 
+    .toast{position:fixed; right:14px; bottom:14px; background:#fff; color:#111; font-weight:800; padding:10px 14px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,.35); opacity:0; transform:translateY(8px); transition:.25s; z-index:50}
+    .toast.show{opacity:1; transform:translateY(0)}
+
     .is-hidden{display:none !important;}
     footer{text-align:center; color:rgb(var(--muted)); padding:20px; margin-bottom:20px;}
 
@@ -135,83 +138,92 @@
   </nav>
 
   <main class="grid">
-    <article class="product-card" data-category="tees">
+    <!-- Each product has data-* used to build the cart object -->
+    <article class="product-card" data-category="tees"
+             data-id="ferris_wheel-tee" data-name="Ferris Wheel • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/ferris_wheel.png" alt="Ferris Wheel Tee">
         <div class="info"><div><div class="name">Ferris Wheel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=ferris_wheel">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
 
-    <article class="product-card" data-category="tees">
+    <article class="product-card" data-category="tees"
+             data-id="benzodiazastream-tee" data-name="Benzodiazastream • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Tee">
         <div class="info"><div><div class="name">Benzodiazastream • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=benzodiazastream">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
 
-    <article class="product-card" data-category="tees">
+    <article class="product-card" data-category="tees"
+             data-id="waytoomany-tee" data-name="Way Too Many • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/waytoomany.jpg" alt="Way Too Many Tee">
         <div class="info"><div><div class="name">Way Too Many • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=waytoomany">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
 
-    <article class="product-card" data-category="tees">
+    <article class="product-card" data-category="tees"
+             data-id="seroquel-tee" data-name="Seroquel • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/generically.png" alt="Seroquel Tee">
         <div class="info"><div><div class="name">Seroquel • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=seroquel">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
 
-    <!-- NEW: Unusual Pollination Tee -->
-    <article class="product-card" data-category="tees">
+    <article class="product-card" data-category="tees"
+             data-id="unusualpollination-tee" data-name="Unusual Pollination • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/unusualpollination.png" alt="Unusual Pollination Tee">
-        <div class="info">
-          <div>
-            <div class="name">Unusual Pollination • Tee</div>
-            <div class="price">$35</div>
-          </div>
-        </div>
+        <div class="info"><div><div class="name">Unusual Pollination • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <!-- product page with size/color -->
-      <a class="buy" href="./product.html?slug=unusualpollination">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
-    <!-- /NEW -->
 
-    <article class="product-card" data-category="hoodies">
+    <article class="product-card" data-category="hoodies"
+             data-id="unusual-hoodie" data-name="Unusual Hoodie"
+             data-price-cents="5500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/hoodie.jpg" alt="Unusual Hoodie">
         <div class="info"><div><div class="name">Unusual Hoodie</div><div class="price">$55</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=hoodie">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
 
-    <article class="product-card" data-category="tees">
+    <article class="product-card" data-category="tees"
+             data-id="unusualpill-tee" data-name="Unusual Pill • Tee"
+             data-price-cents="3500" data-currency="usd" data-is-shirt="true">
       <div class="media">
         <img src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee">
         <div class="info"><div><div class="name">Unusual Pill • Tee</div><div class="price">$35</div></div></div>
       </div>
-      <a class="buy" href="./product.html?slug=unusualpill">Buy</a>
+      <a class="buy" href="#" role="button">Add to cart</a>
     </article>
   </main>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
 
   <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
 
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // retro toggle
+    // ---- Retro toggle ----
     const toggle = document.getElementById('themeToggle'), switchEl = toggle.querySelector('.switch');
     function setRetro(on){ document.body.classList.toggle('retro', on); switchEl.classList.toggle('active', on); toggle.setAttribute('aria-pressed', on?'true':'false'); localStorage.setItem('retro', on?'1':'0'); }
     if(localStorage.getItem('retro')==='1') setRetro(true);
     toggle.addEventListener('click',()=> setRetro(!document.body.classList.contains('retro')));
 
-    // filters
+    // ---- Filters ----
     const filterButtons=[...document.querySelectorAll('.filters [data-filter]')];
     const cards=[...document.querySelectorAll('.product-card')];
     function applyFilter(key){
@@ -225,17 +237,56 @@
     filterButtons.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
     applyFilter('all');
 
-    // cart badge
-    (function(){
-      function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
-      function update(){
-        const n = getCart().reduce((s,i)=>s+(i.qty||1),0);
+    // ---- Global Cart helpers (same schema used by cart.html) ----
+    window.Cart = window.Cart || {
+      get(){ try{return JSON.parse(localStorage.getItem('cart')||'[]')}catch(_){return[]} },
+      set(c){ localStorage.setItem('cart', JSON.stringify(c)); window.Cart.updateCount(); },
+      add(p){
+        const prod = {
+          id: p.id, name: p.name,
+          price_cents: Number(p.price_cents)||0,
+          currency: p.currency||'usd',
+          is_shirt: !!p.is_shirt,
+          quantity: Number(p.quantity)||1
+        };
+        const cart = window.Cart.get();
+        const ex = cart.find(i=>i.id===prod.id);
+        if(ex) ex.quantity += prod.quantity; else cart.push(prod);
+        window.Cart.set(cart);
+      },
+      updateCount(){
+        const n = window.Cart.get().reduce((s,i)=>s+(i.quantity||0),0);
         const el = document.getElementById('cartCount');
-        if (el) el.textContent = n;
+        if(el) el.textContent = n;
       }
-      window.addEventListener('storage', update);
-      update();
-    })();
+    };
+    window.addEventListener('storage', window.Cart.updateCount);
+    window.Cart.updateCount();
+
+    // ---- Hook up "Add to cart" buttons ----
+    function showToast(text){
+      const t = document.getElementById('toast');
+      t.textContent = text;
+      t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'), 1400);
+    }
+
+    document.querySelectorAll('.product-card .buy').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const card = btn.closest('.product-card');
+        const prod = {
+          id: card.dataset.id,
+          name: card.dataset.name,
+          price_cents: Number(card.dataset.priceCents || card.getAttribute('data-price-cents')),
+          currency: card.dataset.currency || 'usd',
+          is_shirt: String(card.dataset.isShirt || card.getAttribute('data-is-shirt')) === 'true',
+          quantity: 1
+        };
+        window.Cart.add(prod);
+        showToast('Added to cart ✔');
+      });
+    });
   </script>
 </body>
 </html>

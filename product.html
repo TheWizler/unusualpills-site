@@ -77,18 +77,18 @@
   </div>
 
   <script>
-    // ---- Product data ----
+    // ---- Catalog with unified schema (id, price_cents, etc.) ----
     const PRODUCTS = {
-      ferris_wheel: { name:"Ferris Wheel • Tee", price:35, type:"tee", image:"static/images/ferris_wheel.png", colors:["White","Black"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/dRmcN69FM74Y2PD4FHbfO0b" },
-      benzodiazastream: { name:"Benzodiazastream • Tee", price:35, type:"tee", image:"static/images/benzodiazastream.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/5kQ28sf06exq3THdcdbfO06" },
-      waytoomany: { name:"Way Too Many • Tee", price:35, type:"tee", image:"static/images/waytoomany.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/14AaEYaJQdtm75TfklbfO0a" },
-      seroquel: { name:"Seroquel • Tee", price:35, type:"tee", image:"static/images/generically.png", colors:["White","Black"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/9B600k3hogFyai57RTbfO08" },
-      hoodie: { name:"Unusual Hoodie", price:55, type:"hoodie", image:"static/images/hoodie.jpg", colors:["Black","Heather Gray"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/5kQ4gA05cahaai55JLbfO04" },
-      unusualpill: { name:"Unusual Pill • Tee", price:35, type:"tee", image:"static/images/unusualpillT.jpg", colors:["White","Black"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/28EfZi9FM1KE3TH4FHbfO09" },
-      unusualpollination: { name:"Unusual Pollination • Tee", price:35, type:"tee", image:"static/images/unusualpollination.png", colors:["Black","White"], sizes:["S","M","L","XL","XXL"], stripe:"https://buy.stripe.com/14A00kg4a60Uai5a01bfO0c" }
+      ferris_wheel:      { id:"ferris_wheel-tee",       name:"Ferris Wheel • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/ferris_wheel.png",      colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
+      benzodiazastream:  { id:"benzodiazastream-tee",   name:"Benzodiazastream • Tee",    price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/benzodiazastream.jpg",  colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
+      waytoomany:        { id:"waytoomany-tee",         name:"Way Too Many • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/waytoomany.jpg",        colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
+      seroquel:          { id:"seroquel-tee",           name:"Seroquel • Tee",            price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/generically.png",       colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
+      hoodie:            { id:"unusual-hoodie",         name:"Unusual Hoodie",            price_cents:5500, currency:"usd", is_shirt:true,  image:"static/images/hoodie.jpg",            colors:["Black","Heather Gray"], sizes:["S","M","L","XL","XXL"] },
+      unusualpill:       { id:"unusualpill-tee",        name:"Unusual Pill • Tee",        price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/unusualpillT.jpg",      colors:["White","Black"],        sizes:["S","M","L","XL","XXL"] },
+      unusualpollination:{ id:"unusualpollination-tee", name:"Unusual Pollination • Tee", price_cents:3500, currency:"usd", is_shirt:true,  image:"static/images/unusualpollination.png",colors:["Black","White"],        sizes:["S","M","L","XL","XXL"] }
     };
 
-    // ---- Utilities ----
+    // ---- DOM helpers ----
     const $ = (s, r=document) => r.querySelector(s);
     function getSlug(){
       const u = new URL(location.href);
@@ -114,21 +114,25 @@
       imgEl.alt = "";
     } else {
       nameEl.textContent = p.name;
-      priceEl.textContent = `$${p.price}`;
+      priceEl.textContent = `$ ${(p.price_cents/100).toFixed(2)}`;
       imgEl.src = p.image; imgEl.alt = p.name;
       fillSelect(sizeSel, p.sizes);
       fillSelect(colorSel, p.colors);
     }
 
-    // ---- Simple cart (localStorage) ----
-    function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
-    function setCart(items){ localStorage.setItem('cart', JSON.stringify(items)); updateCartBadge(); }
-    function updateCartBadge(){
-      const count = getCart().reduce((n,i)=>n + (i.qty||1), 0);
-      const badge = document.getElementById('cartCount'); // exists on merch.html/nav
-      if (badge) badge.textContent = count;
-    }
-    updateCartBadge();
+    // ---- Cart helpers (same schema as cart.html) ----
+    const Cart = {
+      get(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } },
+      set(items){ localStorage.setItem('cart', JSON.stringify(items)); },
+      add(item){
+        const cart = Cart.get();
+        const key = (a)=>`${a.id}|${a.size||''}|${a.color||''}`;
+        const idx = cart.findIndex(i => key(i) === key(item));
+        if (idx >= 0) cart[idx].quantity += item.quantity || 1;
+        else cart.push({ ...item, quantity: item.quantity || 1 });
+        Cart.set(cart);
+      }
+    };
 
     function selectionValid(){ return !!(sizeSel.value && colorSel.value); }
     function updateCartBtnState(){ cartBtn.disabled = !selectionValid(); }
@@ -136,36 +140,52 @@
     colorSel.addEventListener('change', updateCartBtnState);
     updateCartBtnState();
 
+    function buildCartItem(){
+      // Include size/color in the visible name for Stripe line items
+      const variantSuffix = selectionValid() ? ` — ${sizeSel.value} / ${colorSel.value}` : '';
+      return {
+        id: p.id,
+        name: p.name + variantSuffix,
+        price_cents: p.price_cents,
+        currency: p.currency || 'usd',
+        is_shirt: !!p.is_shirt,
+        size: sizeSel.value || null,
+        color: colorSel.value || null,
+        quantity: 1
+      };
+    }
+
+    // ---- Add to Cart ----
     cartBtn.addEventListener('click', () => {
       if (!p) return;
       if (!selectionValid()){ alert('Pick size & color first'); return; }
-      const item = {
-        slug, name: p.name, price: p.price, image: p.image, stripe: p.stripe,
-        size: sizeSel.value, color: colorSel.value, qty: 1
-      };
-      const cart = getCart();
-      const idx = cart.findIndex(i => i.slug===item.slug && i.size===item.size && i.color===item.color);
-      if (idx >= 0) cart[idx].qty += 1; else cart.push(item);
-      setCart(cart);
-
+      Cart.add(buildCartItem());
       cartBtn.textContent = 'Added!';
       setTimeout(()=>{ cartBtn.textContent = 'Add to cart'; }, 900);
     });
 
-    // ---- Checkout: Formspree ping then Stripe ----
-    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
+    // ---- One-click Checkout (whole cart via Netlify Function) ----
     checkoutBtn.addEventListener('click', async () => {
       if (!p) return;
       if (!selectionValid()){ alert('Pick size & color first'); return; }
-      const payload = { _subject:"New Product Order", slug, name:p.name, type:p.type, size:sizeSel.value, color:colorSel.value };
+
+      // Ensure the chosen item is present in the cart before checkout
+      Cart.add(buildCartItem());
+
+      const items = Cart.get();
       try{
-        const fd = new FormData();
-        Object.entries(payload).forEach(([k,v])=>fd.append(k,v));
-        await fetch(FORMSPREE_URL, { method:"POST", body:fd, headers:{ "Accept":"application/json" }});
-      }catch(_){}
-      const sep = p.stripe.includes("?") ? "&" : "?";
-      const url = `${p.stripe}${sep}size=${encodeURIComponent(sizeSel.value)}&color=${encodeURIComponent(colorSel.value)}`;
-      location.href = url;
+        const res = await fetch('/.netlify/functions/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items })
+        });
+        const data = await res.json();
+        if (data.url) { window.location = data.url; }
+        else { throw new Error('No URL from checkout function'); }
+      }catch(err){
+        console.error(err);
+        alert('Checkout error. Please try again.');
+      }
     });
   </script>
 </body>

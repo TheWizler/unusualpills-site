@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Your Cart</title>
 <style>
   body{font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;background:#0c0c0e;color:#f5f5f7;margin:0;padding:24px}
@@ -27,53 +28,60 @@
 <script>
 const $ = (s)=>document.querySelector(s);
 
-// ---------- Normalization helpers (convert old cart shape) ----------
+/* -------------------- Strong normalizer -------------------- */
+function parseMoneyCents(v){
+  if (typeof v === 'number' && Number.isFinite(v)) {
+    // assume cents if integer-ish; if someone saved 35, treat as $35.00 -> 3500
+    return Math.round(v >= 100 ? v : v * 100);
+  }
+  const n = parseFloat(String(v ?? '').replace(/[^\d.]/g,'')); // "$35" -> 35
+  return Number.isFinite(n) ? Math.round(n*100) : 0;
+}
+
 function normalizeCart(items){
-  return (items||[]).map(i => ({
-    id: i.id || i.slug || i.name,                // fallback if older shape
-    name: i.name || '',
-    price_cents: (typeof i.price_cents === 'number')
-      ? i.price_cents
-      : Math.round((i.price || 0) * 100),        // convert dollars -> cents
-    currency: i.currency || 'usd',
-    is_shirt: (typeof i.is_shirt === 'boolean')
-      ? i.is_shirt
-      : /tee|hoodie/i.test(String(i.name)),      // best-effort guess
-    quantity: (typeof i.quantity === 'number')
-      ? i.quantity
-      : (i.qty || 1),                            // old field was qty
-    size: i.size || null,
-    color: i.color || null
-  }));
+  return (items||[]).map(i => {
+    const price_cents =
+      Number.isFinite(i?.price_cents) ? Number(i.price_cents) : parseMoneyCents(i?.price);
+
+    const quantity =
+      Number.isFinite(i?.quantity) ? Number(i.quantity)
+      : Number.isFinite(i?.qty)    ? Number(i.qty)
+      : 1;
+
+    return {
+      id: i.id || i.slug || i.name || crypto.randomUUID(),
+      name: i.name || 'Item',
+      price_cents,
+      currency: i.currency || 'usd',
+      is_shirt: (typeof i.is_shirt === 'boolean') ? i.is_shirt : /tee|hoodie/i.test(String(i.name||'')),
+      quantity,
+      size: i.size || null,
+      color: i.color || null
+    };
+  });
 }
 
 function getCartRaw(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
 function setCartRaw(c){ localStorage.setItem('cart', JSON.stringify(c)); }
 
-// Always return a normalized cart; persist if changed
 function getCart(){
-  const current = getCartRaw();
-  const normalized = normalizeCart(current);
-  if (JSON.stringify(current) !== JSON.stringify(normalized)) {
-    setCartRaw(normalized);
-  }
-  return normalized;
+  const cur = getCartRaw();
+  const norm = normalizeCart(cur);
+  if (JSON.stringify(cur) !== JSON.stringify(norm)) setCartRaw(norm);
+  return norm;
 }
-
 function setCart(c){ setCartRaw(normalizeCart(c)); render(); }
 
-// ---------- Quantity ops ----------
+/* -------------------- Quantity ops -------------------- */
 function inc(id){ const c=getCart(); const i=c.find(x=>x.id===id); if(i){ i.quantity++; setCart(c);} }
 function dec(id){ const c=getCart(); const i=c.find(x=>x.id===id); if(i){ i.quantity--; if(i.quantity<=0) c.splice(c.indexOf(i),1); setCart(c);} }
 function removeItem(id){ const c=getCart().filter(x=>x.id!==id); setCart(c); }
 
-// ---------- Promo math (preview only; real discount server-side) ----------
+/* -------------------- Promo preview (client-only) -------------------- */
 function promoPreview(cart){
   const units = [];
   cart.forEach(it=>{
-    if (it.is_shirt) {
-      for(let q=0;q<it.quantity;q++) units.push(it.price_cents);
-    }
+    if (it.is_shirt) for(let q=0;q<it.quantity;q++) units.push(it.price_cents);
   });
   if (units.length < 4) return {freeCount:0, discountCents:0};
   const freeCount = Math.floor(units.length / 4) * 2;
@@ -81,7 +89,7 @@ function promoPreview(cart){
   return {freeCount, discountCents};
 }
 
-// ---------- Render ----------
+/* -------------------- Render -------------------- */
 function render(){
   const cart = getCart();
   if(cart.length===0){
@@ -122,12 +130,10 @@ function render(){
 }
 render();
 
-// ---------- ONE checkout for the ENTIRE cart ----------
-$('#checkoutBtn').addEventListener('click', async ()=>{
+/* -------------------- One checkout for the entire cart -------------------- */
+document.getElementById('checkoutBtn').addEventListener('click', async ()=>{
   const items = getCart();
   if (!items.length) return alert('Your cart is empty.');
-
-  // Ensure is_shirt exists (normalizer should have done this)
   items.forEach(i => { if (typeof i.is_shirt === 'undefined') i.is_shirt = false; });
 
   try{
@@ -136,12 +142,24 @@ $('#checkoutBtn').addEventListener('click', async ()=>{
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ items })
     });
+
+    if (!res.ok) {
+      let msg = 'Unknown error';
+      try {
+        const data = await res.json();
+        msg = data?.error || JSON.stringify(data);
+      } catch {
+        msg = await res.text();
+      }
+      alert('Checkout error: ' + msg);
+      return;
+    }
+
     const data = await res.json();
-    if (data.url) { window.location = data.url; }
-    else { throw new Error('No URL from checkout function'); }
+    if (data.url) window.location = data.url;
+    else alert('Checkout error: No URL from checkout function');
   }catch(err){
-    console.error(err);
-    alert('Checkout error. Please try again.');
+    alert('Checkout error: ' + (err?.message || String(err)));
   }
 });
 </script>

@@ -1,9 +1,13 @@
+# netlify.toml
 [build]
   publish = "."
-  functions = "netlify/functions"
+  # No build command needed for a static site + functions
 
-[[redirects]]
-  from = "http://*"
-  to = "https://:splat"
-  status = 301
-  force = true
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = []
+  external_node_modules = ["stripe"]
+
+[build.environment]
+  NODE_VERSION = "18"

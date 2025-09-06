@@ -20,8 +20,6 @@
       --max-img: 300px;
       --ring: 255 255 255 / 85%;
       --fade-ms: 380ms;
-
-      /* Default merch drop uses viewport height so it stays on the “table” across screens */
       --merch-drop: clamp(180px, 22vh, 360px);
     }
 
@@ -41,6 +39,20 @@
     }
     @keyframes fadeIn{to{opacity:1}}
 
+    /* simple top bar to show Cart (N) */
+    .topbar{
+      position:fixed; inset:0 0 auto 0;
+      display:flex; justify-content:flex-end; align-items:center;
+      padding:10px 14px; gap:12px;
+      background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,0));
+      z-index:10;
+      pointer-events:none;
+    }
+    .topbar a{ pointer-events:auto; color:#d7e8ff; text-decoration:none; font-weight:600 }
+    .pill-badge{
+      background:#fff; color:#000; border-radius:999px; padding:6px 10px; font-weight:700
+    }
+
     main{display:contents}
 
     .logo,.merch-pill,.snail{
@@ -52,7 +64,6 @@
       display:block;
     }
 
-    /* ——— LOGO: STRAIGHT (not tilted) + soft neon + gentle flicker ——— */
     .logo{
       transform: none;
       transform-origin:center center;
@@ -61,15 +72,14 @@
     }
     .logo:hover{ transform: scale(1.05); }
     @keyframes logoGlow{
-      0%,8%   { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
-      9%      { filter: drop-shadow(0 0 14px rgba(255,255,255,.6)) brightness(1.15); }
-      10%,12% { filter: drop-shadow(0 0 3px rgba(255,255,255,.2)) brightness(.9); }
-      30%     { filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) brightness(1.05); }
-      50%     { filter: drop-shadow(0 0 7px rgba(255,255,255,.35))  brightness(1); }
-      70%     { filter: drop-shadow(0 0 12px rgba(255,255,255,.5))  brightness(1.1); }
-      100%    { filter: drop-shadow(0 0 6px rgba(255,255,255,.35))  brightness(1); }
+      0%,8%{ filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
+      9%{ filter: drop-shadow(0 0 14px rgba(255,255,255,.6)) brightness(1.15); }
+      10%,12%{ filter: drop-shadow(0 0 3px rgba(255,255,255,.2)) brightness(.9); }
+      30%{ filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) brightness(1.05); }
+      50%{ filter: drop-shadow(0 0 7px rgba(255,255,255,.35))  brightness(1); }
+      70%{ filter: drop-shadow(0 0 12px rgba(255,255,255,.5))  brightness(1.1); }
+      100%{ filter: drop-shadow(0 0 6px rgba(255,255,255,.35))  brightness(1); }
     }
-    /* tiny random “glitch pop” state toggled by JS */
     .logo.glitch{
       transform: translateX(2px) skewX(.4deg);
       filter:
@@ -85,137 +95,65 @@
       100%{clip-path:inset(0 0 1% 0)}
     }
 
-    /* ——— Merch bottle sits on the table (responsive) ——— */
-    .merch-pill{
-      margin-top: var(--merch-drop);
-      position: relative;
-      z-index: 2;
-    }
+    .merch-pill{ margin-top: var(--merch-drop); position: relative; z-index: 2; }
     .merch-pill:hover, .snail:hover{ transform: scale(1.05) }
 
-    /* This wrapper lets us add a “cap” + floating pills on click */
-    .merch-wrap{
-      position: relative;
-      display: inline-block;
-    }
-    /* the “cap” visual that pops on click */
+    .merch-wrap{ position: relative; display: inline-block; }
     .cap{
-      position:absolute;
-      left:50%;
+      position:absolute; left:50%;
       top: calc(var(--cap-top, -6%) );
-      width: 40%;
-      height: 14%;
+      width: 40%; height: 14%;
       transform: translateX(-50%) rotate(-20deg);
       border-radius: 12px;
       background: linear-gradient(#e6e6e6,#bfbfbf);
       box-shadow: 0 2px 6px rgba(0,0,0,.35);
-      opacity: 0;
-      pointer-events: none;
-      z-index:3;
+      opacity: 0; pointer-events: none; z-index:3;
       filter: drop-shadow(0 0 6px rgba(255,255,255,.25));
     }
-    /* “open” state animation */
-    .merch-opening .cap{
-      animation: capPop 500ms ease forwards;
-    }
+    .merch-opening .cap{ animation: capPop 500ms ease forwards; }
     @keyframes capPop{
-      0%   { opacity: 0; transform: translateX(-50%) translateY(0) rotate(-20deg) }
-      40%  { opacity: 1; transform: translateX(-50%) translateY(-30%) rotate(-42deg) }
-      100% { opacity: 1; transform: translateX(-50%) translateY(-50%) rotate(-60deg) }
+      0%{ opacity:0; transform: translateX(-50%) translateY(0) rotate(-20deg) }
+      40%{ opacity:1; transform: translateX(-50%) translateY(-30%) rotate(-42deg) }
+      100%{ opacity:1; transform: translateX(-50%) translateY(-50%) rotate(-60deg) }
     }
 
-    /* floating “pills” (tiny dots) created by JS */
     .pill-fx{
-      position:absolute;
-      bottom: 56%;
-      left: 50%;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-      opacity: 0;
-      pointer-events: none;
-      z-index:4;
-      box-shadow: 0 0 8px currentColor;
-      animation: pillRise 900ms ease-out forwards;
+      position:absolute; bottom:56%; left:50%;
+      width:6px; height:6px; border-radius:50%;
+      background: currentColor; opacity:0; pointer-events:none; z-index:4;
+      box-shadow:0 0 8px currentColor; animation: pillRise 900ms ease-out forwards;
     }
     @keyframes pillRise{
-      0%   { transform: translate(-50%,0) scale(.9); opacity: 0 }
-      20%  { opacity: 1 }
-      100% { transform: translate(-50%,-120px) scale(1); opacity: 0 }
+      0%{ transform: translate(-50%,0) scale(.9); opacity:0 }
+      20%{ opacity:1 }
+      100%{ transform: translate(-50%,-120px) scale(1); opacity:0 }
     }
 
-    /* Left-side glitch face link */
-    .snail-link{
-      position:absolute;
-      left:16px;
-      top:50%;
-      transform:translateY(-50%);
-      z-index:1;
-      text-decoration:none;
-      outline:none;
-    }
+    .snail-link{ position:absolute; left:16px; top:50%; transform:translateY(-50%); z-index:1; text-decoration:none; outline:none; }
+    #glitchFace{ width:min(60vw,var(--max-img)); max-width:var(--max-img); height:auto; display:block; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.35); }
 
-    #glitchFace{
-      width:min(60vw,var(--max-img));
-      max-width:var(--max-img);
-      height:auto;
-      display:block;
-      border-radius:16px;
-      box-shadow:0 10px 40px rgba(0,0,0,.35);
-    }
-
-    .center-links{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      z-index:2;
-    }
+    .center-links{ display:flex; flex-direction:column; align-items:center; z-index:2; }
 
     .snail-link:focus-visible #glitchFace,
-    a:focus-visible img{
-      outline:3px solid rgba(var(--ring));
-      outline-offset:6px;
-      border-radius:16px;
-    }
+    a:focus-visible img{ outline:3px solid rgba(var(--ring)); outline-offset:6px; border-radius:16px; }
 
-    .skip{
-      position:absolute;
-      left:12px; top:-40px;
-      padding:8px 12px;
-      background:rgba(0,0,0,.6);
-      color:#fff;
-      border-radius:12px;
-      transition:top .2s ease;
-      text-decoration:none;
-      z-index:4;
-    }
+    .skip{ position:absolute; left:12px; top:-40px; padding:8px 12px; background:rgba(0,0,0,.6); color:#fff; border-radius:12px; transition:top .2s ease; text-decoration:none; z-index:4; }
     .skip:focus{ top:12px }
 
-    /* ——— Portrait/vertical monitors ——— */
     @media (orientation: portrait){
-      /* adjust drop a touch for very tall screens */
       :root{ --merch-drop: clamp(170px, 20vh, 340px) }
-      /* keep left canvas centered a smidge lower */
       .snail-link{ top:48% }
     }
-
-    /* Very tall portrait */
     @media (min-height: 1100px) and (orientation: portrait){
       :root{ --merch-drop: clamp(150px, 18vh, 320px) }
     }
-
-    /* Mobile width (not just portrait) */
     @media (max-width: 640px){
       body{ overflow:auto; padding:20px 0; background-attachment:scroll }
       .snail-link{ position:static; transform:none; margin-top:10px; order:-1 }
       .logo,.merch-pill,.snail,#glitchFace{ width:min(80vw,var(--max-img)) }
-      /* still use responsive drop, but cap it a bit lower on tiny screens */
       :root{ --merch-drop: clamp(120px, 18vh, 240px) }
       .center-links{ margin-top:10px }
     }
-
-    /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce){
       body{ animation:none; opacity:1 }
       .logo{ animation:none }
@@ -227,6 +165,11 @@
 <body>
   <a class="skip" href="#nav-target">Skip to main links</a>
 
+  <!-- simple top bar with Cart (N) -->
+  <div class="topbar">
+    <a href="cart.html" aria-label="Open cart">Cart (<span id="cartCount">0</span>)</a>
+  </div>
+
   <main role="main" aria-label="Unusual Pills landing">
     <!-- Left “glitch face” canvas linking to art -->
     <a class="snail-link" href="art.html" aria-label="Open the Art page" title="Open Art">
@@ -235,12 +178,10 @@
 
     <!-- Center links / buttons -->
     <div class="center-links" id="nav-target" role="navigation" aria-label="Primary">
-      <!-- UNUSUAL PILLS logo: now straight, with glow/flicker + small glitch pops -->
       <a href="claw.html" aria-label="Start Claw Machine">
         <img src="static/images/unusualpills.png" alt="Start the claw machine" class="logo" loading="eager" />
       </a>
 
-      <!-- Merch with “open the bottle” click animation -->
       <a href="merch.html" aria-label="Go to Merch" class="merch-wrap" id="merchWrap">
         <div class="cap" aria-hidden="true"></div>
         <img src="static/images/merch.png" alt="Open the merch page" class="merch-pill" loading="lazy" />
@@ -248,7 +189,7 @@
     </div>
   </main>
 
-  <!-- Glitch face script (unchanged from your version) -->
+  <!-- Glitch face script (unchanged) -->
   <script>
     (() => {
       const canvas = document.getElementById('glitchFace');
@@ -300,6 +241,7 @@
       }
 
       function drawEye(x, y, size, t) {
+        const ctx = canvas.getContext('2d');
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(Math.sin(t * 0.002) * 0.05);
@@ -337,6 +279,7 @@
       }
 
       function drawMouth(cx, cy, w, t) {
+        const ctx = canvas.getContext('2d');
         ctx.save();
         ctx.lineWidth = 3;
         ctx.strokeStyle = 'rgba(255,255,255,0.9)';
@@ -351,6 +294,7 @@
       }
 
       function noiseOverlay(w, h, alpha = 0.05) {
+        const ctx = canvas.getContext('2d');
         const lines = 5;
         ctx.save();
         for (let i = 0; i < lines; i++) {
@@ -444,9 +388,38 @@
     })();
   </script>
 
+  <!-- Global cart utilities + topbar count -->
+  <script>
+    // Basic cart helpers shared across pages
+    window.Cart = {
+      get(){ return JSON.parse(localStorage.getItem('cart')||'[]'); },
+      set(c){ localStorage.setItem('cart', JSON.stringify(c)); window.Cart.updateCount(); },
+      clear(){ localStorage.removeItem('cart'); window.Cart.updateCount(); },
+      add(product){
+        // Expecting: {id,name,price_cents,currency,is_shirt,quantity?}
+        const p = {...product};
+        if (typeof p.quantity === 'undefined') p.quantity = 1;
+        if (typeof p.currency === 'undefined') p.currency = 'usd';
+        if (typeof p.is_shirt === 'undefined') p.is_shirt = false;
+
+        const cart = window.Cart.get();
+        const existing = cart.find(i => i.id === p.id);
+        if (existing) existing.quantity += p.quantity;
+        else cart.push(p);
+        window.Cart.set(cart);
+      },
+      updateCount(){
+        const n = window.Cart.get().reduce((s,i)=>s + (i.quantity||0), 0);
+        const el = document.getElementById('cartCount');
+        if (el) el.textContent = n;
+      }
+    };
+    window.addEventListener('storage', window.Cart.updateCount);
+    window.Cart.updateCount();
+  </script>
+
   <!-- Logo tiny random glitch + Merch “open bottle” interaction -->
   <script>
-    // Logo tiny random glitch (respect reduced motion)
     (() => {
       const logo = document.querySelector('.logo');
       if (!logo) return;
@@ -461,7 +434,6 @@
       setInterval(maybeGlitch, 1200);
     })();
 
-    // Merch: brief “open” animation before navigating
     (() => {
       const wrap = document.getElementById('merchWrap');
       if (!wrap) return;
@@ -471,27 +443,21 @@
         if (reduced) return; // just navigate
         e.preventDefault();
 
-        // add class for cap animation
         wrap.classList.add('merch-opening');
 
-        // spawn a few “pills”
         for (let i = 0; i < 8; i++){
           const dot = document.createElement('span');
           dot.className = 'pill-fx';
-          // random pastel-y colors
           const colors = ['#ff73d3','#7df0ff','#ffd36e','#98ff95','#d6a3ff'];
           dot.style.color = colors[(Math.random()*colors.length)|0];
-          // random horizontal drift
-          const drift = (Math.random()*80 - 40); // -40..40 px
-          const delay = Math.random()*120; // stagger
+          const drift = (Math.random()*80 - 40);
+          const delay = Math.random()*120;
           dot.style.left = `calc(50% + ${drift}px)`;
           dot.style.animationDelay = `${delay}ms`;
           wrap.appendChild(dot);
-          // cleanup
           setTimeout(()=>dot.remove(), 1200 + delay);
         }
 
-        // slight “bounce” on the bottle image
         const img = wrap.querySelector('.merch-pill');
         img.animate([
           { transform: 'translateY(0) scale(1)' },
@@ -499,9 +465,7 @@
           { transform: 'translateY(0) scale(1)' }
         ], { duration: 380, easing: 'ease-out' });
 
-        // navigate after a short beat so animation is visible
         setTimeout(()=>{ window.location.href = wrap.href; }, 280);
-        // remove class after
         setTimeout(()=>wrap.classList.remove('merch-opening'), 800);
       }, { passive:false });
     })();
@@ -509,12 +473,7 @@
 
   <noscript>
     <style>
-      .js-warning{
-        position:fixed; inset:auto 0 0 0;
-        padding:10px 14px;
-        background:rgba(0,0,0,.7);
-        color:#fff; text-align:center; font-size:14px;
-      }
+      .js-warning{ position:fixed; inset:auto 0 0 0; padding:10px 14px; background:rgba(0,0,0,.7); color:#fff; text-align:center; font-size:14px; }
     </style>
     <div class="js-warning">JavaScript is required for animations. Links still work ↑</div>
   </noscript>
