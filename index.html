@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Unusual Pills</title>
 
-  <!-- Basic meta / preview -->
   <meta name="description" content="Unusual Pills — art, merch, music, and interactive oddities." />
   <meta name="theme-color" content="#0c0c0e" />
   <meta property="og:title" content="Unusual Pills" />
@@ -14,7 +13,6 @@
   <meta property="og:image" content="static/images/unusualpills-og.png" />
   <meta name="twitter:card" content="summary_large_image" />
 
-  <!-- Performance: hint the background -->
   <link rel="preload" as="image" href="static/images/background.png" imagesrcset="static/images/background.png" />
 
   <style>
@@ -22,9 +20,9 @@
       --max-img: 300px;
       --ring: 255 255 255 / 85%;
       --fade-ms: 380ms;
+      --merch-drop: clamp(160px, 22vh, 320px); /* responsive merch drop */
     }
 
-    /* Page base */
     body {
       margin: 0;
       background: #0c0c0e url("static/images/background.png") no-repeat center center fixed;
@@ -43,7 +41,6 @@
 
     main { display: contents; }
 
-    /* Common link/button visuals */
     .logo, .merch-pill, .snail {
       width: min(60vw, var(--max-img));
       max-width: var(--max-img);
@@ -53,13 +50,11 @@
       display: block;
     }
 
-    /* >>> LOGO: sideways tilt + neon glow/flicker */
+    /* LOGO: tilt + glow flicker + glitch bursts */
     .logo {
       transform: perspective(900px) rotateX(8deg) rotateZ(-14deg);
       transform-origin: bottom center;
-      /* steady glow as a base */
       filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
-      /* subtle flicker */
       animation: logoGlow 3.6s infinite steps(1, end);
     }
     @keyframes logoGlow {
@@ -71,15 +66,11 @@
       70%      { filter: drop-shadow(0 0 12px rgba(255,255,255,.5)) brightness(1.1); }
       100%     { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
     }
-    /* tiny extra pop on hover, keeping the tilt */
     .logo:hover {
       transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) scale(1.05);
     }
-
-    /* Glitch burst state (JS toggles .glitch briefly) */
     .logo.glitch {
       transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) translateX(2px) skewX(0.5deg);
-      /* chromatic split via multi drop-shadows */
       filter:
         drop-shadow(-2px 0 rgba(255,0,180,.55))
         drop-shadow(2px 0 rgba(0,255,255,.55))
@@ -93,32 +84,29 @@
       100% { clip-path: inset(0 0 1% 0); }
     }
 
-    /* Merch pill sits lower on the "table" */
-    .merch-pill { margin-top: 300px; }
+    /* Merch pill on "table" */
+    .merch-pill { margin-top: var(--merch-drop); }
     .merch-pill:hover, .snail:hover { transform: scale(1.05); }
 
-    /* Left-side glitch face link (desktop/tablet) */
     .snail-link {
       position: absolute;
       left: 16px;
       top: 50%;
       transform: translateY(-50%);
-      z-index: 1; /* under main buttons */
+      z-index: 1;
       text-decoration: none;
       outline: none;
     }
 
-    /* Make the canvas behave like your images */
     #glitchFace {
       width: min(60vw, var(--max-img));
       max-width: var(--max-img);
-      height: auto;              /* JS sets pixel ratio */
+      height: auto;
       display: block;
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0,0,0,.35);
     }
 
-    /* Center buttons over the left face for click priority */
     .center-links {
       display: flex;
       flex-direction: column;
@@ -126,7 +114,6 @@
       z-index: 2;
     }
 
-    /* Focus ring for keyboard users */
     .snail-link:focus-visible #glitchFace,
     a:focus-visible img {
       outline: 3px solid rgba(var(--ring));
@@ -134,7 +121,6 @@
       border-radius: 16px;
     }
 
-    /* Skip link (a11y) */
     .skip {
       position: absolute;
       left: 12px;
@@ -149,27 +135,29 @@
     }
     .skip:focus { top: 12px; }
 
-    /* Mobile: stack, no absolute positioning */
+    /* Portrait tweaks */
+    @media (orientation: portrait) {
+      :root { --merch-drop: clamp(140px, 18vh, 300px); }
+      .logo {
+        transform: perspective(900px) rotateX(8deg) rotateZ(-10deg);
+      }
+      .logo:hover {
+        transform: perspective(900px) rotateX(8deg) rotateZ(-10deg) scale(1.05);
+      }
+      .snail-link { top: 48%; }
+    }
+    @media (min-height: 1100px) and (orientation: portrait) {
+      :root { --merch-drop: clamp(120px, 16vh, 280px); }
+    }
+
     @media (max-width: 640px) {
-      body {
-        overflow: auto;
-        padding: 20px 0;
-        background-attachment: scroll; /* iOS fix */
-      }
-      .snail-link {
-        position: static;
-        transform: none;
-        margin-top: 10px;
-        order: -1; /* show first */
-      }
-      .logo, .merch-pill, .snail, #glitchFace {
-        width: min(80vw, var(--max-img));
-      }
-      .merch-pill { margin-top: 20px; } /* reset for mobile */
+      body { overflow: auto; padding: 20px 0; background-attachment: scroll; }
+      .snail-link { position: static; transform: none; margin-top: 10px; order: -1; }
+      .logo, .merch-pill, .snail, #glitchFace { width: min(80vw, var(--max-img)); }
+      .merch-pill { margin-top: 20px; }
       .center-links { margin-top: 10px; }
     }
 
-    /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce) {
       body { animation: none; opacity: 1; }
       .logo { animation: none; }
@@ -182,32 +170,26 @@
   <a class="skip" href="#nav-target">Skip to main links</a>
 
   <main role="main" aria-label="Unusual Pills landing">
-    <!-- Clickable, JS-drawn "trippy glitch face" linking to art.html -->
     <a class="snail-link" href="art.html" aria-label="Open the Art page" title="Open Art">
       <canvas id="glitchFace" class="snail">Art</canvas>
     </a>
 
-    <!-- Main links centered -->
     <div class="center-links" id="nav-target" role="navigation" aria-label="Primary">
-      <!-- Main claw machine start button -->
       <a href="claw.html" aria-label="Start Claw Machine">
         <img src="static/images/unusualpills.png" alt="Start the claw machine" class="logo" loading="eager" />
       </a>
-
-      <!-- Merch page button -->
       <a href="merch.html" aria-label="Go to Merch">
         <img src="static/images/merch.png" alt="Open the merch page" class="merch-pill" loading="lazy" />
       </a>
     </div>
   </main>
 
-  <!-- ORIGINAL glitch face script (kept) -->
+  <!-- Glitch face script (unchanged) -->
   <script>
     (() => {
       const canvas = document.getElementById('glitchFace');
       const ctx = canvas.getContext('2d', { alpha: true });
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
       function setCanvasSize() {
         const dpr = Math.max(1, window.devicePixelRatio || 1);
         const rect = canvas.getBoundingClientRect();
@@ -215,373 +197,104 @@
         canvas.height = Math.max(180, Math.floor((rect.width * 1.1) * dpr));
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
-
       function drawBaseFace(t = 0) {
-        const w = canvas.clientWidth || canvas.width;
-        const h = canvas.clientHeight || canvas.height;
-
+        const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height;
         ctx.clearRect(0, 0, w, h);
-
         const grad = ctx.createLinearGradient(0, 0, w, h);
         grad.addColorStop(0, 'rgba(255, 0, 200, 0.25)');
         grad.addColorStop(0.5, 'rgba(0, 200, 255, 0.25)');
         grad.addColorStop(1, 'rgba(255, 255, 255, 0.12)');
         ctx.fillStyle = grad;
-        roundedRect(ctx, 8, 8, w - 16, h - 16, 16);
-        ctx.fill();
-
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillStyle = 'rgba(20,20,30,0.35)';
+        roundedRect(ctx, 8, 8, w - 16, h - 16, 16); ctx.fill();
+        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.fillStyle = 'rgba(20,20,30,0.35)';
         ctx.beginPath();
-        const cx = w / 2, cy = h * 0.52, rx = w * 0.36, ry = h * 0.38;
-        for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) {
-          const jx = Math.sin(a * 3 + t * 0.002) * 6;
-          const jy = Math.cos(a * 2 - t * 0.003) * 6;
-          const x = cx + Math.cos(a) * rx + jx;
-          const y = cy + Math.sin(a) * ry + jy;
-          a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        const cx = w/2, cy = h*0.52, rx = w*0.36, ry = h*0.38;
+        for (let a=0; a<=Math.PI*2+0.01; a+=Math.PI/60) {
+          const jx = Math.sin(a*3+t*0.002)*6, jy = Math.cos(a*2-t*0.003)*6;
+          const x = cx+Math.cos(a)*rx+jx, y = cy+Math.sin(a)*ry+jy;
+          a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
         }
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        drawEye(cx - rx * 0.45, cy - ry * 0.15, w * 0.18, t);
-        drawEye(cx + rx * 0.45, cy - ry * 0.10, w * 0.18, t + 777);
-        drawMouth(cx, cy + ry * 0.35, w * 0.42, t);
-        noiseOverlay(w, h, 0.06);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        drawEye(cx-rx*0.45, cy-ry*0.15, w*0.18, t);
+        drawEye(cx+rx*0.45, cy-ry*0.10, w*0.18, t+777);
+        drawMouth(cx, cy+ry*0.35, w*0.42, t);
+        noiseOverlay(w,h,0.06);
       }
-
-      function drawEye(x, y, size, t) {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(Math.sin(t * 0.002) * 0.05);
-        const w = size, h = size * 0.65;
-
-        const grad = ctx.createLinearGradient(-w/2, 0, w/2, 0);
-        grad.addColorStop(0, 'rgba(255,255,255,0.85)');
-        grad.addColorStop(1, 'rgba(200,220,255,0.75)');
-        ctx.fillStyle = grad;
-        roundedRect(ctx, -w/2, -h/2, w, h, h/2);
-        ctx.fill();
-
-        const pupilR = Math.min(w, h) * 0.24;
-        const px = Math.sin(t * 0.01) * w * 0.08;
-        const py = Math.cos(t * 0.013) * h * 0.08;
-
+      function drawEye(x,y,size,t) {
+        ctx.save(); ctx.translate(x,y); ctx.rotate(Math.sin(t*0.002)*0.05);
+        const w=size,h=size*0.65;
+        const grad=ctx.createLinearGradient(-w/2,0,w/2,0);
+        grad.addColorStop(0,'rgba(255,255,255,0.85)');
+        grad.addColorStop(1,'rgba(200,220,255,0.75)');
+        ctx.fillStyle=grad; roundedRect(ctx,-w/2,-h/2,w,h,h/2); ctx.fill();
+        const pupilR=Math.min(w,h)*0.24, px=Math.sin(t*0.01)*w*0.08, py=Math.cos(t*0.013)*h*0.08;
+        ctx.beginPath(); ctx.fillStyle='rgba(10,10,20,0.95)'; ctx.arc(px,py,pupilR,0,Math.PI*2); ctx.fill();
+        ctx.strokeStyle='rgba(255,0,200,0.7)'; ctx.lineWidth=1.8; const turns=2.6;
         ctx.beginPath();
-        ctx.fillStyle = 'rgba(10,10,20,0.95)';
-        ctx.arc(px, py, pupilR, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(255,0,200,0.7)';
-        ctx.lineWidth = 1.8;
-        const turns = 2.6;
-        ctx.beginPath();
-        for (let a = 0; a < Math.PI * 2 * turns; a += 0.08) {
-          const r = (a / (Math.PI * 2 * turns)) * pupilR * 0.9;
-          const gx = px + Math.cos(a + t * 0.015) * r;
-          const gy = py + Math.sin(a + t * 0.017) * r;
-          a === 0 ? ctx.moveTo(gx, gy) : ctx.lineTo(gx, gy);
+        for(let a=0;a<Math.PI*2*turns;a+=0.08){
+          const r=(a/(Math.PI*2*turns))*pupilR*0.9;
+          const gx=px+Math.cos(a+t*0.015)*r, gy=py+Math.sin(a+t*0.017)*r;
+          a===0?ctx.moveTo(gx,gy):ctx.lineTo(gx,gy);
         }
-        ctx.stroke();
-
+        ctx.stroke(); ctx.restore();
+      }
+      function drawMouth(cx,cy,w,t){
+        ctx.save(); ctx.lineWidth=3; ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.beginPath();
+        for(let i=0;i<=100;i++){
+          const x=cx-w/2+(w*i/100), y=cy+Math.sin(i*0.25+t*0.02)*6;
+          i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        }
+        ctx.stroke(); ctx.restore();
+      }
+      function noiseOverlay(w,h,alpha=0.05){
+        const lines=5; ctx.save();
+        for(let i=0;i<lines;i++){ const y=Math.random()*h;
+          ctx.globalAlpha=alpha+Math.random()*alpha; ctx.fillStyle='white'; ctx.fillRect(0,y,w,1);}
+        ctx.restore();
+        const specks=Math.floor((w*h)/5000); ctx.save(); ctx.globalAlpha=alpha;
+        for(let i=0;i<specks;i++){const x=Math.random()*w,y=Math.random()*h;
+          ctx.fillStyle=Math.random()>0.5?'white':'black'; ctx.fillRect(x,y,1,1);}
         ctx.restore();
       }
-
-      function drawMouth(cx, cy, w, t) {
-        ctx.save();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.beginPath();
-        for (let i = 0; i <= 100; i++) {
-          const x = cx - w/2 + (w * i / 100);
-          const y = cy + Math.sin(i * 0.25 + t * 0.02) * 6;
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        ctx.restore();
+      function roundedRect(ctx,x,y,w,h,r){
+        const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y);
+        ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr);
+        ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath();
       }
-
-      function noiseOverlay(w, h, alpha = 0.05) {
-        const lines = 5;
-        ctx.save();
-        for (let i = 0; i < lines; i++) {
-          const y = Math.random() * h;
-          ctx.globalAlpha = alpha + Math.random() * alpha;
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, y, w, 1);
+      function glitchSlices(){
+        const w=canvas.clientWidth||canvas.width,h=canvas.clientHeight||canvas.height;
+        const slices=(Math.random()*3)|0;
+        for(let i=0;i<slices;i++){
+          const sh=8+Math.random()*24,sy=Math.random()*(h-sh),sx=0,sw=w,dx=(Math.random()-0.5)*16;
+          const imgData=ctx.getImageData(sx,sy,sw,sh);
+          ctx.clearRect(sx,sy,sw,sh); ctx.putImageData(imgData,sx+dx,sy);
         }
-        ctx.restore();
-
-        const specks = Math.floor((w * h) / 5000);
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        for (let i = 0; i < specks; i++) {
-          const x = Math.random() * w, y = Math.random() * h;
-          ctx.fillStyle = Math.random() > 0.5 ? 'white' : 'black';
-          ctx.fillRect(x, y, 1, 1);
-        }
-        ctx.restore();
-      }
-
-      function roundedRect(ctx, x, y, w, h, r) {
-        const rr = Math.min(r, w/2, h/2);
-        ctx.beginPath();
-        ctx.moveTo(x + rr, y);
-        ctx.arcTo(x + w, y,     x + w, y + h, rr);
-        ctx.arcTo(x + w, y + h, x,     y + h, rr);
-        ctx.arcTo(x,     y + h, x,     y,     rr);
-        ctx.arcTo(x,     y,     x + w, y,     rr);
-        ctx.closePath();
-      }
-
-      function glitchSlices() {
-        const w = canvas.clientWidth || canvas.width;
-        const h = canvas.clientHeight || canvas.height;
-        const slices = (Math.random() * 3) | 0;
-        for (let i = 0; i < slices; i++) {
-          const sh = 8 + Math.random() * 24;
-          const sy = Math.random() * (h - sh);
-          const sx = 0;
-          const sw = w;
-          const dx = (Math.random() - 0.5) * 16;
-          const imgData = ctx.getImageData(sx, sy, sw, sh);
-          ctx.clearRect(sx, sy, sw, sh);
-          ctx.putImageData(imgData, sx + dx, sy);
-        }
-
-        if (Math.random() < 0.25) {
-          ctx.globalCompositeOperation = 'screen';
-          ctx.drawImage(canvas, 2, 0);
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.drawImage(canvas, -2, 0);
-          ctx.globalCompositeOperation = 'source-over';
+        if(Math.random()<0.25){
+          ctx.globalCompositeOperation='screen'; ctx.drawImage(canvas,2,0);
+          ctx.globalCompositeOperation='multiply'; ctx.drawImage(canvas,-2,0);
+          ctx.globalCompositeOperation='source-over';
         }
       }
-
-      let rafId = null;
-      function animate(t) {
-        drawBaseFace(t);
-        if (!prefersReduced) {
-          if (Math.random() < 0.5) glitchSlices();
-          rafId = requestAnimationFrame(animate);
-        }
-      }
-
-      function start() {
-        setCanvasSize();
-        drawBaseFace(0);
-        if (!prefersReduced) {
-          cancelAnimationFrame(rafId);
-          rafId = requestAnimationFrame(animate);
-        }
-      }
-
-      const ro = new ResizeObserver(start);
-      ro.observe(canvas);
-      window.addEventListener('orientationchange', () => {
-        setTimeout(start, 250);
-      });
-
+      let rafId=null;
+      function animate(t){ drawBaseFace(t); if(!prefersReduced){ if(Math.random()<0.5)glitchSlices(); rafId=requestAnimationFrame(animate);} }
+      function start(){ setCanvasSize(); drawBaseFace(0); if(!prefersReduced){ cancelAnimationFrame(rafId); rafId=requestAnimationFrame(animate);} }
+      const ro=new ResizeObserver(start); ro.observe(canvas);
+      window.addEventListener('orientationchange',()=>{setTimeout(start,250);});
       start();
-
-      const link = canvas.parentElement;
-      link.setAttribute('tabindex', '0');
-      link.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          link.click();
-        }
-      });
+      const link=canvas.parentElement; link.setAttribute('tabindex','0');
+      link.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); link.click(); }});
     })();
   </script>
 
-  <!-- FREE SHIRT button with pulse + click ripple (unchanged) -->
-  <script>
-    (() => {
-      const link = document.createElement('a');
-      link.href = "signup.html";
-      link.setAttribute('aria-label', 'Free Shirt Signup');
-      link.title = 'Free Shirt';
-      Object.assign(link.style, {
-        position: 'absolute',
-        right: '16px',
-        bottom: '16px',
-        zIndex: '3',
-        textDecoration: 'none',
-        outline: 'none'
-      });
-
-      const c = document.createElement('canvas');
-      c.id = 'freeShirtCanvas';
-      c.style.width = 'min(38vw, 240px)';
-      c.style.display = 'block';
-      c.style.filter = 'drop-shadow(0 6px 20px rgba(0,0,0,0.35))';
-      link.appendChild(c);
-      document.body.appendChild(link);
-
-      const ctx = c.getContext('2d', { alpha: true });
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      function fitCanvas() {
-        const dpr = Math.max(1, window.devicePixelRatio || 1);
-        const rectW = Math.max(160, c.getBoundingClientRect().width);
-        const rectH = Math.floor(rectW * 0.36); // pill aspect
-        c.width = Math.floor(rectW * dpr);
-        c.height = Math.floor(rectH * dpr);
-        c.style.height = rectH + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-
-      function rr(x,y,w,h,r){
-        const rad = Math.min(r, w/2, h/2);
-        ctx.beginPath();
-        ctx.moveTo(x+rad,y);
-        ctx.arcTo(x+w,y,x+w,y+h,rad);
-        ctx.arcTo(x+w,y+h,x,y+h,rad);
-        ctx.arcTo(x,y+h,x,y,rad);
-        ctx.arcTo(x,y,x+w,y,rad);
-        ctx.closePath();
-      }
-
-      let hovering = false;
-      let ripples = []; // {t0:number} each lasts ~0.6s
-
-      function draw(t=0){
-        const w = Math.floor(c.clientWidth || 220);
-        const h = Math.floor(parseInt(c.style.height||'80',10));
-        ctx.clearRect(0,0,w,h);
-
-        // Pulse factor (0..1)
-        const pulse = (prefersReduced ? 0 : (Math.sin(t * 0.012) + 1) / 2);
-        const scale = 1 + (hovering ? 0.02 * (0.5 + pulse*0.5) : 0);
-
-        // Scaled group for subtle breathing
-        ctx.save();
-        ctx.translate(w/2, h/2);
-        ctx.scale(scale, scale);
-        ctx.translate(-w/2, -h/2);
-
-        // Outer glow / background
-        const bg = ctx.createLinearGradient(0, 0, w, h);
-        bg.addColorStop(0, hovering ? 'rgba(255,120,220,0.42)' : 'rgba(255,0,200,0.30)');
-        bg.addColorStop(1, hovering ? 'rgba(80,220,255,0.42)'  : 'rgba(0,200,255,0.30)');
-        ctx.save();
-        ctx.shadowColor = `rgba(255,0,200,${0.15 + 0.15*pulse})`;
-        ctx.shadowBlur  = 24 + 20*pulse;
-        rr(4,4,w-8,h-8,h/2);
-        ctx.fillStyle = bg;
-        ctx.fill();
-        ctx.restore();
-
-        // Inner pill
-        rr(8,8,w-16,h-16,(h-16)/2);
-        ctx.fillStyle = 'rgba(15,15,25,0.58)';
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle='rgba(255,255,255,0.85)';
-        ctx.stroke();
-
-        // Label
-        const label = 'FREE SHIRT';
-        ctx.font = `700 ${Math.floor(h*0.38)}px Arial`;
-        ctx.textAlign='center';
-        ctx.textBaseline='middle';
-
-        if(hovering && !prefersReduced){
-          ctx.fillStyle='rgba(255,0,120,0.9)'; ctx.fillText(label,w/2+1.6,h/2);
-          ctx.fillStyle='rgba(0,220,255,0.9)'; ctx.fillText(label,w/2-1.6,h/2);
-        }
-        ctx.fillStyle='rgba(255,255,255,0.97)';
-        ctx.fillText(label,w/2,h/2);
-
-        // Click ripple rings
-        if (!prefersReduced && ripples.length){
-          for (let i = ripples.length - 1; i >= 0; i--) {
-            const age = (t - ripples[i].t0) / 1000; // seconds
-            if (age > 0.6) { ripples.splice(i,1); continue; }
-            const a = 1 - age/0.6;
-            const r = (h*0.2) + age*(Math.min(w,h)*0.6);
-            ctx.beginPath();
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = `rgba(255,255,255,${0.6*a})`;
-            ctx.arc(w/2, h/2, r, 0, Math.PI*2);
-            ctx.stroke();
-          }
-        }
-
-        ctx.restore(); // end scaled group
-
-        // Subtle scanlines
-        if(!prefersReduced){
-          ctx.save();
-          ctx.globalAlpha = hovering ? 0.12 : 0.07;
-          for(let i=0;i<4;i++){
-            const y = ( (t*0.12 + i*17) % h );
-            ctx.fillStyle='white'; ctx.fillRect(12,y,w-24,1);
-          }
-          ctx.restore();
-        }
-      }
-
-      let raf;
-      function loop(ts){ draw(ts); if(!prefersReduced) raf = requestAnimationFrame(loop); }
-
-      function start(){
-        cancelAnimationFrame(raf);
-        fitCanvas();
-        draw(0);
-        if(!prefersReduced) raf = requestAnimationFrame(loop);
-      }
-
-      const ro = new ResizeObserver(start);
-      ro.observe(c);
-
-      c.addEventListener('mouseenter', () => hovering = true);
-      c.addEventListener('mouseleave', () => hovering = false);
-
-      // Click ripple, then navigate (tiny delay so ripple is visible)
-      link.addEventListener('click', (e) => {
-        if (prefersReduced) return; // just navigate immediately
-        e.preventDefault();
-        ripples.push({ t0: performance.now() });
-        setTimeout(() => { window.location.href = link.href; }, 180);
-      });
-
-      // Keyboard accessibility
-      link.setAttribute('tabindex','0');
-      link.addEventListener('keydown', e => {
-        if(e.key==='Enter' || e.key===' '){
-          e.preventDefault();
-          link.click();
-        }
-      });
-
-      // Keep it tucked nicely on small screens
-      function responsivePosition(){
-        if(window.innerWidth < 480){ link.style.bottom = '12px'; link.style.right='12px'; }
-        else { link.style.bottom='16px'; link.style.right='16px'; }
-      }
-      window.addEventListener('resize', responsivePosition);
-      responsivePosition();
-
-      start();
-    })();
-  </script>
-
-  <!-- NEW: tiny script to trigger random logo glitches -->
+  <!-- Free shirt + glitch logo JS -->
   <script>
     (() => {
       const logo = document.querySelector('.logo');
       if (!logo) return;
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      if (prefersReduced) return; // respect user setting
-
-      // Add a short glitch burst randomly every ~1–2s
+      if (prefersReduced) return;
       function maybeGlitch() {
-        if (Math.random() < 0.28) { // ~28% chance each tick
+        if (Math.random() < 0.28) {
           logo.classList.add('glitch');
           setTimeout(() => logo.classList.remove('glitch'), 180);
         }
@@ -589,18 +302,5 @@
       setInterval(maybeGlitch, 1200);
     })();
   </script>
-
-  <noscript>
-    <style>
-      .js-warning {
-        position: fixed; inset: auto 0 0 0;
-        padding: 10px 14px;
-        background: rgba(0,0,0,.7);
-        color: #fff; text-align: center;
-        font-size: 14px;
-      }
-    </style>
-    <div class="js-warning">JavaScript is required for animations. Links still work ↑</div>
-  </noscript>
 </body>
 </html>
