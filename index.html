@@ -39,10 +39,8 @@
       opacity: 0;
       animation: fadeIn var(--fade-ms) ease forwards;
     }
-
     @keyframes fadeIn { to { opacity: 1; } }
 
-    /* Layout landmarks */
     main { display: contents; }
 
     /* Common link/button visuals */
@@ -55,17 +53,47 @@
       display: block;
     }
 
-    /* <<< UPDATED: sideways tilt on the wall >>> */
+    /* >>> LOGO: sideways tilt + neon glow/flicker */
     .logo {
-      /* rotateZ = sideways tilt; rotateX gives a touch of “on wall” depth */
       transform: perspective(900px) rotateX(8deg) rotateZ(-14deg);
       transform-origin: bottom center;
+      /* steady glow as a base */
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
+      /* subtle flicker */
+      animation: logoGlow 3.6s infinite steps(1, end);
     }
+    @keyframes logoGlow {
+      0%, 8%   { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
+      9%       { filter: drop-shadow(0 0 14px rgba(255,255,255,.6)) brightness(1.15); }
+      10%, 12% { filter: drop-shadow(0 0 3px rgba(255,255,255,.2)) brightness(.9); }
+      30%      { filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) brightness(1.05); }
+      50%      { filter: drop-shadow(0 0 7px rgba(255,255,255,.35)) brightness(1); }
+      70%      { filter: drop-shadow(0 0 12px rgba(255,255,255,.5)) brightness(1.1); }
+      100%     { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
+    }
+    /* tiny extra pop on hover, keeping the tilt */
     .logo:hover {
       transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) scale(1.05);
     }
 
-    /* <<< UPDATED: merch sits lower on the table >>> */
+    /* Glitch burst state (JS toggles .glitch briefly) */
+    .logo.glitch {
+      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) translateX(2px) skewX(0.5deg);
+      /* chromatic split via multi drop-shadows */
+      filter:
+        drop-shadow(-2px 0 rgba(255,0,180,.55))
+        drop-shadow(2px 0 rgba(0,255,255,.55))
+        drop-shadow(0 0 8px rgba(255,255,255,.45))
+        saturate(1.25) contrast(1.1);
+      animation: glitchPulse 180ms steps(1, end) 1;
+    }
+    @keyframes glitchPulse {
+      0%   { clip-path: inset(0 0 0 0); }
+      50%  { clip-path: inset(1% 0 0 0); }
+      100% { clip-path: inset(0 0 1% 0); }
+    }
+
+    /* Merch pill sits lower on the "table" */
     .merch-pill { margin-top: 300px; }
     .merch-pill:hover, .snail:hover { transform: scale(1.05); }
 
@@ -144,6 +172,8 @@
     /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce) {
       body { animation: none; opacity: 1; }
+      .logo { animation: none; }
+      .logo.glitch { animation: none; }
       .logo:hover, .merch-pill:hover, .snail:hover { transform: none; }
     }
   </style>
@@ -171,7 +201,7 @@
     </div>
   </main>
 
-  <!-- ORIGINAL glitch face script (kept, with tiny safety tweaks) -->
+  <!-- ORIGINAL glitch face script (kept) -->
   <script>
     (() => {
       const canvas = document.getElementById('glitchFace');
@@ -187,8 +217,8 @@
       }
 
       function drawBaseFace(t = 0) {
-        const w = canvas.clientWidth || canvas.width;   // safety
-        const h = canvas.clientHeight || canvas.height; // safety
+        const w = canvas.clientWidth || canvas.width;
+        const h = canvas.clientHeight || canvas.height;
 
         ctx.clearRect(0, 0, w, h);
 
@@ -367,11 +397,11 @@
     })();
   </script>
 
-  <!-- NEW: bottom-right FREE SHIRT button with pulse + click ripple -->
+  <!-- FREE SHIRT button with pulse + click ripple (unchanged) -->
   <script>
     (() => {
       const link = document.createElement('a');
-      link.href = "signup.html";   // GitHub Pages-friendly
+      link.href = "signup.html";
       link.setAttribute('aria-label', 'Free Shirt Signup');
       link.title = 'Free Shirt';
       Object.assign(link.style, {
@@ -540,6 +570,26 @@
     })();
   </script>
 
+  <!-- NEW: tiny script to trigger random logo glitches -->
+  <script>
+    (() => {
+      const logo = document.querySelector('.logo');
+      if (!logo) return;
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (prefersReduced) return; // respect user setting
+
+      // Add a short glitch burst randomly every ~1–2s
+      function maybeGlitch() {
+        if (Math.random() < 0.28) { // ~28% chance each tick
+          logo.classList.add('glitch');
+          setTimeout(() => logo.classList.remove('glitch'), 180);
+        }
+      }
+      setInterval(maybeGlitch, 1200);
+    })();
+  </script>
+
   <noscript>
     <style>
       .js-warning {
@@ -550,7 +600,7 @@
         font-size: 14px;
       }
     </style>
-    <div class="js-warning">JavaScript is required for the glitch face and button animations. Links still work ↑</div>
+    <div class="js-warning">JavaScript is required for animations. Links still work ↑</div>
   </noscript>
 </body>
 </html>
