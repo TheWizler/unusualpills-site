@@ -16,153 +16,211 @@
   <link rel="preload" as="image" href="static/images/background.png" imagesrcset="static/images/background.png" />
 
   <style>
-    :root {
+    :root{
       --max-img: 300px;
       --ring: 255 255 255 / 85%;
       --fade-ms: 380ms;
-      --merch-drop: clamp(160px, 22vh, 320px); /* responsive merch drop */
+
+      /* Default merch drop uses viewport height so it stays on the “table” across screens */
+      --merch-drop: clamp(180px, 22vh, 360px);
     }
 
-    body {
-      margin: 0;
-      background: #0c0c0e url("static/images/background.png") no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, sans-serif;
-      min-height: 100dvh;
-      display: grid;
-      place-items: center;
-      position: relative;
-      overflow: hidden;
-      opacity: 0;
-      animation: fadeIn var(--fade-ms) ease forwards;
+    body{
+      margin:0;
+      background:#0c0c0e url("static/images/background.png") no-repeat center center fixed;
+      background-size:cover;
+      color:#fff;
+      font-family:Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, sans-serif;
+      min-height:100dvh;
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+      opacity:0;
+      animation:fadeIn var(--fade-ms) ease forwards;
     }
-    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes fadeIn{to{opacity:1}}
 
-    main { display: contents; }
+    main{display:contents}
 
-    .logo, .merch-pill, .snail {
-      width: min(60vw, var(--max-img));
-      max-width: var(--max-img);
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      margin-top: 20px;
-      display: block;
+    .logo,.merch-pill,.snail{
+      width:min(60vw,var(--max-img));
+      max-width:var(--max-img);
+      cursor:pointer;
+      transition:transform .3s ease;
+      margin-top:20px;
+      display:block;
     }
 
-    /* LOGO: tilt + glow flicker + glitch bursts */
-    .logo {
-      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg);
-      transform-origin: bottom center;
+    /* ——— LOGO: STRAIGHT (not tilted) + soft neon + gentle flicker ——— */
+    .logo{
+      transform: none;
+      transform-origin:center center;
       filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
-      animation: logoGlow 3.6s infinite steps(1, end);
+      animation: logoGlow 3.6s infinite steps(1,end);
     }
-    @keyframes logoGlow {
-      0%, 8%   { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
-      9%       { filter: drop-shadow(0 0 14px rgba(255,255,255,.6)) brightness(1.15); }
-      10%, 12% { filter: drop-shadow(0 0 3px rgba(255,255,255,.2)) brightness(.9); }
-      30%      { filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) brightness(1.05); }
-      50%      { filter: drop-shadow(0 0 7px rgba(255,255,255,.35)) brightness(1); }
-      70%      { filter: drop-shadow(0 0 12px rgba(255,255,255,.5)) brightness(1.1); }
-      100%     { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
+    .logo:hover{ transform: scale(1.05); }
+    @keyframes logoGlow{
+      0%,8%   { filter: drop-shadow(0 0 6px rgba(255,255,255,.35)) brightness(1); }
+      9%      { filter: drop-shadow(0 0 14px rgba(255,255,255,.6)) brightness(1.15); }
+      10%,12% { filter: drop-shadow(0 0 3px rgba(255,255,255,.2)) brightness(.9); }
+      30%     { filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) brightness(1.05); }
+      50%     { filter: drop-shadow(0 0 7px rgba(255,255,255,.35))  brightness(1); }
+      70%     { filter: drop-shadow(0 0 12px rgba(255,255,255,.5))  brightness(1.1); }
+      100%    { filter: drop-shadow(0 0 6px rgba(255,255,255,.35))  brightness(1); }
     }
-    .logo:hover {
-      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) scale(1.05);
-    }
-    .logo.glitch {
-      transform: perspective(900px) rotateX(8deg) rotateZ(-14deg) translateX(2px) skewX(0.5deg);
+    /* tiny random “glitch pop” state toggled by JS */
+    .logo.glitch{
+      transform: translateX(2px) skewX(.4deg);
       filter:
         drop-shadow(-2px 0 rgba(255,0,180,.55))
-        drop-shadow(2px 0 rgba(0,255,255,.55))
-        drop-shadow(0 0 8px rgba(255,255,255,.45))
+        drop-shadow( 2px 0 rgba(0,255,255,.55))
+        drop-shadow( 0  0 8px rgba(255,255,255,.45))
         saturate(1.25) contrast(1.1);
-      animation: glitchPulse 180ms steps(1, end) 1;
+      animation: glitchPulse 180ms steps(1,end) 1;
     }
-    @keyframes glitchPulse {
-      0%   { clip-path: inset(0 0 0 0); }
-      50%  { clip-path: inset(1% 0 0 0); }
-      100% { clip-path: inset(0 0 1% 0); }
-    }
-
-    /* Merch pill on "table" */
-    .merch-pill { margin-top: var(--merch-drop); }
-    .merch-pill:hover, .snail:hover { transform: scale(1.05); }
-
-    .snail-link {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 1;
-      text-decoration: none;
-      outline: none;
+    @keyframes glitchPulse{
+      0%{clip-path:inset(0 0 0 0)}
+      50%{clip-path:inset(1% 0 0 0)}
+      100%{clip-path:inset(0 0 1% 0)}
     }
 
-    #glitchFace {
-      width: min(60vw, var(--max-img));
-      max-width: var(--max-img);
-      height: auto;
-      display: block;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,.35);
-    }
-
-    .center-links {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* ——— Merch bottle sits on the table (responsive) ——— */
+    .merch-pill{
+      margin-top: var(--merch-drop);
+      position: relative;
       z-index: 2;
+    }
+    .merch-pill:hover, .snail:hover{ transform: scale(1.05) }
+
+    /* This wrapper lets us add a “cap” + floating pills on click */
+    .merch-wrap{
+      position: relative;
+      display: inline-block;
+    }
+    /* the “cap” visual that pops on click */
+    .cap{
+      position:absolute;
+      left:50%;
+      top: calc(var(--cap-top, -6%) );
+      width: 40%;
+      height: 14%;
+      transform: translateX(-50%) rotate(-20deg);
+      border-radius: 12px;
+      background: linear-gradient(#e6e6e6,#bfbfbf);
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
+      opacity: 0;
+      pointer-events: none;
+      z-index:3;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.25));
+    }
+    /* “open” state animation */
+    .merch-opening .cap{
+      animation: capPop 500ms ease forwards;
+    }
+    @keyframes capPop{
+      0%   { opacity: 0; transform: translateX(-50%) translateY(0) rotate(-20deg) }
+      40%  { opacity: 1; transform: translateX(-50%) translateY(-30%) rotate(-42deg) }
+      100% { opacity: 1; transform: translateX(-50%) translateY(-50%) rotate(-60deg) }
+    }
+
+    /* floating “pills” (tiny dots) created by JS */
+    .pill-fx{
+      position:absolute;
+      bottom: 56%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0;
+      pointer-events: none;
+      z-index:4;
+      box-shadow: 0 0 8px currentColor;
+      animation: pillRise 900ms ease-out forwards;
+    }
+    @keyframes pillRise{
+      0%   { transform: translate(-50%,0) scale(.9); opacity: 0 }
+      20%  { opacity: 1 }
+      100% { transform: translate(-50%,-120px) scale(1); opacity: 0 }
+    }
+
+    /* Left-side glitch face link */
+    .snail-link{
+      position:absolute;
+      left:16px;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:1;
+      text-decoration:none;
+      outline:none;
+    }
+
+    #glitchFace{
+      width:min(60vw,var(--max-img));
+      max-width:var(--max-img);
+      height:auto;
+      display:block;
+      border-radius:16px;
+      box-shadow:0 10px 40px rgba(0,0,0,.35);
+    }
+
+    .center-links{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      z-index:2;
     }
 
     .snail-link:focus-visible #glitchFace,
-    a:focus-visible img {
-      outline: 3px solid rgba(var(--ring));
-      outline-offset: 6px;
-      border-radius: 16px;
+    a:focus-visible img{
+      outline:3px solid rgba(var(--ring));
+      outline-offset:6px;
+      border-radius:16px;
     }
 
-    .skip {
-      position: absolute;
-      left: 12px;
-      top: -40px;
-      padding: 8px 12px;
-      background: rgba(0,0,0,.6);
-      color: #fff;
-      border-radius: 12px;
-      transition: top .2s ease;
-      text-decoration: none;
-      z-index: 4;
+    .skip{
+      position:absolute;
+      left:12px; top:-40px;
+      padding:8px 12px;
+      background:rgba(0,0,0,.6);
+      color:#fff;
+      border-radius:12px;
+      transition:top .2s ease;
+      text-decoration:none;
+      z-index:4;
     }
-    .skip:focus { top: 12px; }
+    .skip:focus{ top:12px }
 
-    /* Portrait tweaks */
-    @media (orientation: portrait) {
-      :root { --merch-drop: clamp(140px, 18vh, 300px); }
-      .logo {
-        transform: perspective(900px) rotateX(8deg) rotateZ(-10deg);
-      }
-      .logo:hover {
-        transform: perspective(900px) rotateX(8deg) rotateZ(-10deg) scale(1.05);
-      }
-      .snail-link { top: 48%; }
-    }
-    @media (min-height: 1100px) and (orientation: portrait) {
-      :root { --merch-drop: clamp(120px, 16vh, 280px); }
+    /* ——— Portrait/vertical monitors ——— */
+    @media (orientation: portrait){
+      /* adjust drop a touch for very tall screens */
+      :root{ --merch-drop: clamp(170px, 20vh, 340px) }
+      /* keep left canvas centered a smidge lower */
+      .snail-link{ top:48% }
     }
 
-    @media (max-width: 640px) {
-      body { overflow: auto; padding: 20px 0; background-attachment: scroll; }
-      .snail-link { position: static; transform: none; margin-top: 10px; order: -1; }
-      .logo, .merch-pill, .snail, #glitchFace { width: min(80vw, var(--max-img)); }
-      .merch-pill { margin-top: 20px; }
-      .center-links { margin-top: 10px; }
+    /* Very tall portrait */
+    @media (min-height: 1100px) and (orientation: portrait){
+      :root{ --merch-drop: clamp(150px, 18vh, 320px) }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      body { animation: none; opacity: 1; }
-      .logo { animation: none; }
-      .logo.glitch { animation: none; }
-      .logo:hover, .merch-pill:hover, .snail:hover { transform: none; }
+    /* Mobile width (not just portrait) */
+    @media (max-width: 640px){
+      body{ overflow:auto; padding:20px 0; background-attachment:scroll }
+      .snail-link{ position:static; transform:none; margin-top:10px; order:-1 }
+      .logo,.merch-pill,.snail,#glitchFace{ width:min(80vw,var(--max-img)) }
+      /* still use responsive drop, but cap it a bit lower on tiny screens */
+      :root{ --merch-drop: clamp(120px, 18vh, 240px) }
+      .center-links{ margin-top:10px }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      body{ animation:none; opacity:1 }
+      .logo{ animation:none }
+      .logo.glitch{ animation:none }
+      .logo:hover,.merch-pill:hover,.snail:hover{ transform:none }
     }
   </style>
 </head>
@@ -170,26 +228,33 @@
   <a class="skip" href="#nav-target">Skip to main links</a>
 
   <main role="main" aria-label="Unusual Pills landing">
+    <!-- Left “glitch face” canvas linking to art -->
     <a class="snail-link" href="art.html" aria-label="Open the Art page" title="Open Art">
       <canvas id="glitchFace" class="snail">Art</canvas>
     </a>
 
+    <!-- Center links / buttons -->
     <div class="center-links" id="nav-target" role="navigation" aria-label="Primary">
+      <!-- UNUSUAL PILLS logo: now straight, with glow/flicker + small glitch pops -->
       <a href="claw.html" aria-label="Start Claw Machine">
         <img src="static/images/unusualpills.png" alt="Start the claw machine" class="logo" loading="eager" />
       </a>
-      <a href="merch.html" aria-label="Go to Merch">
+
+      <!-- Merch with “open the bottle” click animation -->
+      <a href="merch.html" aria-label="Go to Merch" class="merch-wrap" id="merchWrap">
+        <div class="cap" aria-hidden="true"></div>
         <img src="static/images/merch.png" alt="Open the merch page" class="merch-pill" loading="lazy" />
       </a>
     </div>
   </main>
 
-  <!-- Glitch face script (unchanged) -->
+  <!-- Glitch face script (unchanged from your version) -->
   <script>
     (() => {
       const canvas = document.getElementById('glitchFace');
       const ctx = canvas.getContext('2d', { alpha: true });
       const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       function setCanvasSize() {
         const dpr = Math.max(1, window.devicePixelRatio || 1);
         const rect = canvas.getBoundingClientRect();
@@ -197,110 +262,261 @@
         canvas.height = Math.max(180, Math.floor((rect.width * 1.1) * dpr));
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
+
       function drawBaseFace(t = 0) {
-        const w = canvas.clientWidth || canvas.width, h = canvas.clientHeight || canvas.height;
+        const w = canvas.clientWidth || canvas.width;
+        const h = canvas.clientHeight || canvas.height;
+
         ctx.clearRect(0, 0, w, h);
+
         const grad = ctx.createLinearGradient(0, 0, w, h);
         grad.addColorStop(0, 'rgba(255, 0, 200, 0.25)');
         grad.addColorStop(0.5, 'rgba(0, 200, 255, 0.25)');
         grad.addColorStop(1, 'rgba(255, 255, 255, 0.12)');
         ctx.fillStyle = grad;
-        roundedRect(ctx, 8, 8, w - 16, h - 16, 16); ctx.fill();
-        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.fillStyle = 'rgba(20,20,30,0.35)';
+        roundedRect(ctx, 8, 8, w - 16, h - 16, 16);
+        ctx.fill();
+
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.fillStyle = 'rgba(20,20,30,0.35)';
         ctx.beginPath();
-        const cx = w/2, cy = h*0.52, rx = w*0.36, ry = h*0.38;
-        for (let a=0; a<=Math.PI*2+0.01; a+=Math.PI/60) {
-          const jx = Math.sin(a*3+t*0.002)*6, jy = Math.cos(a*2-t*0.003)*6;
-          const x = cx+Math.cos(a)*rx+jx, y = cy+Math.sin(a)*ry+jy;
-          a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        const cx = w / 2, cy = h * 0.52, rx = w * 0.36, ry = h * 0.38;
+        for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) {
+          const jx = Math.sin(a * 3 + t * 0.002) * 6;
+          const jy = Math.cos(a * 2 - t * 0.003) * 6;
+          const x = cx + Math.cos(a) * rx + jx;
+          const y = cy + Math.sin(a) * ry + jy;
+          a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-        drawEye(cx-rx*0.45, cy-ry*0.15, w*0.18, t);
-        drawEye(cx+rx*0.45, cy-ry*0.10, w*0.18, t+777);
-        drawMouth(cx, cy+ry*0.35, w*0.42, t);
-        noiseOverlay(w,h,0.06);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        drawEye(cx - rx * 0.45, cy - ry * 0.15, w * 0.18, t);
+        drawEye(cx + rx * 0.45, cy - ry * 0.10, w * 0.18, t + 777);
+        drawMouth(cx, cy + ry * 0.35, w * 0.42, t);
+        noiseOverlay(w, h, 0.06);
       }
-      function drawEye(x,y,size,t) {
-        ctx.save(); ctx.translate(x,y); ctx.rotate(Math.sin(t*0.002)*0.05);
-        const w=size,h=size*0.65;
-        const grad=ctx.createLinearGradient(-w/2,0,w/2,0);
-        grad.addColorStop(0,'rgba(255,255,255,0.85)');
-        grad.addColorStop(1,'rgba(200,220,255,0.75)');
-        ctx.fillStyle=grad; roundedRect(ctx,-w/2,-h/2,w,h,h/2); ctx.fill();
-        const pupilR=Math.min(w,h)*0.24, px=Math.sin(t*0.01)*w*0.08, py=Math.cos(t*0.013)*h*0.08;
-        ctx.beginPath(); ctx.fillStyle='rgba(10,10,20,0.95)'; ctx.arc(px,py,pupilR,0,Math.PI*2); ctx.fill();
-        ctx.strokeStyle='rgba(255,0,200,0.7)'; ctx.lineWidth=1.8; const turns=2.6;
+
+      function drawEye(x, y, size, t) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(Math.sin(t * 0.002) * 0.05);
+        const w = size, h = size * 0.65;
+
+        const grad = ctx.createLinearGradient(-w/2, 0, w/2, 0);
+        grad.addColorStop(0, 'rgba(255,255,255,0.85)');
+        grad.addColorStop(1, 'rgba(200,220,255,0.75)');
+        ctx.fillStyle = grad;
+        roundedRect(ctx, -w/2, -h/2, w, h, h/2);
+        ctx.fill();
+
+        const pupilR = Math.min(w, h) * 0.24;
+        const px = Math.sin(t * 0.01) * w * 0.08;
+        const py = Math.cos(t * 0.013) * h * 0.08;
+
         ctx.beginPath();
-        for(let a=0;a<Math.PI*2*turns;a+=0.08){
-          const r=(a/(Math.PI*2*turns))*pupilR*0.9;
-          const gx=px+Math.cos(a+t*0.015)*r, gy=py+Math.sin(a+t*0.017)*r;
-          a===0?ctx.moveTo(gx,gy):ctx.lineTo(gx,gy);
+        ctx.fillStyle = 'rgba(10,10,20,0.95)';
+        ctx.arc(px, py, pupilR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255,0,200,0.7)';
+        ctx.lineWidth = 1.8;
+        const turns = 2.6;
+        ctx.beginPath();
+        for (let a = 0; a < Math.PI * 2 * turns; a += 0.08) {
+          const r = (a / (Math.PI * 2 * turns)) * pupilR * 0.9;
+          const gx = px + Math.cos(a + t * 0.015) * r;
+          const gy = py + Math.sin(a + t * 0.017) * r;
+          a === 0 ? ctx.moveTo(gx, gy) : ctx.lineTo(gx, gy);
         }
-        ctx.stroke(); ctx.restore();
-      }
-      function drawMouth(cx,cy,w,t){
-        ctx.save(); ctx.lineWidth=3; ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.beginPath();
-        for(let i=0;i<=100;i++){
-          const x=cx-w/2+(w*i/100), y=cy+Math.sin(i*0.25+t*0.02)*6;
-          i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-        }
-        ctx.stroke(); ctx.restore();
-      }
-      function noiseOverlay(w,h,alpha=0.05){
-        const lines=5; ctx.save();
-        for(let i=0;i<lines;i++){ const y=Math.random()*h;
-          ctx.globalAlpha=alpha+Math.random()*alpha; ctx.fillStyle='white'; ctx.fillRect(0,y,w,1);}
-        ctx.restore();
-        const specks=Math.floor((w*h)/5000); ctx.save(); ctx.globalAlpha=alpha;
-        for(let i=0;i<specks;i++){const x=Math.random()*w,y=Math.random()*h;
-          ctx.fillStyle=Math.random()>0.5?'white':'black'; ctx.fillRect(x,y,1,1);}
+        ctx.stroke();
+
         ctx.restore();
       }
-      function roundedRect(ctx,x,y,w,h,r){
-        const rr=Math.min(r,w/2,h/2); ctx.beginPath(); ctx.moveTo(x+rr,y);
-        ctx.arcTo(x+w,y,x+w,y+h,rr); ctx.arcTo(x+w,y+h,x,y+h,rr);
-        ctx.arcTo(x,y+h,x,y,rr); ctx.arcTo(x,y,x+w,y,rr); ctx.closePath();
-      }
-      function glitchSlices(){
-        const w=canvas.clientWidth||canvas.width,h=canvas.clientHeight||canvas.height;
-        const slices=(Math.random()*3)|0;
-        for(let i=0;i<slices;i++){
-          const sh=8+Math.random()*24,sy=Math.random()*(h-sh),sx=0,sw=w,dx=(Math.random()-0.5)*16;
-          const imgData=ctx.getImageData(sx,sy,sw,sh);
-          ctx.clearRect(sx,sy,sw,sh); ctx.putImageData(imgData,sx+dx,sy);
+
+      function drawMouth(cx, cy, w, t) {
+        ctx.save();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.beginPath();
+        for (let i = 0; i <= 100; i++) {
+          const x = cx - w/2 + (w * i / 100);
+          const y = cy + Math.sin(i * 0.25 + t * 0.02) * 6;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
-        if(Math.random()<0.25){
-          ctx.globalCompositeOperation='screen'; ctx.drawImage(canvas,2,0);
-          ctx.globalCompositeOperation='multiply'; ctx.drawImage(canvas,-2,0);
-          ctx.globalCompositeOperation='source-over';
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function noiseOverlay(w, h, alpha = 0.05) {
+        const lines = 5;
+        ctx.save();
+        for (let i = 0; i < lines; i++) {
+          const y = Math.random() * h;
+          ctx.globalAlpha = alpha + Math.random() * alpha;
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, y, w, 1);
+        }
+        ctx.restore();
+
+        const specks = Math.floor((w * h) / 5000);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        for (let i = 0; i < specks; i++) {
+          const x = Math.random() * w, y = Math.random() * h;
+          ctx.fillStyle = Math.random() > 0.5 ? 'white' : 'black';
+          ctx.fillRect(x, y, 1, 1);
+        }
+        ctx.restore();
+      }
+
+      function roundedRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, w/2, h/2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y,     x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x,     y + h, rr);
+        ctx.arcTo(x,     y + h, x,     y,     rr);
+        ctx.arcTo(x,     y,     x + w, y,     rr);
+        ctx.closePath();
+      }
+
+      function glitchSlices() {
+        const w = canvas.clientWidth || canvas.width;
+        const h = canvas.clientHeight || canvas.height;
+        const slices = (Math.random() * 3) | 0;
+        for (let i = 0; i < slices; i++) {
+          const sh = 8 + Math.random() * 24;
+          const sy = Math.random() * (h - sh);
+          const sx = 0;
+          const sw = w;
+          const dx = (Math.random() - 0.5) * 16;
+          const imgData = ctx.getImageData(sx, sy, sw, sh);
+          ctx.clearRect(sx, sy, sw, sh);
+          ctx.putImageData(imgData, sx + dx, sy);
+        }
+
+        if (Math.random() < 0.25) {
+          ctx.globalCompositeOperation = 'screen';
+          ctx.drawImage(canvas, 2, 0);
+          ctx.globalCompositeOperation = 'multiply';
+          ctx.drawImage(canvas, -2, 0);
+          ctx.globalCompositeOperation = 'source-over';
         }
       }
-      let rafId=null;
-      function animate(t){ drawBaseFace(t); if(!prefersReduced){ if(Math.random()<0.5)glitchSlices(); rafId=requestAnimationFrame(animate);} }
-      function start(){ setCanvasSize(); drawBaseFace(0); if(!prefersReduced){ cancelAnimationFrame(rafId); rafId=requestAnimationFrame(animate);} }
-      const ro=new ResizeObserver(start); ro.observe(canvas);
-      window.addEventListener('orientationchange',()=>{setTimeout(start,250);});
+
+      let rafId = null;
+      function animate(t) {
+        drawBaseFace(t);
+        if (!prefersReduced) {
+          if (Math.random() < 0.5) glitchSlices();
+          rafId = requestAnimationFrame(animate);
+        }
+      }
+
+      function start() {
+        setCanvasSize();
+        drawBaseFace(0);
+        if (!prefersReduced) {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(animate);
+        }
+      }
+
+      const ro = new ResizeObserver(start);
+      ro.observe(canvas);
+      window.addEventListener('orientationchange', () => {
+        setTimeout(start, 250);
+      });
+
       start();
-      const link=canvas.parentElement; link.setAttribute('tabindex','0');
-      link.addEventListener('keydown',(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); link.click(); }});
+
+      const link = canvas.parentElement;
+      link.setAttribute('tabindex', '0');
+      link.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          link.click();
+        }
+      });
     })();
   </script>
 
-  <!-- Free shirt + glitch logo JS -->
+  <!-- Logo tiny random glitch + Merch “open bottle” interaction -->
   <script>
+    // Logo tiny random glitch (respect reduced motion)
     (() => {
       const logo = document.querySelector('.logo');
       if (!logo) return;
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReduced) return;
-      function maybeGlitch() {
-        if (Math.random() < 0.28) {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) return;
+      function maybeGlitch(){
+        if (Math.random() < 0.28){
           logo.classList.add('glitch');
-          setTimeout(() => logo.classList.remove('glitch'), 180);
+          setTimeout(()=>logo.classList.remove('glitch'), 180);
         }
       }
       setInterval(maybeGlitch, 1200);
     })();
+
+    // Merch: brief “open” animation before navigating
+    (() => {
+      const wrap = document.getElementById('merchWrap');
+      if (!wrap) return;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      wrap.addEventListener('click', (e) => {
+        if (reduced) return; // just navigate
+        e.preventDefault();
+
+        // add class for cap animation
+        wrap.classList.add('merch-opening');
+
+        // spawn a few “pills”
+        for (let i = 0; i < 8; i++){
+          const dot = document.createElement('span');
+          dot.className = 'pill-fx';
+          // random pastel-y colors
+          const colors = ['#ff73d3','#7df0ff','#ffd36e','#98ff95','#d6a3ff'];
+          dot.style.color = colors[(Math.random()*colors.length)|0];
+          // random horizontal drift
+          const drift = (Math.random()*80 - 40); // -40..40 px
+          const delay = Math.random()*120; // stagger
+          dot.style.left = `calc(50% + ${drift}px)`;
+          dot.style.animationDelay = `${delay}ms`;
+          wrap.appendChild(dot);
+          // cleanup
+          setTimeout(()=>dot.remove(), 1200 + delay);
+        }
+
+        // slight “bounce” on the bottle image
+        const img = wrap.querySelector('.merch-pill');
+        img.animate([
+          { transform: 'translateY(0) scale(1)' },
+          { transform: 'translateY(-6px) scale(1.02)' },
+          { transform: 'translateY(0) scale(1)' }
+        ], { duration: 380, easing: 'ease-out' });
+
+        // navigate after a short beat so animation is visible
+        setTimeout(()=>{ window.location.href = wrap.href; }, 280);
+        // remove class after
+        setTimeout(()=>wrap.classList.remove('merch-opening'), 800);
+      }, { passive:false });
+    })();
   </script>
+
+  <noscript>
+    <style>
+      .js-warning{
+        position:fixed; inset:auto 0 0 0;
+        padding:10px 14px;
+        background:rgba(0,0,0,.7);
+        color:#fff; text-align:center; font-size:14px;
+      }
+    </style>
+    <div class="js-warning">JavaScript is required for animations. Links still work ↑</div>
+  </noscript>
 </body>
 </html>
