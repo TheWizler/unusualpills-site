@@ -2,220 +2,153 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unusual Pills — Merch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unusual Pills — Product</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --bg:12 12 14; --fg:245 245 247; --muted:160 160 175;
-      --card:20 20 24; --accent:255 51 204; --accent-2:129 140 248;
-      --ring:255 255 255 / 18%; --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35); --maxw:1200px;
-      --retro-filter: contrast(1.05) saturate(.85) sepia(.18) brightness(.98);
+    :root{
+      --bg:12 12 14; --fg:245 245 247; --muted:160 160 175;
+      --ring:255 255 255 / 18%; --maxw:1100px; --radius:18px;
+      --shadow:0 16px 46px rgba(0,0,0,.5);
     }
     html,body{height:100%}
     body{
       margin:0; color:rgb(var(--fg));
-      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
       background:
         radial-gradient(1200px 600px at 10% -10%, rgba(255,51,204,.2), transparent),
         radial-gradient(800px 400px at 110% 10%, rgba(129,140,248,.18), transparent),
-        rgb(var(--bg)) url("static/images/background.png") center / cover fixed no-repeat;
+        rgb(var(--bg)) url("static/images/background.png") center/cover fixed no-repeat;
       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
     }
-
-    .nav{position:sticky; top:0; backdrop-filter:blur(10px);
-      background:linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,.15));
-      border-bottom:1px solid var(--ring); z-index:10;}
-    .nav-inner{max-width:var(--maxw); margin:0 auto; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px;}
-    .brand img{width:160px; height:auto; display:block; filter:drop-shadow(0 4px 14px rgba(255,51,204,.25));}
-    .toggle{display:inline-flex; align-items:center; gap:10px; font-size:14px; color:rgb(var(--muted)); cursor:pointer; user-select:none;}
-    .switch{position:relative; width:50px; height:28px; background:rgba(255,255,255,.1); border:1px solid var(--ring); border-radius:999px; transition:.25s;}
-    .switch::after{content:""; position:absolute; inset:2px auto auto 2px; width:24px; height:24px; border-radius:50%; background:white; box-shadow:0 2px 8px rgba(0,0,0,.35); transition:.25s;}
-    .switch.active{background:rgba(255,51,204,.25); border-color:rgba(255,51,204,.45);}
-    .switch.active::after{transform:translateX(22px);}
-
-    .header{max-width:var(--maxw); margin:40px auto 10px; padding:0 20px;}
-    .title{font-size:clamp(26px,4vw,44px); line-height:1.1; font-weight:800;}
-    .subtitle{margin-top:10px; color:rgb(var(--muted));}
-    .promo-banner{margin-top:14px; padding:10px 16px; background:#ff5a5a; color:#111; font-weight:800; border-radius:12px; display:inline-block;}
-
-    .filters{max-width:var(--maxw); margin:12px auto 0; padding:0 20px; display:flex; gap:10px; flex-wrap:wrap;}
-    .filter-btn{appearance:none; border:1px solid rgba(255,255,255,.25);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
-      color:rgb(var(--fg)); padding:8px 14px; border-radius:999px; font-weight:700;
-      cursor:pointer; transition:border-color .2s, transform .15s;}
-    .filter-btn:hover{transform:translateY(-1px); border-color:rgba(255,51,204,.55);}
-    .filter-btn.active{border-color:rgba(255,51,204,.75); box-shadow:0 0 0 2px rgba(255,51,204,.25) inset;}
-
-    .grid{max-width:var(--maxw); margin:24px auto 120px; padding:0 20px 40px;
-      display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:22px;}
-    .product-card{position:relative; border:1px solid var(--ring); border-radius:var(--radius);
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      overflow:hidden; box-shadow:var(--shadow);
-      transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;}
-    .product-card:hover{transform:translateY(-3px); box-shadow:0 16px 46px rgba(0,0,0,.5); border-color:rgba(255,255,255,.28);}
-    .product-card::before{content:""; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
-      background:linear-gradient(135deg, rgba(255,51,204,.35), rgba(129,140,248,.35));
-      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite:xor; mask-composite:exclude; opacity:0; transition:opacity .25s; pointer-events:none;}
-    .product-card:hover::before{opacity:1;}
-
-    .media{position:relative; aspect-ratio:4/5; overflow:hidden;}
-    .media img{width:100%; height:100%; object-fit:cover; transform:scale(1.02); transition:transform .4s ease; filter:var(--retro-filter);}
-    .product-card:hover .media img{transform:scale(1.08);}
-    .media::before{
-      content:""; position:absolute; inset:0;
-      background:
-        radial-gradient(transparent 60%, rgba(0,0,0,.12) 100%),
-        url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'>\
-<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='table' tableValues='0 0 .08 .12 .08 0 0'/></feComponentTransfer></filter>\
-<rect width='100%' height='100%' filter='url(#n)'/>\
-</svg>") center/200px 200px repeat;
-      mix-blend-mode:soft-light; opacity:.55; pointer-events:none;
+    .wrap{max-width:var(--maxw); margin:24px auto; padding:20px;}
+    .crumb{display:inline-flex; gap:8px; align-items:center; color:rgb(var(--muted)); text-decoration:none; font-weight:600}
+    .crumb:hover{color:#fff}
+    .grid{display:grid; grid-template-columns: 1fr 1fr; gap:28px; margin-top:16px}
+    .media{border:1px solid rgba(var(--ring)); border-radius:var(--radius); overflow:hidden; background:rgba(255,255,255,.03)}
+    .media img{width:100%; height:auto; display:block; object-fit:cover}
+    h1{margin:0; font-size:clamp(24px,3.5vw,36px); line-height:1.1; font-weight:800}
+    .price{margin-top:8px; font-weight:800; font-size:18px; opacity:.95}
+    .desc{margin-top:12px; color:rgb(var(--muted))}
+    .sizes{margin-top:18px}
+    .size-grid{display:flex; flex-wrap:wrap; gap:10px; margin-top:10px}
+    .size{
+      appearance:none; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.06);
+      color:#fff; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:800; min-width:56px;
+      transition:border-color .2s, transform .08s;
     }
-    .media::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(to bottom, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
-      background-size:100% 3px; opacity:.18; pointer-events:none;
+    .size:hover{transform:translateY(-1px); border-color:rgba(255,51,204,.6)}
+    .size.selected{border-color:rgba(255,51,204,.85); box-shadow:0 0 0 2px rgba(255,51,204,.25) inset}
+    .cta{
+      margin-top:18px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
     }
-
-    .info{position:absolute; left:0; right:0; bottom:0; z-index:2; display:flex; align-items:end; justify-content:space-between; padding:12px; color:#fff;}
-    .name{font-weight:800; font-size:14px;}
-    .price{font-size:13px; opacity:.9;}
-
-    .buy{position:relative; z-index:10; margin:10px; margin-top:0; display:block; text-align:center;
-      background:#fff; color:#111; font-weight:900; cursor:pointer;
-      border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 12px;
-      transition:transform .08s, box-shadow .2s;}
-    .buy:hover{transform:translateY(-1px); box-shadow:0 10px 26px rgba(255,255,255,.18);}
-
-    .is-hidden{display:none !important;}
-    footer{text-align:center; color:rgb(var(--muted)); padding:20px; margin-bottom:20px;}
-
-    body.retro{
-      image-rendering:pixelated;
-      background:
-        repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 2px, transparent 2px 4px),
-        radial-gradient(1000px 450px at -10% 10%, rgba(0,255,170,.18), transparent),
-        radial-gradient(700px 350px at 120% -10%, rgba(255,0,170,.18), transparent),
-        rgb(10 10 12) url("static/images/background.png") center / cover fixed no-repeat;
-      font-family:'Press Start 2P', monospace;
+    .buy{
+      display:inline-block; background:#fff; color:#111; font-weight:900; padding:12px 18px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.14); text-decoration:none; box-shadow:var(--shadow); transition:transform .08s, box-shadow .2s;
     }
-    body.retro .buy{border-radius:6px; background:linear-gradient(180deg, rgba(0,0,0,.5), rgba(0,0,0,.35)); box-shadow:inset 0 0 0 2px rgba(0,255,170,.35), 0 6px 0 0 rgba(0,0,0,.6);}
+    .buy:hover{transform:translateY(-1px)}
+    .note{color:rgb(var(--muted)); font-size:13px}
+    .card{border:1px solid rgba(var(--ring)); border-radius:var(--radius); padding:16px; background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02))}
+    .oops{padding:24px; text-align:center}
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
-  <div class="nav">
-    <div class="nav-inner">
-      <a class="brand" href="/"><img src="static/images/unusualpills.png" alt="Unusual Pills" /></a>
-      <div class="toggle" id="themeToggle" role="button" aria-pressed="false" tabindex="0">
-        <span>Retro mode</span><div class="switch"></div>
-      </div>
-    </div>
+  <div class="wrap">
+    <a class="crumb" href="merch.html">← Back to Merch</a>
+
+    <div id="content"></div>
   </div>
 
-  <header class="header">
-    <h1 class="title">Merch</h1>
-    <p class="subtitle">Flip the switch</p>
-    <div class="promo-banner"> BUY 2 GET 2</div>
-  </header>
+  <script>
+    // --- tiny product "DB" ---
+    const PRODUCTS = {
+      // existing slugs can be added later if you want a page for them too
+      unusualpollination: {
+        name: "Unusual Pollination • Tee",
+        price: 35,
+        image: "static/images/unusualpollination.png",
+        sizes: ["S","M","L","XL","XXL"],
+        // Your Stripe Payment Link (single link). We'll append ?size= for your reference.
+        stripe: "https://buy.stripe.com/14A00kg4a60Uai5a01bfO0c",
+        // OPTIONAL: if you make separate links per size later, put them here and we'll use them instead:
+        // stripeBySize: { S:"...", M:"...", L:"...", XL:"...", XXL:"..." }
+      }
+    };
 
-  <nav class="filters" aria-label="Filter products">
-    <button class="filter-btn active" data-filter="all" aria-pressed="true">All</button>
-    <button class="filter-btn" data-filter="tees">Tees</button>
-    <button class="filter-btn" data-filter="hoodies">Hoodies</button>
-  </nav>
+    const $ = (s, r=document) => r.querySelector(s);
+    const params = new URLSearchParams(location.search);
+    const slug = (params.get('slug')||"").toLowerCase();
+    const product = PRODUCTS[slug];
 
-  <main class="grid">
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/ferris_wheel.png" alt="Ferris Wheel Tee">
-        <div class="info"><div><div class="name">Ferris Wheel • Tee</div><div class="price">$35</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=ferris_wheel">Buy</a>
-    </article>
+    function render404(){
+      $('#content').innerHTML = `
+        <div class="card oops">
+          <h1>Item not found</h1>
+          <p>That product doesn’t exist. <a href="merch.html">See all merch</a>.</p>
+        </div>`;
+    }
 
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/benzodiazastream.jpg" alt="Benzodiazastream Tee">
-        <div class="info"><div><div class="name">Benzodiazastream • Tee</div><div class="price">$35</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=benzodiazastream">Buy</a>
-    </article>
+    function renderProduct(p){
+      const root = document.createElement('div');
+      root.className = 'grid';
+      root.innerHTML = `
+        <div class="media"><img src="${p.image}" alt="${p.name}"></div>
+        <div>
+          <h1>${p.name}</h1>
+          <div class="price">$${p.price}</div>
+          <p class="desc">Premium cotton tee. True-to-size fit. Screen-printed graphic.</p>
 
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/waytoomany.jpg" alt="Way Too Many Tee">
-        <div class="info"><div><div class="name">Way Too Many • Tee</div><div class="price">$35</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=waytoomany">Buy</a>
-    </article>
+          <div class="sizes">
+            <div style="font-weight:800">Select size</div>
+            <div class="size-grid" id="sizeGrid">
+              ${p.sizes.map(s => `<button class="size" data-size="${s}" type="button">${s}</button>`).join('')}
+            </div>
+          </div>
 
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/generically.png" alt="Seroquel Tee">
-        <div class="info"><div><div class="name">Seroquel • Tee</div><div class="price">$35</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=seroquel">Buy</a>
-    </article>
-
-    <!-- NEW: Unusual Pollination Tee -->
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/unusualpollination.png" alt="Unusual Pollination Tee">
-        <div class="info">
-          <div>
-            <div class="name">Unusual Pollination • Tee</div>
-            <div class="price">$35</div>
+          <div class="cta">
+            <a id="buyBtn" class="buy" href="#" role="button">Buy</a>
+            <span class="note">Free returns/exchanges within 30 days.</span>
           </div>
         </div>
-      </div>
-      <!-- Direct Stripe checkout link -->
-      <a class="buy" href="https://buy.stripe.com/14A00kg4a60Uai5a01bfO0c" target="_blank" rel="noopener">Buy</a>
-    </article>
-    <!-- /NEW -->
+      `;
+      $('#content').appendChild(root);
 
-    <article class="product-card" data-category="hoodies">
-      <div class="media">
-        <img src="static/images/hoodie.jpg" alt="Unusual Hoodie">
-        <div class="info"><div><div class="name">Unusual Hoodie</div><div class="price">$55</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=hoodie">Buy</a>
-    </article>
+      const sizeBtns = [...root.querySelectorAll('.size')];
+      const buyBtn = root.querySelector('#buyBtn');
+      const saved = localStorage.getItem('size:'+slug);
+      let selected = p.sizes.includes(saved) ? saved : "";
 
-    <article class="product-card" data-category="tees">
-      <div class="media">
-        <img src="static/images/unusualpillT.jpg" alt="Unusual Pill Tee">
-        <div class="info"><div><div class="name">Unusual Pill • Tee</div><div class="price">$35</div></div></div>
-      </div>
-      <a class="buy" href="./product.html?slug=unusualpill">Buy</a>
-    </article>
-  </main>
+      function setSelected(s){
+        selected = s;
+        sizeBtns.forEach(b => b.classList.toggle('selected', b.dataset.size === s));
+        if (s) localStorage.setItem('size:'+slug, s);
+      }
+      sizeBtns.forEach(b => b.addEventListener('click', () => setSelected(b.dataset.size)));
+      if (selected) setSelected(selected);
 
-  <footer>© <span id="year"></span> Unusual Pills. All rights reserved.</footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    const toggle = document.getElementById('themeToggle'), switchEl = toggle.querySelector('.switch');
-    function setRetro(on){ document.body.classList.toggle('retro', on); switchEl.classList.toggle('active', on); toggle.setAttribute('aria-pressed', on?'true':'false'); localStorage.setItem('retro', on?'1':'0'); }
-    if(localStorage.getItem('retro')==='1') setRetro(true);
-    toggle.addEventListener('click',()=> setRetro(!document.body.classList.contains('retro')));
-
-    const filterButtons=[...document.querySelectorAll('.filters [data-filter]')];
-    const cards=[...document.querySelectorAll('.product-card')];
-    function applyFilter(key){
-      filterButtons.forEach(b=>{
-        const active=b.dataset.filter===key||(key==='all'&&b.dataset.filter==='all');
-        b.classList.toggle('active',active);
-        if(b.tagName==='BUTTON') b.setAttribute('aria-pressed',active?'true':'false');
+      buyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!selected){
+          alert('Pick a size first 🙏');
+          return;
+        }
+        // Prefer size-specific links if you add them later
+        if (p.stripeBySize && p.stripeBySize[selected]){
+          location.href = p.stripeBySize[selected];
+          return;
+        }
+        // Otherwise use the single Payment Link and append a size hint.
+        // Note: Stripe Payment Links ignore arbitrary params unless you add a Custom Field in dashboard.
+        // This at least preserves size in your analytics / logs if you capture URL.
+        const url = p.stripe + (p.stripe.includes('?') ? '&' : '?') + 'size=' + encodeURIComponent(selected);
+        location.href = url;
       });
-      cards.forEach(c=> c.classList.toggle('is-hidden', !(key==='all'||c.dataset.category===key)));
     }
-    filterButtons.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
-    applyFilter('all');
+
+    if (!product) render404(); else renderProduct(product);
   </script>
 </body>
 </html>
