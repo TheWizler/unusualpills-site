@@ -27,19 +27,10 @@
       border:1px solid var(--stroke); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.45); padding:24px;
     }
     .header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:14px }
-    .brand-link{ display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit }
-    .brand-link:hover{ opacity:.9 }
-    .brand-link img{ width:40px; height:40px; border-radius:10px; object-fit:cover }
+    .brand{ display:flex; align-items:center; gap:12px }
+    .brand img{ width:40px; height:40px; border-radius:10px; object-fit:cover }
     h1{margin:0; font-size:28px; letter-spacing:.3px}
     .sub{margin-top:6px; color:var(--muted); font-size:14px}
-    .header-right{ display:flex; align-items:center; gap:12px }
-    .home-btn{
-      padding:8px 12px; border-radius:12px; border:1px solid var(--stroke);
-      background:#fff; color:#111; font-weight:800; text-decoration:none;
-      transition: transform .05s ease, box-shadow .2s ease;
-    }
-    .home-btn:hover{ transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,255,255,.15) }
-    .home-btn:active{ transform:none; box-shadow:none }
     form{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px }
     .row{ display:grid; grid-template-columns:1fr 1fr; gap:14px }
     .full{ grid-column:1 / -1 }
@@ -75,22 +66,20 @@
 <body>
   <div class="card" role="region" aria-labelledby="title">
     <div class="header">
-      <a class="brand-link" href="index.html" aria-label="Back to Home">
+      <div class="brand">
         <img src="static/images/merch.png" alt="Unusual Pills">
         <div>
           <h1 id="title">Free Shirt Signup</h1>
           <div class="sub">Verify your email and drop your shipping info. We’ll never sell your data.</div>
         </div>
-      </a>
-      <div class="header-right">
-        <a class="home-btn" href="index.html">Home</a>
-        <a class="small" href="mailto:hello@unusualpills.com" style="color:#fff">Contact us</a>
       </div>
+      <div class="small">Need help? <a href="mailto:hello@unusualpills.com" style="color:#fff">Contact us</a></div>
     </div>
 
     <div id="err" class="error" role="alert"></div>
     <div id="ok"  class="success" role="status">Thanks! Check your email for a verification link…</div>
 
+    <!-- NOTE: no action attribute; JS handles submit -->
     <form id="shirtForm" autocomplete="on" novalidate>
       <div class="row">
         <div>
@@ -142,23 +131,6 @@
         </div>
       </div>
 
-      <!-- NEW: Shirt Size -->
-      <div class="row">
-        <div class="full">
-          <label for="size">Shirt size</label>
-          <select id="size" name="shirt_size" required>
-            <option value="" disabled selected>Select size</option>
-            <option>XS</option>
-            <option>S</option>
-            <option>M</option>
-            <option>L</option>
-            <option>XL</option>
-            <option>2XL</option>
-            <option>3XL</option>
-          </select>
-        </div>
-      </div>
-
       <div class="full">
         <label for="phone">Phone (optional)</label>
         <input id="phone" name="phone" autocomplete="tel">
@@ -176,16 +148,13 @@
     </form>
   </div>
 
-  <!-- Supabase + Formspree -->
+  <!-- Supabase -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    // Supabase values (yours)
-    const SUPABASE_URL  = "https://rkwldeocahwvnuzjhpgq.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJrd2xkZW9jYWh3dm51empocGdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY2NDA2OTEsImV4cCI6MjA3MjIxNjY5MX0.WH_XmuIJ53DtMwMo2I7e4ul-m9BaTVlJMkMHY583oi0";
-
-    // Formspree endpoint (for owner email notifications)
-    const FORMSPREE_URL = "https://formspree.io/f/xldwnjan";
-
+    // ======= fill these with your project values =======
+    const SUPABASE_URL  = "https://SUPABASE_URL_HERE.supabase.co";
+    const SUPABASE_ANON = "SUPABASE_ANON_KEY_HERE";
+    // ================================================
     const { createClient } = supabase;
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
@@ -208,13 +177,6 @@
         return;
       }
 
-      // Basic size validation
-      if (!val('size')) {
-        err.textContent = 'Please select a shirt size.';
-        err.style.display = 'block';
-        return;
-      }
-
       btn.disabled = true;
 
       const payload = {
@@ -228,25 +190,21 @@
         postal_code:val('postal'),
         country:    document.getElementById('country').value,
         phone:      val('phone'),
-        shirt_size: val('size'),
         marketing_consent: true
       };
 
-      // 1) Send passwordless magic link (no password required)
-      const { error: otpErr } = await sb.auth.signInWithOtp({
-        email: payload.email,
-        options: {
-          emailRedirectTo: window.location.origin + '/thanks.html' // optional
-        }
+      // 1) Create account (sends magic-link email)
+      const { data: signData, error: signErr } = await sb.auth.signUp({
+        email: payload.email
       });
-      if (otpErr) {
-        err.textContent = 'Signup failed: ' + otpErr.message;
+      if (signErr) {
+        err.textContent = 'Signup failed: ' + signErr.message;
         err.style.display = 'block';
         btn.disabled = false;
         return;
       }
 
-      // 2) Save profile row (stores shipping info for you)
+      // 2) Save profile (insert row)
       const { error: insErr } = await sb.from('profiles').insert(payload);
       if (insErr) {
         err.textContent = 'Saving profile failed: ' + insErr.message;
@@ -255,18 +213,11 @@
         return;
       }
 
-      // 3) Email you via Formspree (non-blocking)
-      try {
-        const fd = new FormData();
-        Object.entries(payload).forEach(([k,v]) => fd.append(k, v ?? ""));
-        fd.append("_subject", "New Free Shirt Signup");
-        await fetch(FORMSPREE_URL, { method: "POST", body: fd, headers: { "Accept": "application/json" } });
-      } catch (_) { /* ignore */ }
-
-      // 4) Success message + gentle redirect
+      // 3) Success → show message and send to thanks page
       ok.style.display = 'block';
-      setTimeout(() => { window.location.href = 'thanks.html'; }, 800);
+      setTimeout(() => { window.location.href = 'thanks.html'; }, 600);
     });
   </script>
 </body>
 </html>
+
