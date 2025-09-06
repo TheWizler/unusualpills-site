@@ -1,144 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Unusual Pills — Cart</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{ --ring:255 255 255 / 18%; --maxw:980px; }
-    body{ margin:0; font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; color:#f5f5f7;
-      background:
-        radial-gradient(1100px 520px at 8% -8%, rgba(255,51,204,.18), transparent),
-        radial-gradient(800px 420px at 108% 12%, rgba(129,140,248,.16), transparent),
-        #0c0c0e url("static/images/background.png") center/cover fixed no-repeat;
-    }
-    .wrap{max-width:var(--maxw); margin:24px auto 40px; padding:0 16px;}
-    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid rgba(var(--ring));}
-    .brand img{height:36px}
-    a.back{color:#f5f5f7; text-decoration:none; font-weight:800; padding:8px 12px; border:1px solid rgba(var(--ring)); border-radius:12px}
-    h1{margin:16px 0 10px; font-size:clamp(24px,3.5vw,36px)}
-    .empty{opacity:.85; margin-top:20px}
-    .list{display:grid; gap:12px; margin-top:16px}
-    .item{display:grid; grid-template-columns:96px 1fr auto; gap:12px; border:1px solid rgba(var(--ring)); border-radius:14px; padding:12px; background:rgba(255,255,255,.04)}
-    .thumb{width:96px; height:96px; border-radius:10px; overflow:hidden; background:#111}
-    .thumb img{width:100%; height:100%; object-fit:cover}
-    .name{font-weight:800}
-    .muted{color:#a0a0af; font-size:13px}
-    .qty{display:inline-flex; align-items:center; gap:8px; margin-top:6px}
-    .qty button{width:28px; height:28px; border-radius:8px; border:1px solid rgba(var(--ring)); background:rgba(255,255,255,.08); color:#fff; cursor:pointer}
-    .price{font-weight:800; margin-top:4px}
-    .actions{display:flex; flex-direction:column; gap:8px; align-items:flex-end}
-    .btn{padding:10px 12px; border-radius:12px; border:1px solid rgba(var(--ring)); background:#fff; color:#111; font-weight:900; cursor:pointer; text-decoration:none; text-align:center}
-    .btn.secondary{background:transparent; color:#fff}
-    .summary{margin-top:18px; display:flex; align-items:center; justify-content:space-between}
-    .total{font-weight:900; font-size:18px}
-    .note{color:#a0a0af; font-size:13px}
-    @media (max-width:720px){ .item{grid-template-columns:72px 1fr} .actions{align-items:flex-start} }
-  </style>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Your Cart</title>
+<style>
+  body{font-family:Inter,system-ui,-apple-system,Segoe UI,Arial;background:#0c0c0e;color:#f5f5f7;margin:0;padding:24px}
+  table{width:100%;max-width:900px;margin:0 auto;border-collapse:collapse}
+  th,td{padding:10px;border-bottom:1px solid #26262c;text-align:left;vertical-align:middle}
+  .actions{max-width:900px;margin:16px auto;display:flex;gap:12px;justify-content:space-between;align-items:center}
+  button{background:#fff;color:#000;border:0;border-radius:999px;padding:10px 16px;cursor:pointer}
+  a{color:#9ad}
+  .muted{color:#9aa}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <a class="brand" href="merch.html"><img src="static/images/unusualpills.png" alt="Unusual Pills"></a>
-      <a class="back" href="merch.html">← Continue shopping</a>
+  <h1>Your Cart</h1>
+  <table id="cartTable"></table>
+  <div class="actions">
+    <a href="/index.html">← Continue shopping</a>
+    <div>
+      <span id="promoPreview" class="muted"></span>
+      <button id="checkoutBtn">Checkout</button>
     </div>
-
-    <h1>Your Cart</h1>
-    <div id="empty" class="empty">Your cart is empty.</div>
-    <div id="list" class="list"></div>
-
-    <div class="summary" id="summary" style="display:none">
-      <div class="total">Subtotal: $<span id="subtotal">0</span></div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap">
-        <button id="checkoutAll" class="btn">Checkout all (one-by-one)</button>
-        <button id="clear" class="btn secondary">Empty cart</button>
-      </div>
-    </div>
-
-    <p class="note">Heads up: Stripe Payment Links are single-product. “Checkout all” will open the first item; come back to finish the rest.</p>
   </div>
 
-  <script>
-    const $ = (s, r=document)=>r.querySelector(s);
-    function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
-    function setCart(items){ localStorage.setItem('cart', JSON.stringify(items)); render(); }
+<script>
+const $ = (s)=>document.querySelector(s);
 
-    function stripeUrl(base, size, color){
-      if (!base) return '#';
-      const sep = base.includes('?') ? '&' : '?';
-      return `${base}${sep}size=${encodeURIComponent(size||'')}&color=${encodeURIComponent(color||'')}`;
+// ===== Cart helpers =====
+function getCart(){ return JSON.parse(localStorage.getItem('cart')||'[]'); }
+function setCart(c){ localStorage.setItem('cart', JSON.stringify(c)); render(); }
+
+function inc(id){ const c=getCart(); const i=c.find(x=>x.id===id); if(i){i.quantity++; setCart(c);} }
+function dec(id){ const c=getCart(); const i=c.find(x=>x.id===id); if(i){ i.quantity--; if(i.quantity<=0) c.splice(c.indexOf(i),1); setCart(c);} }
+function removeItem(id){ const c=getCart().filter(x=>x.id!==id); setCart(c); }
+
+// ===== Promo math (client-side preview only; real discount is created server-side) =====
+function promoPreview(cart){
+  // gather each shirt as individual units by price
+  const units = [];
+  cart.forEach(it=>{
+    if (it.is_shirt) {
+      for(let q=0;q<it.quantity;q++) units.push(it.price_cents);
     }
+  });
+  if (units.length < 4) return {freeCount:0, discountCents:0};
 
-    function render(){
-      const items = getCart();
-      const empty = $('#empty');
-      const list = $('#list');
-      const summary = $('#summary');
-      const subtotalEl = $('#subtotal');
+  const freeCount = Math.floor(units.length / 4) * 2;
+  const discountCents = units.sort((a,b)=>a-b).slice(0, freeCount).reduce((s,p)=>s+p,0);
+  return {freeCount, discountCents};
+}
 
-      list.innerHTML = '';
-      if (!items.length){
-        empty.style.display = '';
-        summary.style.display = 'none';
-        subtotalEl.textContent = '0';
-        return;
-      }
-      empty.style.display = 'none';
-      summary.style.display = '';
+// ===== Render table =====
+function render(){
+  const cart = getCart();
+  if(cart.length===0){
+    $('#cartTable').innerHTML = '<tr><td>Your cart is empty.</td></tr>';
+    $('#promoPreview').textContent = '';
+    return;
+  }
 
-      let subtotal = 0;
+  const rows = cart.map(i => `
+    <tr>
+      <td style="min-width:260px">${i.name}</td>
+      <td>$ ${(i.price_cents/100).toFixed(2)}</td>
+      <td>
+        <button onclick="dec('${i.id}')">-</button>
+        ${i.quantity}
+        <button onclick="inc('${i.id}')">+</button>
+        <button onclick="removeItem('${i.id}')">Remove</button>
+      </td>
+      <td>$ ${((i.price_cents*i.quantity)/100).toFixed(2)}</td>
+    </tr>
+  `).join('');
 
-      items.forEach((it, idx)=>{
-        subtotal += (it.price||0) * (it.qty||1);
+  const subtotal = cart.reduce((s,i)=>s+i.price_cents*i.quantity,0);
+  const {freeCount, discountCents} = promoPreview(cart);
+  const total = subtotal - discountCents;
 
-        const row = document.createElement('div');
-        row.className = 'item';
-        row.innerHTML = `
-          <div class="thumb"><img src="${it.image}" alt=""></div>
-          <div>
-            <div class="name">${it.name}</div>
-            <div class="muted">Size: ${it.size} • Color: ${it.color}</div>
-            <div class="qty">
-              <button data-act="dec">−</button>
-              <span>Qty: <strong>${it.qty||1}</strong></span>
-              <button data-act="inc">+</button>
-              <button data-act="rm" style="margin-left:8px">Remove</button>
-            </div>
-            <div class="price">$${it.price} each</div>
-          </div>
-          <div class="actions">
-            <a class="btn" href="${stripeUrl(it.stripe, it.size, it.color)}">Checkout</a>
-          </div>
-        `;
-        // bind actions
-        row.querySelector('[data-act="inc"]').addEventListener('click', ()=>{
-          const c = getCart(); c[idx].qty = (c[idx].qty||1) + 1; setCart(c);
-        });
-        row.querySelector('[data-act="dec"]').addEventListener('click', ()=>{
-          const c = getCart(); c[idx].qty = Math.max(1, (c[idx].qty||1) - 1); setCart(c);
-        });
-        row.querySelector('[data-act="rm"]').addEventListener('click', ()=>{
-          const c = getCart(); c.splice(idx,1); setCart(c);
-        });
+  $('#cartTable').innerHTML = `
+    <tr><th>Item</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+    ${rows}
+    <tr><td colspan="3" style="text-align:right">Subtotal</td><td>$ ${(subtotal/100).toFixed(2)}</td></tr>
+    <tr><td colspan="3" style="text-align:right">Promo discount (preview)</td><td>− $ ${(discountCents/100).toFixed(2)}</td></tr>
+    <tr><td colspan="3" style="text-align:right"><strong>Estimated total</strong></td><td><strong>$ ${(total/100).toFixed(2)}</strong></td></tr>
+  `;
 
-        list.appendChild(row);
-      });
+  if (freeCount>0) {
+    $('#promoPreview').textContent =
+      `Promo: ${freeCount} shirt${freeCount>1?'s':''} will be free at checkout (cheapest first).`;
+  } else {
+    $('#promoPreview').textContent = 'Add 4 shirts to trigger “Buy 2, Get 2 Free.”';
+  }
+}
+render();
 
-      subtotalEl.textContent = subtotal.toFixed(2);
-    }
+// ===== ONE checkout for the ENTIRE cart =====
+$('#checkoutBtn').addEventListener('click', async ()=>{
+  const items = getCart();
+  if (!items.length) return alert('Your cart is empty.');
 
-    $('#checkoutAll').addEventListener('click', ()=>{
-      const items = getCart();
-      if (!items.length) return;
-      const first = items[0];
-      location.href = (first && first.stripe) ? (first.stripe + (first.stripe.includes('?')?'&':'?') + `size=${encodeURIComponent(first.size)}&color=${encodeURIComponent(first.color)}`) : '#';
+  // IMPORTANT: ensure each cart line has is_shirt boolean
+  // If any items were added earlier without is_shirt, default false:
+  items.forEach(i => { if (typeof i.is_shirt === 'undefined') i.is_shirt = false; });
+
+  try{
+    const res = await fetch('/.netlify/functions/create-checkout', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ items })
     });
-    $('#clear').addEventListener('click', ()=>{ setCart([]); });
-
-    render();
-  </script>
+    const data = await res.json();
+    if (data.url) { window.location = data.url; }
+    else { throw new Error('No URL from checkout function'); }
+  }catch(err){
+    console.error(err);
+    alert('Checkout error. Please try again.');
+  }
+});
+</script>
 </body>
 </html>
