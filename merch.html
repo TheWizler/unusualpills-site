@@ -247,11 +247,12 @@
         <div class="info">
           <div>
             <div class="name">Unusual Booty Shorts</div>
-            <div class="price">$28</div>
+            <div class="price">$15</div>
           </div>
         </div>
       </div>
-      <a class="buy" href="./product.html?slug=booty_shorts">Buy</a>
+      <!-- CHANGED: direct to Stripe -->
+      <a class="buy" href="https://buy.stripe.com/7sYbJ27xEexqcqd7RTbfO0d" target="_blank" rel="noopener">Buy</a>
     </article>
   </main>
 
@@ -288,18 +289,6 @@
     }
     filterButtons.forEach(btn=>btn.addEventListener('click',()=>applyFilter(btn.dataset.filter)));
     applyFilter('all');
-
-    // cart badge
-    (function(){
-      function getCart(){ try{ return JSON.parse(localStorage.getItem('cart')||'[]'); }catch(_){ return []; } }
-      function update(){
-        const n = getCart().reduce((s,i)=>s+(i.quantity||i.qty||1),0);
-        const el = document.getElementById('cartCount');
-        if (el) el.textContent = n;
-      }
-      window.addEventListener('storage', update);
-      update();
-    })();
 
     // ============= Hover Zoom (desktop) & Tap Zoom (touch) =============
     const preview = document.getElementById('zoomPreview');
