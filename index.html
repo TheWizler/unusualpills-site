@@ -23,14 +23,23 @@
     }
     .splash .kaomoji {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: clamp(28px, 8vw, 80px);
-      color: #fff;
+      text-align: center;
+      color: #fff; user-select: none;
       text-shadow: 0 0 10px #ff2a6d, 0 0 18px #7cffc1;
-      opacity: 0; transform: scale(.9);
-      animation: kfade 1s ease forwards .35s;
-      user-select: none;
     }
-    @keyframes kfade { to { opacity: 1; transform: scale(1); } }
+    .splash .kaomoji .fr {
+      font-size: clamp(18px,3.5vw,28px);
+      opacity:.95; margin-bottom:.25em; letter-spacing:.5px;
+      transform: translateY(6px); opacity: 0;
+      animation: frIn 0.7s ease forwards .2s;
+    }
+    .splash .kaomoji .face {
+      font-size: clamp(28px,8vw,80px);
+      transform: scale(.9); opacity: 0;
+      animation: faceIn 0.8s ease forwards .45s;
+    }
+    @keyframes frIn { to { transform: translateY(0); opacity: 1; } }
+    @keyframes faceIn { to { transform: scale(1); opacity: 1; } }
 
     .flash { position: fixed; inset: 0; opacity: 0;
       background: radial-gradient(circle, #fff, transparent 60%); }
@@ -39,9 +48,10 @@
 
     .particle {
       position: fixed; width: 6px; height: 6px; border-radius: 50%;
-      background: linear-gradient(180deg,#7cffc1,#ff2a6d);
+      background: linear-gradient(180deg,#ff7a1a,#5eb9ff); /* pill-orange → xanax-blue */
       box-shadow: 0 0 6px rgba(255,255,255,.8);
       pointer-events: none; animation: fly .9s ease-out forwards;
+      mix-blend-mode: screen;
     }
     @keyframes fly { to { transform: translate(var(--x), var(--y)) scale(.6); opacity:0 } }
 
@@ -199,9 +209,12 @@
   </style>
 </head>
 <body>
-  <!-- === SPLASH ADD: this sits above everything and disappears after 1.6s === -->
+  <!-- === SPLASH ADD: above everything, removed after 1.6s === -->
   <div class="splash" id="splash" aria-hidden="true">
-    <div class="kaomoji">(ﾉ´ヮ`)ﾉ*:･ﾟ✧</div>
+    <div class="kaomoji">
+      <div class="fr">Bienvenue, <strong>Wizler</strong></div>
+      <div class="face">(◉‿◉)</div>
+    </div>
     <div class="flash" id="flash"></div>
   </div>
   <!-- === /SPLASH ADD === -->
@@ -214,7 +227,7 @@
   </div>
 
   <main role="main" aria-label="Unusual Pills landing">
-    <!-- Left “glitch face” canvas linking to art -->
+    <!-- Left “trippy eye” canvas linking to art -->
     <a class="snail-link" href="art.html" aria-label="Open the Art page" title="Open Art">
       <canvas id="glitchFace" class="snail">Art</canvas>
     </a>
@@ -262,203 +275,148 @@
   </script>
   <!-- === /SPLASH ADD === -->
 
-  <!-- Glitch face script (unchanged) -->
+  <!-- Trippy Eye script (replaces old face) -->
   <script>
-    (() => {
-      const canvas = document.getElementById('glitchFace');
-      const ctx = canvas.getContext('2d', { alpha: true });
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (() => {
+    const canvas = document.getElementById('glitchFace');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      function setCanvasSize() {
-        const dpr = Math.max(1, window.devicePixelRatio || 1);
-        const rect = canvas.getBoundingClientRect();
-        canvas.width  = Math.max(180, Math.floor(rect.width * dpr));
-        canvas.height = Math.max(180, Math.floor((rect.width * 1.1) * dpr));
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
+    function setCanvasSize() {
+      const dpr = Math.max(1, devicePixelRatio || 1);
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(220, Math.floor(rect.width * dpr));
+      const h = Math.max(220, Math.floor((rect.width * 0.75) * dpr));
+      canvas.width = w;
+      canvas.height = h;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
-      function drawBaseFace(t = 0) {
-        const w = canvas.clientWidth || canvas.width;
-        const h = canvas.clientHeight || canvas.height;
+    function drawEye(t = 0) {
+      const w = canvas.clientWidth || canvas.width;
+      const h = canvas.clientHeight || canvas.height;
+      const cx = w / 2, cy = h / 2;
+      const eyeW = Math.min(w * 0.86, h * 1.15);
+      const eyeH = eyeW * 0.56;
 
-        ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, w, h);
 
-        const grad = ctx.createLinearGradient(0, 0, w, h);
-        grad.addColorStop(0, 'rgba(255, 0, 200, 0.25)');
-        grad.addColorStop(0.5, 'rgba(0, 200, 255, 0.25)');
-        grad.addColorStop(1, 'rgba(255, 255, 255, 0.12)');
-        ctx.fillStyle = grad;
-        roundedRect(ctx, 8, 8, w - 16, h - 16, 16);
-        ctx.fill();
+      // Sclera with soft glow
+      const scleraGrad = ctx.createRadialGradient(cx, cy, eyeW*0.06, cx, cy, eyeW*0.52);
+      scleraGrad.addColorStop(0, 'rgba(250,250,255,0.95)');
+      scleraGrad.addColorStop(1, 'rgba(210,220,255,0.75)');
+      ctx.fillStyle = scleraGrad;
+      roundedOval(cx, cy, eyeW, eyeH, 0);
+      ctx.shadowColor = 'rgba(255,255,255,0.35)';
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.fillStyle = 'rgba(20,20,30,0.35)';
+      // Chromatic fringe pass
+      ctx.globalCompositeOperation = 'screen';
+      ctx.filter = 'blur(0.4px)';
+      ctx.save(); ctx.translate(1.5, 0); ctx.globalAlpha = 0.35; ctx.drawImage(canvas, 0, 0); ctx.restore();
+      ctx.save(); ctx.translate(-1.5, 0); ctx.globalAlpha = 0.35; ctx.drawImage(canvas, 0, 0); ctx.restore();
+      ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over';
+
+      // Iris: rotating psychedelic radial field
+      const irisR = eyeH * 0.34;
+      const hue = (t * 0.03) % 360;
+      for (let i = 0; i < 140; i++) {
+        const a0 = (i / 140) * Math.PI * 2;
+        const a1 = ((i + 1) / 140) * Math.PI * 2;
+        const inner = irisR * 0.25 + Math.sin(a0 * 7 + t * 0.02) * 3;
+        const outer = irisR * (0.95 + Math.sin(a0 * 5 + t * 0.015) * 0.03);
         ctx.beginPath();
-        const cx = w / 2, cy = h * 0.52, rx = w * 0.36, ry = h * 0.38;
-        for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) {
-          const jx = Math.sin(a * 3 + t * 0.002) * 6;
-          const jy = Math.cos(a * 2 - t * 0.003) * 6;
-          const x = cx + Math.cos(a) * rx + jx;
-          const y = cy + Math.sin(a) * ry + jy;
-          a === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.closePath();
+        ctx.moveTo(cx + Math.cos(a0) * inner, cy + Math.sin(a0) * inner);
+        ctx.lineTo(cx + Math.cos(a0) * outer, cy + Math.sin(a0) * outer);
+        ctx.lineTo(cx + Math.cos(a1) * outer, cy + Math.sin(a1) * outer);
+        ctx.lineTo(cx + Math.cos(a1) * inner, cy + Math.sin(a1) * inner);
+        const sat = 80 + 20 * Math.sin(a0 * 9 + t * 0.01);
+        const light = 45 + 10 * Math.cos(a0 * 6 - t * 0.012);
+        ctx.fillStyle = `hsl(${(hue + i*2)%360} ${sat}% ${light}%)`;
         ctx.fill();
-        ctx.stroke();
-
-        drawEye(cx - rx * 0.45, cy - ry * 0.15, w * 0.18, t);
-        drawEye(cx + rx * 0.45, cy - ry * 0.10, w * 0.18, t + 777);
-        drawMouth(cx, cy + ry * 0.35, w * 0.42, t);
-        noiseOverlay(w, h, 0.06);
       }
+      // Iris ring
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+      ctx.beginPath(); ctx.arc(cx, cy, irisR * 0.98, 0, Math.PI * 2); ctx.stroke();
 
-      function drawEye(x, y, size, t) {
-        const ctx = canvas.getContext('2d');
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(Math.sin(t * 0.002) * 0.05);
-        const w = size, h = size * 0.65;
+      // Pupil (dilating)
+      const pupilR = irisR * (0.26 + 0.08 * Math.sin(t * 0.02));
+      ctx.beginPath(); ctx.fillStyle = '#0a0a12';
+      ctx.arc(cx, cy, pupilR, 0, Math.PI * 2); ctx.fill();
 
-        const grad = ctx.createLinearGradient(-w/2, 0, w/2, 0);
-        grad.addColorStop(0, 'rgba(255,255,255,0.85)');
-        grad.addColorStop(1, 'rgba(200,220,255,0.75)');
-        ctx.fillStyle = grad;
-        roundedRect(ctx, -w/2, -h/2, w, h, h/2);
-        ctx.fill();
+      // Glints
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.beginPath(); ctx.arc(cx - pupilR*0.5, cy - pupilR*0.6, pupilR*0.18, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.globalAlpha = 0.5; ctx.arc(cx + pupilR*0.35, cy - pupilR*0.75, pupilR*0.08, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
 
-        const pupilR = Math.min(w, h) * 0.24;
-        const px = Math.sin(t * 0.01) * w * 0.08;
-        const py = Math.cos(t * 0.013) * h * 0.08;
-
-        ctx.beginPath();
-        ctx.fillStyle = 'rgba(10,10,20,0.95)';
-        ctx.arc(px, py, pupilR, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.strokeStyle = 'rgba(255,0,200,0.7)';
-        ctx.lineWidth = 1.8;
-        const turns = 2.6;
-        ctx.beginPath();
-        for (let a = 0; a < Math.PI * 2 * turns; a += 0.08) {
-          const r = (a / (Math.PI * 2 * turns)) * pupilR * 0.9;
-          const gx = px + Math.cos(a + t * 0.015) * r;
-          const gy = py + Math.sin(a + t * 0.017) * r;
-          a === 0 ? ctx.moveTo(gx, gy) : ctx.lineTo(gx, gy);
-        }
-        ctx.stroke();
-
-        ctx.restore();
-      }
-
-      function drawMouth(cx, cy, w, t) {
-        const ctx = canvas.getContext('2d');
-        ctx.save();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.beginPath();
-        for (let i = 0; i <= 100; i++) {
-          const x = cx - w/2 + (w * i / 100);
-          const y = cy + Math.sin(i * 0.25 + t * 0.02) * 6;
-          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      function noiseOverlay(w, h, alpha = 0.05) {
-        const ctx = canvas.getContext('2d');
-        const lines = 5;
-        ctx.save();
+      // Scanline/glitch streaks
+      if (Math.random() < 0.5) {
+        const lines = 4;
         for (let i = 0; i < lines; i++) {
-          const y = Math.random() * h;
-          ctx.globalAlpha = alpha + Math.random() * alpha;
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, y, w, 1);
+          const y = cy + (Math.random() - 0.5) * eyeH * 0.8;
+          ctx.globalAlpha = 0.06 + Math.random() * 0.08;
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(cx - eyeW*0.45, y, eyeW*0.9, 1);
         }
-        ctx.restore();
-
-        const specks = Math.floor((w * h) / 5000);
-        ctx.save();
-        ctx.globalAlpha = alpha;
-        for (let i = 0; i < specks; i++) {
-          const x = Math.random() * w, y = Math.random() * h;
-          ctx.fillStyle = Math.random() > 0.5 ? 'white' : 'black';
-          ctx.fillRect(x, y, 1, 1);
-        }
-        ctx.restore();
+        ctx.globalAlpha = 1;
       }
 
-      function roundedRect(ctx, x, y, w, h, r) {
-        const rr = Math.min(r, w/2, h/2);
-        ctx.beginPath();
-        ctx.moveTo(x + rr, y);
-        ctx.arcTo(x + w, y,     x + w, y + h, rr);
-        ctx.arcTo(x + w, y + h, x,     y + h, rr);
-        ctx.arcTo(x,     y + h, x,     y,     rr);
-        ctx.arcTo(x,     y,     x + w, y,     rr);
-        ctx.closePath();
+      // Outer stroke
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      roundedOval(cx, cy, eyeW, eyeH, 0); ctx.stroke();
+    }
+
+    function roundedOval(cx, cy, w, h, rot=0) {
+      const rx = w/2, ry = h/2;
+      const k = 0.552284749831;
+      const cpx = rx * k, cpy = ry * k;
+
+      ctx.save();
+      ctx.translate(cx, cy); ctx.rotate(rot);
+      ctx.beginPath();
+      ctx.moveTo(rx, 0);
+      ctx.bezierCurveTo(rx, -cpy, cpx, -ry, 0, -ry);
+      ctx.bezierCurveTo(-cpx, -ry, -rx, -cpy, -rx, 0);
+      ctx.bezierCurveTo(-rx, cpy, -cpx, ry, 0, ry);
+      ctx.bezierCurveTo(cpx, ry, rx, cpy, rx, 0);
+      ctx.closePath();
+      ctx.restore();
+    }
+
+    let rafId = null;
+    function animate(t) {
+      drawEye(t);
+      if (!prefersReduced) rafId = requestAnimationFrame(animate);
+    }
+
+    function start() {
+      setCanvasSize();
+      drawEye(0);
+      if (!prefersReduced) {
+        cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(animate);
       }
+    }
 
-      function glitchSlices() {
-        const w = canvas.clientWidth || canvas.width;
-        const h = canvas.clientHeight || canvas.height;
-        const slices = (Math.random() * 3) | 0;
-        for (let i = 0; i < slices; i++) {
-          const sh = 8 + Math.random() * 24;
-          const sy = Math.random() * (h - sh);
-          const sx = 0;
-          const sw = w;
-          const dx = (Math.random() - 0.5) * 16;
-          const imgData = ctx.getImageData(sx, sy, sw, sh);
-          ctx.clearRect(sx, sy, sw, sh);
-          ctx.putImageData(imgData, sx + dx, sy);
-        }
+    const ro = new ResizeObserver(start);
+    ro.observe(canvas);
+    window.addEventListener('orientationchange', () => setTimeout(start, 250));
 
-        if (Math.random() < 0.25) {
-          ctx.globalCompositeOperation = 'screen';
-          ctx.drawImage(canvas, 2, 0);
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.drawImage(canvas, -2, 0);
-          ctx.globalCompositeOperation = 'source-over';
-        }
+    start();
+
+    // Keyboard access (Enter/Space)
+    const link = canvas.parentElement;
+    link.setAttribute('tabindex', '0');
+    link.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        link.click();
       }
-
-      let rafId = null;
-      function animate(t) {
-        drawBaseFace(t);
-        if (!prefersReduced) {
-          if (Math.random() < 0.5) glitchSlices();
-          rafId = requestAnimationFrame(animate);
-        }
-      }
-
-      function start() {
-        setCanvasSize();
-        drawBaseFace(0);
-        if (!prefersReduced) {
-          cancelAnimationFrame(rafId);
-          rafId = requestAnimationFrame(animate);
-        }
-      }
-
-      const ro = new ResizeObserver(start);
-      ro.observe(canvas);
-      window.addEventListener('orientationchange', () => {
-        setTimeout(start, 250);
-      });
-
-      start();
-
-      const link = canvas.parentElement;
-      link.setAttribute('tabindex', '0');
-      link.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          link.click();
-        }
-      });
-    })();
+    });
+  })();
   </script>
 
   <!-- Global cart utilities + topbar count -->
