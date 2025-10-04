@@ -15,6 +15,42 @@
 
   <link rel="preload" as="image" href="static/images/background.png" imagesrcset="static/images/background.png" />
 
+  <!-- === SPLASH ADD: minimal styles for intro + fade-in === -->
+  <style>
+    .splash {
+      position: fixed; inset: 0; display: grid; place-items: center;
+      background: #000; z-index: 9999;
+    }
+    .splash .kaomoji {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(28px, 8vw, 80px);
+      color: #fff;
+      text-shadow: 0 0 10px #ff2a6d, 0 0 18px #7cffc1;
+      opacity: 0; transform: scale(.9);
+      animation: kfade 1s ease forwards .35s;
+      user-select: none;
+    }
+    @keyframes kfade { to { opacity: 1; transform: scale(1); } }
+
+    .flash { position: fixed; inset: 0; opacity: 0;
+      background: radial-gradient(circle, #fff, transparent 60%); }
+    .boom { animation: flash .5s ease-out forwards; }
+    @keyframes flash { 0%{opacity:0} 20%{opacity:1} 100%{opacity:0} }
+
+    .particle {
+      position: fixed; width: 6px; height: 6px; border-radius: 50%;
+      background: linear-gradient(180deg,#7cffc1,#ff2a6d);
+      box-shadow: 0 0 6px rgba(255,255,255,.8);
+      pointer-events: none; animation: fly .9s ease-out forwards;
+    }
+    @keyframes fly { to { transform: translate(var(--x), var(--y)) scale(.6); opacity:0 } }
+
+    /* Hide real UI until splash completes */
+    main, .topbar { opacity: 0; transition: opacity .6s ease; }
+    body.ready main, body.ready .topbar { opacity: 1; }
+  </style>
+  <!-- === /SPLASH ADD === -->
+
   <style>
     :root{
       --max-img: 300px;
@@ -163,6 +199,13 @@
   </style>
 </head>
 <body>
+  <!-- === SPLASH ADD: this sits above everything and disappears after 1.6s === -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <div class="kaomoji">(ﾉ´ヮ`)ﾉ*:･ﾟ✧</div>
+    <div class="flash" id="flash"></div>
+  </div>
+  <!-- === /SPLASH ADD === -->
+
   <a class="skip" href="#nav-target">Skip to main links</a>
 
   <!-- simple top bar with Cart (N) -->
@@ -188,6 +231,36 @@
       </a>
     </div>
   </main>
+
+  <!-- === SPLASH ADD: tiny script to run the boom + remove splash === -->
+  <script>
+    (function(){
+      function boom(x = innerWidth/2, y = innerHeight/2){
+        const f = document.getElementById('flash');
+        if (f){ f.classList.add('boom'); setTimeout(()=>f.classList.remove('boom'), 520); }
+        for(let i=0;i<70;i++){
+          const p=document.createElement('div');
+          p.className='particle';
+          const ang=Math.random()*Math.PI*2;
+          const mag=110+Math.random()*240;
+          p.style.left=x+'px'; p.style.top=y+'px';
+          p.style.setProperty('--x', Math.cos(ang)*mag+'px');
+          p.style.setProperty('--y', Math.sin(ang)*mag+'px');
+          document.body.appendChild(p);
+          setTimeout(()=>p.remove(), 950);
+        }
+      }
+      window.addEventListener('load', ()=>{
+        boom();
+        setTimeout(()=>{
+          document.body.classList.add('ready');
+          const s=document.getElementById('splash');
+          if(s) s.remove();
+        }, 1600);
+      });
+    })();
+  </script>
+  <!-- === /SPLASH ADD === -->
 
   <!-- Glitch face script (unchanged) -->
   <script>
