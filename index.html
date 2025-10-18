@@ -206,6 +206,42 @@
       .logo.glitch{ animation:none }
       .logo:hover,.merch-pill:hover,.snail:hover{ transform:none }
     }
+
+    /* === ADDED: social links (glowing pill buttons) === */
+    .social-links {
+      display:flex;
+      gap:18px;
+      margin-top:28px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    .social-links a {
+      position:relative;
+      text-decoration:none;
+      color:#fff;
+      font-weight:600;
+      padding:10px 20px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#ff7a1a,#5eb9ff);
+      box-shadow:0 0 12px rgba(255,255,255,0.25);
+      transition:transform .25s ease,box-shadow .25s ease;
+    }
+    .social-links a:hover {
+      transform:scale(1.07);
+      box-shadow:0 0 16px rgba(255,255,255,0.45);
+    }
+    .social-links a::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:999px;
+      background:linear-gradient(90deg,#ff7a1a,#5eb9ff);
+      filter:blur(8px);
+      opacity:.7;
+      z-index:-1;
+      transition:opacity .3s ease;
+    }
+    .social-links a:hover::before{opacity:1;}
   </style>
 </head>
 <body>
@@ -242,6 +278,13 @@
         <div class="cap" aria-hidden="true"></div>
         <img src="static/images/merch.png" alt="Open the merch page" class="merch-pill" loading="lazy" />
       </a>
+
+      <!-- === ADDED: Social links === -->
+      <div class="social-links">
+        <a href="https://www.instagram.com/wizl_er" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+        <a href="https://www.tiktok.com/@wizl_er" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
+        <a href="https://www.youtube.com/@wizlerr" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+      </div>
     </div>
   </main>
 
