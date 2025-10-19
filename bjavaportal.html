@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pill Portal — JS Animation</title>
+<title>Pill Portal — JS Animation + Mix</title>
 <meta name="theme-color" content="#0c0c0e" />
 <style>
   html,body{
@@ -36,6 +36,23 @@
     box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;
   }
 
+  /* player dock */
+  .player-dock{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:12px; width:min(920px, 96vw); z-index:20;
+    border-radius:14px; overflow:hidden;
+    box-shadow:0 18px 44px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.12) inset;
+  }
+
+  .open-sc{
+    position:fixed; left:16px; bottom:16px; z-index:21;
+    text-decoration:none; font-weight:800; color:#0b0b10;
+    background:linear-gradient(135deg,#ff8ccf,#7fd8ff);
+    padding:10px 14px; border-radius:12px;
+    box-shadow:0 0 18px rgba(255,255,255,.25);
+  }
+  .open-sc:hover{ filter:brightness(1.08) }
+
   @media (prefers-reduced-motion: reduce){
     body{ animation: none; }
   }
@@ -43,11 +60,27 @@
 </head>
 <body>
 <a class="back" href="claw.html" aria-label="Back to Claw">← Back</a>
-<div class="cap">JS neon tunnel — click to toggle speed</div>
+<a class="open-sc" href="https://soundcloud.com/wizl_er/apnas-vibes" target="_blank" rel="noopener">Open on SoundCloud ↗</a>
+<div class="cap">Neon tunnel reacts: faster while the mix plays</div>
+
 <canvas id="fx"></canvas>
 
+<!-- SoundCloud Player -->
+<div class="player-dock">
+  <iframe
+    id="scWidget"
+    width="100%"
+    height="166"
+    scrolling="no"
+    frameborder="no"
+    allow="autoplay"
+    src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/wizl_er/apnas-vibes&color=%23ff2a6d&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&visual=false">
+  </iframe>
+</div>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-/* Neon tunnel / plasma in plain JS canvas */
+/* Neon tunnel / plasma in plain JS canvas; speed reacts to SC play/pause */
 (() => {
   const c = document.getElementById('fx');
   const ctx = c.getContext('2d', { alpha:false });
@@ -63,40 +96,35 @@
   resize();
 
   const img = ctx.createImageData(c.width, c.height);
-  let t = 0, speed = 0.012;
+  let t = 0;
+  let baseSpeed = 0.012;     // idle speed
+  let playBoost = 0.06;      // speed while playing
+  let speed = baseSpeed;
 
   function render(){
     const W = c.width, H = c.height;
     const data = img.data;
     const cx = W/2, cy = H/2;
 
-    // Fill pixels
     let i = 0;
     for(let y=0; y<H; y++){
       const dy = (y - cy);
       for(let x=0; x<W; x++){
         const dx = (x - cx);
-
-        // polar coords
         const r = Math.sqrt(dx*dx + dy*dy) + 0.0001;
         const ang = Math.atan2(dy, dx);
 
-        // tunnel / plasma formula
         const v = Math.sin(8*ang + t*3) + Math.cos(r*0.03 - t*4) + Math.sin((dx*0.02 + dy*0.02) + t*2);
-
-        // color mapping (0..1)
-        const n = (v + 3) / 6; // normalize to 0..1
+        const n = (v + 3) / 6; // 0..1
         const hue = (n * 360 + t*120) % 360;
-        const light = 35 + n*45; // 35..80
+        const light = 35 + n*45;
         const sat = 90;
 
-        // quick HSL->RGB approximation
         const rgb = hslToRgb(hue/360, sat/100, light/100);
-
         data[i++] = rgb[0];
         data[i++] = rgb[1];
         data[i++] = rgb[2];
-        data[i++] = 255; // alpha
+        data[i++] = 255;
       }
     }
 
@@ -105,7 +133,6 @@
     requestAnimationFrame(render);
   }
 
-  // Tiny HSL->RGB (returns [r,g,b] 0..255)
   function hslToRgb(h, s, l){
     if (s === 0){ const g = l*255|0; return [g,g,g]; }
     const q = l < 0.5 ? l * (1 + s) : l + s - l*s;
@@ -124,10 +151,16 @@
     return p;
   }
 
-  // Interaction: click to toggle speed
-  addEventListener('click', () => {
-    speed = (speed < 0.02) ? 0.06 : 0.012;
-  }, { passive:true });
+  // Hook SoundCloud widget to react
+  try{
+    const widget = SC.Widget(document.getElementById('scWidget'));
+    widget.bind(SC.Widget.Events.PLAY,   () => { speed = playBoost; });
+    widget.bind(SC.Widget.Events.PAUSE,  () => { speed = baseSpeed; });
+    widget.bind(SC.Widget.Events.FINISH, () => { speed = baseSpeed; });
+  }catch(e){
+    // If the widget API fails to load, animation still runs
+    console.warn('SC widget not available:', e);
+  }
 
   render();
 })();
