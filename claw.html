@@ -13,61 +13,35 @@
       background: radial-gradient(circle at 50% 30%, #1b1b1d, #0a0a0c);
       color: #fff;
       font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; overflow: hidden;
     }
 
-    /* home logo */
     .logo-link img {
-      width: 300px;
-      max-width: 70vw;
+      width: 300px; max-width: 70vw; margin-bottom: 40px;
       filter: drop-shadow(0 0 6px rgba(255,255,255,.25));
       transition: transform .3s ease;
-      margin-bottom: 40px;
     }
     .logo-link img:hover { transform: scale(1.05); }
 
-    /* pill portal button */
+    /* pill button */
     .pill-link {
-      display: inline-block;
-      width: 150px;
-      height: 60px;
-      border-radius: 30px;
+      display: inline-block; width: 160px; height: 64px; border-radius: 32px;
       background: linear-gradient(90deg, #ff66cc 50%, #66ccff 50%);
-      box-shadow: 0 0 20px rgba(255, 102, 204, 0.8);
-      position: relative;
-      outline: none;
-      cursor: pointer;
-      animation:
-        pillPulse 1.5s infinite alternate ease-in-out,
-        pillFloat 3s infinite ease-in-out,
-        hueShift 8s linear infinite;
-      transition: transform .25s ease, box-shadow .25s ease;
+      box-shadow: 0 0 20px rgba(255,102,204,.8);
+      position: relative; outline: none; cursor: pointer;
+      animation: pulse 1.5s infinite alternate ease-in-out, float 3s infinite ease-in-out, hue 8s linear infinite;
     }
-
-    .pill-link:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 25px rgba(255,255,255,0.45);
-    }
-
-    .pill-link::after {
-      content:'';
-      position:absolute;
-      inset:0;
-      border-radius: 30px;
+    .pill-link::after{
+      content:''; position:absolute; inset:0; border-radius: 32px;
       background: radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.35), rgba(255,255,255,0) 55%);
-      mix-blend-mode: screen;
-      pointer-events:none;
+      mix-blend-mode: screen; pointer-events:none;
     }
+    .pill-link:focus-visible { outline:3px solid rgba(var(--ring)); outline-offset:6px; }
 
-    /* animations */
-    @keyframes pillPulse { from{transform:scale(1);} to{transform:scale(1.1);} }
-    @keyframes pillFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-    @keyframes hueShift { 0%{filter:hue-rotate(0deg);} 50%{filter:hue-rotate(180deg);} 100%{filter:hue-rotate(360deg);} }
+    @keyframes pulse { from{transform:scale(1);} to{transform:scale(1.08);} }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+    @keyframes hue { 0%{filter:hue-rotate(0deg);} 50%{filter:hue-rotate(180deg);} 100%{filter:hue-rotate(360deg);} }
 
     @media (prefers-reduced-motion: reduce){
       .pill-link { animation: none; }
@@ -78,12 +52,12 @@
 <body>
 
   <!-- Home logo -->
-  <a href="/" class="logo-link" aria-label="Return to home">
+  <a href="/" class="logo-link" aria-label="Back to home">
     <img src="static/images/unusualpills.png" alt="Unusual Pills" />
   </a>
 
-  <!-- Interactive pill -->
-  <a href="pill-portal.html" class="pill-link" aria-label="Enter the pill portal"></a>
+  <!-- Pill opens the new animation page -->
+  <a href="bjavaportal.html" class="pill-link" aria-label="Enter the Pill Portal"></a>
 
 </body>
 </html>

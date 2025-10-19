@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pill Portal — JS Animation</title>
+<meta name="theme-color" content="#0c0c0e" />
+<style>
+  html,body{
+    margin:0; height:100%; background:#0c0c0e; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, sans-serif;
+    color:#fff;
+  }
+  canvas{display:block;}
+
+  /* fade-in */
+  body{opacity:0; animation:fadein 1.2s ease forwards;}
+  @keyframes fadein{to{opacity:1;}}
+
+  /* back button */
+  .back{
+    position:fixed; top:16px; left:16px; z-index:10;
+    color:#d7e8ff; text-decoration:none; font-weight:800;
+    padding:8px 12px; border-radius:10px;
+    background:rgba(0,0,0,.35);
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;
+  }
+  .back:hover{ background:rgba(0,0,0,.55); }
+
+  /* caption */
+  .cap{
+    position:fixed; bottom:16px; right:16px; z-index:10;
+    font-size:12px; opacity:.75; background:rgba(0,0,0,.35);
+    padding:6px 10px; border-radius:8px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.12) inset;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    body{ animation: none; }
+  }
+</style>
+</head>
+<body>
+<a class="back" href="claw.html" aria-label="Back to Claw">← Back</a>
+<div class="cap">JS neon tunnel — click to toggle speed</div>
+<canvas id="fx"></canvas>
+
+<script>
+/* Neon tunnel / plasma in plain JS canvas */
+(() => {
+  const c = document.getElementById('fx');
+  const ctx = c.getContext('2d', { alpha:false });
+  let DPR = Math.max(1, devicePixelRatio || 1);
+
+  function resize(){
+    const w = innerWidth, h = innerHeight;
+    c.width  = Math.floor(w * DPR);
+    c.height = Math.floor(h * DPR);
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  addEventListener('resize', () => { DPR = Math.max(1, devicePixelRatio || 1); resize(); });
+  resize();
+
+  const img = ctx.createImageData(c.width, c.height);
+  let t = 0, speed = 0.012;
+
+  function render(){
+    const W = c.width, H = c.height;
+    const data = img.data;
+    const cx = W/2, cy = H/2;
+
+    // Fill pixels
+    let i = 0;
+    for(let y=0; y<H; y++){
+      const dy = (y - cy);
+      for(let x=0; x<W; x++){
+        const dx = (x - cx);
+
+        // polar coords
+        const r = Math.sqrt(dx*dx + dy*dy) + 0.0001;
+        const ang = Math.atan2(dy, dx);
+
+        // tunnel / plasma formula
+        const v = Math.sin(8*ang + t*3) + Math.cos(r*0.03 - t*4) + Math.sin((dx*0.02 + dy*0.02) + t*2);
+
+        // color mapping (0..1)
+        const n = (v + 3) / 6; // normalize to 0..1
+        const hue = (n * 360 + t*120) % 360;
+        const light = 35 + n*45; // 35..80
+        const sat = 90;
+
+        // quick HSL->RGB approximation
+        const rgb = hslToRgb(hue/360, sat/100, light/100);
+
+        data[i++] = rgb[0];
+        data[i++] = rgb[1];
+        data[i++] = rgb[2];
+        data[i++] = 255; // alpha
+      }
+    }
+
+    ctx.putImageData(img, 0, 0);
+    t += speed;
+    requestAnimationFrame(render);
+  }
+
+  // Tiny HSL->RGB (returns [r,g,b] 0..255)
+  function hslToRgb(h, s, l){
+    if (s === 0){ const g = l*255|0; return [g,g,g]; }
+    const q = l < 0.5 ? l * (1 + s) : l + s - l*s;
+    const p = 2 * l - q;
+    const r = hue2rgb(p, q, h + 1/3);
+    const g = hue2rgb(p, q, h);
+    const b = hue2rgb(p, q, h - 1/3);
+    return [ (r*255)|0, (g*255)|0, (b*255)|0 ];
+  }
+  function hue2rgb(p, q, t){
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  }
+
+  // Interaction: click to toggle speed
+  addEventListener('click', () => {
+    speed = (speed < 0.02) ? 0.06 : 0.012;
+  }, { passive:true });
+
+  render();
+})();
+</script>
+</body>
+</html>
