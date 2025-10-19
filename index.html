@@ -177,6 +177,7 @@
 
     .snail-link{ position:absolute; left:16px; top:50%; transform:translateY(-50%); z-index:1; text-decoration:none; outline:none; }
     #glitchFace{ width:min(60vw,var(--max-img)); max-width:var(--max-img); height:auto; display:block; border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.35); }
+    .snail{ position:relative; z-index:5; } /* ensure eyeball sits above */
 
     .center-links{ display:flex; flex-direction:column; align-items:center; z-index:2; }
 
@@ -207,7 +208,14 @@
       .logo:hover,.merch-pill:hover,.snail:hover{ transform:none }
     }
 
-    /* === ADDED: social links (glowing pill buttons) === */
+    /* === ADDED: oscillating social + music links === */
+    @keyframes hueShift {
+      0%   { filter: hue-rotate(0deg); }
+      50%  { filter: hue-rotate(180deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    /* social links (glowing pills) */
     .social-links {
       display:flex;
       gap:18px;
@@ -225,6 +233,7 @@
       background:linear-gradient(90deg,#ff7a1a,#5eb9ff);
       box-shadow:0 0 12px rgba(255,255,255,0.25);
       transition:transform .25s ease,box-shadow .25s ease;
+      animation:hueShift 6s linear infinite;
     }
     .social-links a:hover {
       transform:scale(1.07);
@@ -232,18 +241,16 @@
     }
     .social-links a::before {
       content:'';
-      position:absolute;
-      inset:0;
+      position:absolute; inset:0;
       border-radius:999px;
       background:linear-gradient(90deg,#ff7a1a,#5eb9ff);
       filter:blur(8px);
-      opacity:.7;
-      z-index:-1;
+      opacity:.7; z-index:-1;
       transition:opacity .3s ease;
     }
     .social-links a:hover::before{opacity:1;}
 
-    /* === ADDED: music links (razor-blade buttons) === */
+    /* music links (razor-blade buttons) */
     .music-links{
       display:flex;
       gap:18px;
@@ -263,6 +270,7 @@
       clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%); /* razor shape */
       box-shadow:0 0 14px rgba(255,255,255,.25);
       transition:transform .25s ease, filter .25s ease, box-shadow .25s ease;
+      animation:hueShift 8s linear infinite;
     }
     .music-links a::before{
       content:'';
@@ -316,14 +324,14 @@
         <img src="static/images/merch.png" alt="Open the merch page" class="merch-pill" loading="lazy" />
       </a>
 
-      <!-- === ADDED: Social links === -->
+      <!-- Social links -->
       <div class="social-links">
         <a href="https://www.instagram.com/wizl_er" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
         <a href="https://www.tiktok.com/@wizl_er" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
         <a href="https://www.youtube.com/@wizlerr" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
       </div>
 
-      <!-- === ADDED: Music links (SoundCloud / Apple / Spotify) === -->
+      <!-- Music links -->
       <div class="music-links" aria-label="Music platforms">
         <a href="https://soundcloud.com/wizl_er" target="_blank" rel="noopener" aria-label="SoundCloud">SoundCloud</a>
         <a href="https://music.apple.com/us/artist/wizler/1640896431" target="_blank" rel="noopener" aria-label="Apple Music">Apple&nbsp;Music</a>
@@ -401,7 +409,7 @@
 
       // Chromatic fringe pass
       ctx.globalCompositeOperation = 'screen';
-      ctx.filter = 'blur(0.4px)');
+      ctx.filter = 'blur(0.4px)'; /* fixed stray parenthesis */
       ctx.save(); ctx.translate(1.5, 0); ctx.globalAlpha = 0.35; ctx.drawImage(canvas, 0, 0); ctx.restore();
       ctx.save(); ctx.translate(-1.5, 0); ctx.globalAlpha = 0.35; ctx.drawImage(canvas, 0, 0); ctx.restore();
       ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over';
