@@ -2,62 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Unusual Pills</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Unusual Pills — Claw</title>
+  <meta name="theme-color" content="#0c0c0e" />
   <style>
+    :root { --ring: 255 255 255 / 85%; }
+
     body {
       margin: 0;
-      background: #111;
+      background: radial-gradient(circle at 50% 30%, #1b1b1d, #0a0a0c);
       color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
+      font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       overflow: hidden;
     }
 
+    /* home logo */
     .logo-link img {
       width: 300px;
+      max-width: 70vw;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,.25));
+      transition: transform .3s ease;
       margin-bottom: 40px;
-      transition: transform 0.3s ease;
     }
+    .logo-link img:hover { transform: scale(1.05); }
 
-    .logo-link img:hover {
-      transform: scale(1.05);
-    }
-
-    .pill {
+    /* pill portal button */
+    .pill-link {
+      display: inline-block;
       width: 150px;
       height: 60px;
-      background: linear-gradient(90deg, #ff66cc 50%, #66ccff 50%);
       border-radius: 30px;
+      background: linear-gradient(90deg, #ff66cc 50%, #66ccff 50%);
       box-shadow: 0 0 20px rgba(255, 102, 204, 0.8);
-      animation: pulse 1.5s infinite alternate ease-in-out, float 3s infinite ease-in-out;
+      position: relative;
+      outline: none;
       cursor: pointer;
+      animation:
+        pillPulse 1.5s infinite alternate ease-in-out,
+        pillFloat 3s infinite ease-in-out,
+        hueShift 8s linear infinite;
+      transition: transform .25s ease, box-shadow .25s ease;
     }
 
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.1); }
+    .pill-link:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(255,255,255,0.45);
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+    .pill-link::after {
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius: 30px;
+      background: radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.35), rgba(255,255,255,0) 55%);
+      mix-blend-mode: screen;
+      pointer-events:none;
+    }
+
+    /* animations */
+    @keyframes pillPulse { from{transform:scale(1);} to{transform:scale(1.1);} }
+    @keyframes pillFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+    @keyframes hueShift { 0%{filter:hue-rotate(0deg);} 50%{filter:hue-rotate(180deg);} 100%{filter:hue-rotate(360deg);} }
+
+    @media (prefers-reduced-motion: reduce){
+      .pill-link { animation: none; }
+      .logo-link img { transition: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- INVOIID image home button -->
-  <a href="/" class="logo-link">
-    <img src="static/images/unusualpills.png" alt="Home" />
+  <!-- Home logo -->
+  <a href="/" class="logo-link" aria-label="Return to home">
+    <img src="static/images/unusualpills.png" alt="Unusual Pills" />
   </a>
 
   <!-- Interactive pill -->
-  <div class="pill" onclick="window.open('https://soundcloud.com/unusualpills', '_blank')"></div>
+  <a href="pill-portal.html" class="pill-link" aria-label="Enter the pill portal"></a>
 
 </body>
 </html>
